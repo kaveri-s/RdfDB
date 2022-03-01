@@ -6,7 +6,6 @@
 JARFILES=bufmgr/*.class diskmgr/*.class global/*.class iterator/*.class\
          heap/*.class chainexception/*.class  btree/*.class index/*.class tests/*.class
 
-JDKPATH = /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.322.b06-1.el7_9.x86_64/
 LIBPATH = .:..
 CLASSPATH = $(LIBPATH)
 BINPATH = $(JDKPATH)/bin
@@ -17,7 +16,7 @@ DOCFILES=bufmgr diskmgr global chainexception heap btree iterator index
 
 ##############  update the above for each assignment in making
 
-ASSIGN=/home/candan/Courses/CSE510spr02/minjava/javaminibase/src
+# ASSIGN=/home/candan/Courses/CSE510spr02/minjava/javaminibase/src
 LIBDIR=$(ASSIGN)/lib
 KEY=$(ASSIGN)/key
 SRC=$(ASSIGN)/src
