@@ -2,7 +2,6 @@ package heap;
 
 import java.io.*;
 import global.*;
-import bufmgr.*;
 import diskmgr.*;
 
 /**
@@ -16,13 +15,13 @@ import diskmgr.*;
 public class TScan implements GlobalConst{
 
     /** The heapfile we are using. */
-    private Heapfile  _hf;
+    private QuadrupleHeapFile _qhf;
 
-    /** PageId of current directory page (which is itself an HFPage) */
+    /** PageId of current directory page (which is itself an THFPage) */
     private PageId dirpageId = new PageId();
 
     /** pointer to in-core data of dirpageId (page is pinned) */
-    private HFPage dirpage = new HFPage();
+    private THFPage dirpage = new THFPage();
 
     /** record ID of the DataPageInfo struct (in the directory page) which
      * describes the data page where our current record lives.
@@ -33,7 +32,7 @@ public class TScan implements GlobalConst{
     private PageId datapageId = new PageId();
 
     /** in-core copy (pinned) of the same */
-    private HFPage datapage = new HFPage();
+    private THFPage datapage = new THFPage();
 
     /** record ID of the current record (from the current data page) */
     private QID userrid = new QID();
@@ -47,14 +46,13 @@ public class TScan implements GlobalConst{
      *
      * @exception InvalidTupleSizeException Invalid tuple size
      * @exception IOException I/O errors
-     *
-     * @param hf A HeapFile object
+     *@param hf A HeapFile object
      */
-    public Scan(Heapfile hf)
+    public TScan(QuadrupleHeapFile hf)
             throws InvalidTupleSizeException,
             IOException
     {
-        init(hf);
+        init(_qhf);
     }
 
     /** Retrieve the next record in a sequential scan
@@ -62,7 +60,7 @@ public class TScan implements GlobalConst{
      * @exception InvalidTupleSizeException Invalid tuple size
      * @exception IOException I/O errors
      *
-     * @param rid Record ID of the record
+     * @param qid Record ID of the record
      * @return the Tuple of the retrieved record.
      */
     public Quadruple getNext(QID qid)
@@ -101,7 +99,7 @@ public class TScan implements GlobalConst{
      *
      * @exception InvalidTupleSizeException Invalid tuple size
      * @exception IOException I/O errors
-     * @param rid Record ID of the given record
+     * @param qid Record ID of the given record
      * @return 	true if successful,
      *			false otherwise.
      */
@@ -166,14 +164,13 @@ public class TScan implements GlobalConst{
      *
      * @exception InvalidTupleSizeException Invalid tuple size
      * @exception IOException I/O errors
-     *
-     * @param hf A HeapFile object
+     *@param hf A HeapFile object
      */
-    private void init(Heapfile hf)
+    private void init(QuadrupleHeapFile hf)
             throws InvalidTupleSizeException,
             IOException
     {
-        _hf = hf;
+        _qhf = hf;
 
         firstDataPage();
     }
@@ -229,12 +226,12 @@ public class TScan implements GlobalConst{
         Boolean      bst;
 
         /** copy data about first directory page */
-        dirpageId.pid = _hf._firstDirPageId.pid;
+        dirpageId.pid = _qhf._firstDirPageId.pid;
         nextUserStatus = true;
 
         /** get first directory page and pin it */
         try {
-            dirpage  = new HFPage();
+            dirpage  = new THFPage();
             pinPage(dirpageId, (Page) dirpage, false);
         }
         catch (Exception e) {
@@ -282,7 +279,7 @@ public class TScan implements GlobalConst{
 
                 try {
 
-                    dirpage = new HFPage();
+                    dirpage = new THFPage();
                     pinPage(nextDirPageId, (Page )dirpage, false);
 
                 }
@@ -407,7 +404,7 @@ public class TScan implements GlobalConst{
 
                 // pin first data page
                 try {
-                    datapage  = new HFPage();
+                    datapage  = new THFPage();
                     pinPage(datapageId, (Page) datapage, false);
                 }
                 catch (Exception e){
@@ -475,7 +472,7 @@ public class TScan implements GlobalConst{
                 dirpageId = nextDirPageId;
 
                 try {
-                    dirpage  = new HFPage();
+                    dirpage  = new THFPage();
                     pinPage(dirpageId, (Page)dirpage, false);
                 }
 
@@ -520,7 +517,7 @@ public class TScan implements GlobalConst{
         datapageId.pid = dpinfo.pageId.pid;
 
         try {
-            datapage = new HFPage();
+            datapage = new THFPage();
             pinPage(dpinfo.pageId, (Page) datapage, false);
         }
 
@@ -547,8 +544,8 @@ public class TScan implements GlobalConst{
 
     private boolean peekNext(QID qid) {
 
-        rid.pageNo.pid = userrid.pageNo.pid;
-        rid.slotNo = userrid.slotNo;
+        qid.pageNo.pid = userrid.pageNo.pid;
+        qid.slotNo = userrid.slotNo;
         return true;
 
     }

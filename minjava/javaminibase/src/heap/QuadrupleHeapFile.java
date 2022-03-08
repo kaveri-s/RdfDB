@@ -18,6 +18,160 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
     private     String 	 _fileName;
     private static int tempfilecount = 0;
 
+
+    /* get a new datapage from the buffer manager and initialize dpinfo
+     @param dpinfop the information in the new THFPage
+  */
+    private THFPage _newDatapage(DataPageInfo dpinfop)
+            throws HFException,
+            HFBufMgrException,
+            HFDiskMgrException,
+            IOException
+    {
+        Page apage = new Page();
+        PageId pageId = new PageId();
+        pageId = newPage(apage, 1);
+
+        if(pageId == null)
+            throw new HFException(null, "can't new pae");
+
+        // initialize internal values of the new page:
+
+        THFPage thfpage = new THFPage();
+        thfpage.init(pageId, apage);
+
+        dpinfop.pageId.pid = pageId.pid;
+        dpinfop.recct = 0;
+        dpinfop.availspace = thfpage.available_space();
+
+        return thfpage;
+
+    }
+
+    /* Internal HeapFile function (used in getRecord and updateRecord):
+    returns pinned directory page and pinned data page of the specified
+    user record(rid) and true if record is found.
+    If the user record cannot be found, return false.
+ */
+    private boolean  _findDataPage( QID qid,
+                                    PageId dirPageId, THFPage dirpage,
+                                    PageId dataPageId, THFPage datapage,
+                                    QID rpDataPageQid)
+            throws InvalidSlotNumberException,
+            InvalidTupleSizeException,
+            HFException,
+            HFBufMgrException,
+            HFDiskMgrException,
+            Exception
+    {
+        PageId currentDirPageId = new PageId(_firstDirPageId.pid);
+
+        THFPage currentDirPage = new THFPage();
+        THFPage currentDataPage = new THFPage();
+        QID currentDataPageQid = new QID();
+        PageId nextDirPageId = new PageId();
+        // datapageId is stored in dpinfo.pageId
+
+
+        pinPage(currentDirPageId, currentDirPage, false/*read disk*/);
+
+        Quadruple aquad = new Quadruple();
+
+        while (currentDirPageId.pid != INVALID_PAGE)
+        {// Start While01
+            // ASSERTIONS:
+            //  currentDirPage, currentDirPageId valid and pinned and Locked.
+
+            for( currentDataPageQid = currentDirPage.firstRecord();
+                 currentDataPageQid != null;
+                 currentDataPageQid = currentDirPage.nextRecord(currentDataPageQid))
+            {
+                try{
+                    aquad = currentDirPage.getRecord(currentDataPageQid);
+                }
+                catch (InvalidSlotNumberException e)// check error! return false(done)
+                {
+                    return false;
+                }
+
+                DataPageInfo dpinfo = new DataPageInfo(aquad);
+                try{
+                    pinPage(dpinfo.pageId, currentDataPage, false/*Rddisk*/);
+
+
+                    //check error;need unpin currentDirPage
+                }catch (Exception e)
+                {
+                    unpinPage(currentDirPageId, false/*undirty*/);
+                    dirpage = null;
+                    datapage = null;
+                    throw e;
+                }
+
+
+
+                // ASSERTIONS:
+                // - currentDataPage, currentDataPageRid, dpinfo valid
+                // - currentDataPage pinned
+
+                if(dpinfo.pageId.pid==qid.pageNo.pid)
+                {
+                    aquad = currentDataPage.returnRecord(qid);
+                    // found user's record on the current datapage which itself
+                    // is indexed on the current dirpage.  Return both of these.
+
+                    dirpage.setpage(currentDirPage.getpage());
+                    dirPageId.pid = currentDirPageId.pid;
+
+                    datapage.setpage(currentDataPage.getpage());
+                    dataPageId.pid = dpinfo.pageId.pid;
+
+                    rpDataPageQid.pageNo.pid = currentDataPageQid.pageNo.pid;
+                    rpDataPageQid.slotNo = currentDataPageQid.slotNo;
+                    return true;
+                }
+                else
+                {
+                    // user record not found on this datapage; unpin it
+                    // and try the next one
+                    unpinPage(dpinfo.pageId, false /*undirty*/);
+
+                }
+
+            }
+
+            // if we would have found the correct datapage on the current
+            // directory page we would have already returned.
+            // therefore:
+            // read in next directory page:
+
+            nextDirPageId = currentDirPage.getNextPage();
+            try{
+                unpinPage(currentDirPageId, false /*undirty*/);
+            }
+            catch(Exception e) {
+                throw new HFException (e, "heapfile,_find,unpinpage failed");
+            }
+
+            currentDirPageId.pid = nextDirPageId.pid;
+            if(currentDirPageId.pid != INVALID_PAGE)
+            {
+                pinPage(currentDirPageId, currentDirPage, false/*Rdisk*/);
+                if(currentDirPage == null)
+                    throw new HFException(null, "pinPage return null page");
+            }
+
+
+        } // end of While01
+        // checked all dir pages and all data pages; user record not found:(
+
+        dirPageId.pid = dataPageId.pid = INVALID_PAGE;
+
+        return false;
+
+
+    }
+
     public  QuadrupleHeapFile(String name)
             throws HFException,
             HFBufMgrException,
@@ -60,7 +214,7 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
             add_file_entry(_fileName, _firstDirPageId);
             // check error(new exception: Could not add file entry
 
-            HFPage firstDirPage = new HFPage();
+            THFPage firstDirPage = new THFPage();
             firstDirPage.init(_firstDirPageId, apage);
             PageId pageId = new PageId(INVALID_PAGE);
 
@@ -82,7 +236,7 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
 
         PageId nextDirPageId = new PageId(0);
 
-        HFPage currentDirPage = new HFPage();
+        THFPage currentDirPage = new THFPage();
         while(currentDirPageId.pid != INVALID_PAGE)
         {
             pinPage(currentDirPageId, currentDirPage, false);
@@ -112,7 +266,7 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
         return answer;
     }
 
-    public RID insertQuadruple(byte[] quadruplePtr)
+    public QID insertQuadruple(byte[] quadruplePtr)
             throws InvalidSlotNumberException,
             InvalidTupleSizeException,
             SpaceNotAvailableException,
@@ -126,10 +280,10 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
         boolean found;
         QID currentDataPageQid = new QID();
         Page pageinbuffer = new Page();
-        HFPage currentDirPage = new HFPage();
-        HFPage currentDataPage = new HFPage();
+        THFPage currentDirPage = new THFPage();
+        THFPage currentDataPage = new THFPage();
 
-        HFPage nextDirPage = new HFPage();
+        THFPage nextDirPage = new THFPage();
         PageId currentDirPageId = new PageId(_firstDirPageId.pid);
         PageId nextDirPageId = new PageId();  // OK
 
@@ -200,7 +354,7 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
 
 
                     // currentDataPage is pinned: insert its record
-                    // calling a HFPage function
+                    // calling a THFPage function
 
 
 
@@ -273,7 +427,7 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
                         unpinPage(currentDirPageId, true/*dirty*/);
 
                         currentDirPageId.pid = nextDirPageId.pid;
-                        currentDirPage = new HFPage(nextDirPage);
+                        currentDirPage = new THFPage(nextDirPage);
 
                         // remark that MINIBASE_BM->newPage already
                         // pinned the new directory page!
@@ -314,7 +468,7 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
         if ((dpinfo.pageId).pid == INVALID_PAGE) // check error!
             throw new HFException(null, "invalid PageId");
 
-        if (!(currentDataPage.available_space() >= recLen))
+        if (!(currentDataPage.available_space() >= quadLen))
             throw new SpaceNotAvailableException(null, "no available space");
 
         if (currentDataPage == null)
@@ -356,9 +510,9 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
             HFDiskMgrException,
             Exception {
         boolean status;
-        HFPage currentDirPage = new HFPage();
+        THFPage currentDirPage = new THFPage();
         PageId currentDirPageId = new PageId();
-        HFPage currentDataPage = new HFPage();
+        THFPage currentDataPage = new THFPage();
         PageId currentDataPageId = new PageId();
         QID currentDataPageQid = new QID();
 
@@ -418,7 +572,7 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
 
                 // point previous page around deleted page:
 
-                HFPage prevDirPage = new HFPage();
+                THFPage prevDirPage = new THFPage();
                 pinPage(pageId, prevDirPage, false);
                 pageId = currentDirPage.getNextPage();
                 prevDirPage.setNextPage(pageId);
@@ -429,7 +583,7 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
                 pageId = currentDirPage.getNextPage();
                 if(pageId.pid != INVALID_PAGE)
                 {
-                    HFPage nextDirPage = new HFPage();
+                    THFPage nextDirPage = new THFPage();
                     pageId = currentDirPage.getNextPage();
                     pinPage(pageId, nextDirPage, false);
                     //nextDirPage.openHFpage(apage);
@@ -463,9 +617,9 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
             Exception
     {
         boolean status;
-        HFPage dirPage = new HFPage();
+        THFPage dirPage = new THFPage();
         PageId currentDirPageId = new PageId();
-        HFPage dataPage = new HFPage();
+        THFPage dataPage = new THFPage();
         PageId currentDataPageId = new PageId();
         QID currentDataPageQid = new QID();
 
@@ -488,7 +642,7 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
         return true;
     }
 
-    public  Tuple getQuadruple(QID qid)
+    public  Quadruple getQuadruple(QID qid)
             throws InvalidSlotNumberException,
             InvalidTupleSizeException,
             HFException,
@@ -497,9 +651,9 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
             Exception
     {
         boolean status;
-        HFPage dirPage = new HFPage();
+        THFPage dirPage = new THFPage();
         PageId currentDirPageId = new PageId();
-        HFPage dataPage = new HFPage();
+        THFPage dataPage = new THFPage();
         PageId currentDataPageId = new PageId();
         QID currentDataPageRid = new QID();
 
@@ -524,11 +678,11 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
         return  aquad;  //(true?)OK, but the caller need check if atuple==NULL
     }
 
-    public Scan openScan()
+    public TScan openScan()
             throws InvalidTupleSizeException,
             IOException
     {
-        Scan newscan = new Scan(this);
+        TScan newscan = new TScan(this);
         return newscan;
     }
 
@@ -551,7 +705,7 @@ public class QuadrupleHeapFile implements Filetype, GlobalConst {
         PageId nextDirPageId = new PageId();
         nextDirPageId.pid = 0;
         Page pageinbuffer = new Page();
-        HFPage currentDirPage =  new HFPage();
+        THFPage currentDirPage =  new THFPage();
         Quadruple aquad;
 
         pinPage(currentDirPageId, currentDirPage, false);
