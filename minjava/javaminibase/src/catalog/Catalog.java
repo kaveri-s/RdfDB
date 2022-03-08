@@ -10,8 +10,6 @@ import java.io.*;
 
 import global.*;
 import heap.*;
-import bufmgr.*;
-import diskmgr.*;
 
 public class Catalog 
   implements GlobalConst, Catalogglobal
@@ -252,7 +250,7 @@ public class Catalog
     throws CatalogException
     {
       try {
-	Scan relscan = new Scan(relCat);
+	TScan relscan = new TScan(relCat);
       }
       catch (Exception e1) {
 	throw new CatalogException (e1, "scan failed");

@@ -3,7 +3,6 @@ package iterator;
 import heap.*;
 import global.*;
 import bufmgr.*;
-import diskmgr.*;
 import index.*;
 
 import java.lang.*;
@@ -23,9 +22,9 @@ public class DuplElim extends Iterator
   
   private AttrType  sortFldType;
   private int       sortFldLen;
-  private Tuple    Jtuple;
+  private Quadruple Jtuple;
   
-  private Tuple TempTuple1, TempTuple2;
+  private Quadruple TempTuple1, TempTuple2;
   
   /**
    *Constructor to set up some information.
@@ -50,7 +49,7 @@ public class DuplElim extends Iterator
       System.arraycopy(in,0,_in,0,in.length);
       in_len = len_in;
      
-      Jtuple =  new Tuple();
+      Jtuple =  new Quadruple();
       try {
 	Jtuple.setHdr(len_in, _in, s_sizes);
       }catch (Exception e){
@@ -88,8 +87,8 @@ public class DuplElim extends Iterator
 	}
 
       // Allocate memory for the temporary tuples
-      TempTuple1 =  new Tuple();
-      TempTuple2 = new Tuple();
+      TempTuple1 =  new Quadruple();
+      TempTuple2 = new Quadruple();
       try{
 	TempTuple1.setHdr(in_len, _in, s_sizes);
 	TempTuple2.setHdr(in_len, _in, s_sizes);
@@ -116,7 +115,7 @@ public class DuplElim extends Iterator
    *@exception UnknownKeyTypeException key type unknown
    *@exception Exception other exceptions
    */
-  public Tuple get_next() 
+  public Quadruple get_next()
     throws IOException,
 	   JoinsException ,
 	   IndexException,
@@ -131,23 +130,23 @@ public class DuplElim extends Iterator
 	   UnknownKeyTypeException,
 	   Exception
     {
-      Tuple t;
+      Quadruple t;
       
       if (done)
         return null;
-      Jtuple.tupleCopy(TempTuple1);
+      Jtuple.quadrupleCopy(TempTuple1);
      
       do {
 	if ((t = _am.get_next()) == null) {
 	  done = true;                    // next call returns DONE;
 	  return null;
 	} 
-	TempTuple2.tupleCopy(t);
+	TempTuple2.quadrupleCopy(t);
       } while (TupleUtils.Equal(TempTuple1, TempTuple2, _in, in_len));
       
       // Now copy the the TempTuple2 (new o/p tuple) into TempTuple1.
-      TempTuple1.tupleCopy(TempTuple2);
-      Jtuple.tupleCopy(TempTuple2);
+      TempTuple1.quadrupleCopy(TempTuple2);
+      Jtuple.quadrupleCopy(TempTuple2);
       return Jtuple ;
     }
  

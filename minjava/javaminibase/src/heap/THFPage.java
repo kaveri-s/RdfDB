@@ -1,4 +1,4 @@
-/* File HFPage.java */
+/* File THFPage.java */
 
 package heap;
 
@@ -24,7 +24,7 @@ interface ConstSlot{
  * deletions are performed. 
  */
 
-public class HFPage extends Page 
+public class THFPage extends Page
   implements ConstSlot, GlobalConst{
   
   
@@ -84,21 +84,21 @@ public class HFPage extends Page
    * Default constructor
    */
   
-  public HFPage ()   {  }
+  public THFPage()   {  }
   
   /**
-   * Constructor of class HFPage
-   * open a HFPage and make this HFpage piont to the given page
+   * Constructor of class THFPage
+   * open a THFPage and make this HFpage piont to the given page
    * @param  page  the given page in Page type
    */
   
-  public HFPage(Page page)
+  public THFPage(Page page)
     {
       data = page.getpage();
     }
   
   /**
-   * Constructor of class HFPage
+   * Constructor of class THFPage
    * open a existed hfpage
    * @param  apage   a page in buffer pool
    */
@@ -109,7 +109,7 @@ public class HFPage extends Page
     }
   
   /**
-   * Constructor of class HFPage
+   * Constructor of class THFPage
    * initialize a new page
    * @param	pageNo	the page number of a new page to be initialized
    * @param	apage	the Page to be initialized 
@@ -538,9 +538,9 @@ public class HFPage extends Page
    * @return 	a tuple contains the record
    * @exception   InvalidSlotNumberException Invalid slot number
    * @exception  	IOException I/O errors
-   * @see 	Tuple
+   * @see    Quadruple
    */
-  public Tuple getRecord ( RID rid ) 
+  public Quadruple getRecord (RID rid )
     throws IOException,  
 	   InvalidSlotNumberException
     {
@@ -561,7 +561,7 @@ public class HFPage extends Page
 	  offset = getSlotOffset (slotNo);
 	  record = new byte[recLen];
 	  System.arraycopy(data, offset, record, 0, recLen);
-	  Tuple tuple = new Tuple(record, 0, recLen);
+	  Quadruple tuple = new Quadruple(record, 0, recLen);
 	  return tuple;
 	}
       
@@ -580,9 +580,9 @@ public class HFPage extends Page
    * @return      a tuple  with its length and offset in the byte array
    * @exception   InvalidSlotNumberException Invalid slot number
    * @exception   IOException I/O errors
-   * @see 	Tuple
+   * @see    Quadruple
    */  
-  public Tuple returnRecord ( RID rid )
+  public Quadruple returnRecord (RID rid )
     throws IOException, 
 	   InvalidSlotNumberException
     {
@@ -603,7 +603,7 @@ public class HFPage extends Page
 	{
 	  
 	  offset = getSlotOffset (slotNo);
-	  Tuple tuple = new Tuple(data, offset, recLen);
+	  Quadruple tuple = new Quadruple(data, offset, recLen);
 	  return tuple;
 	}
       
@@ -627,7 +627,7 @@ public class HFPage extends Page
   
   /**      
    * Determining if the page is empty
-   * @return true if the HFPage is has no records in it, false otherwise  
+   * @return true if the THFPage is has no records in it, false otherwise
    * @exception  IOException I/O errors
    */
   public boolean empty() 
@@ -649,7 +649,7 @@ public class HFPage extends Page
     }
   
   /**
-   * Compacts the slot directory on an HFPage.
+   * Compacts the slot directory on an THFPage.
    * WARNING -- this will probably lead to a change in the RIDs of
    * records on the page.  You CAN'T DO THIS on most kinds of pages.
    * @exception  IOException I/O errors

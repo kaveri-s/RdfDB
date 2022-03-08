@@ -9,7 +9,6 @@ package btree;
 
 import java.io.*;
 import diskmgr.*;
-import bufmgr.*;
 import global.*;
 import heap.*;
 
@@ -1337,7 +1336,7 @@ public class BTreeFile extends IndexFile
 	    
 	    PageId leafPage_no=leafPage.getCurPage();     
 	    if ( (4+leafPage.available_space()) <= 
-		 ((MAX_SPACE-HFPage.DPFIXED)/2) ) { 
+		 ((MAX_SPACE- THFPage.DPFIXED)/2) ) {
 	      // the leaf page is at least half full after the deletion
 	      unpinPage(leafPage.getCurPage(), true /* = DIRTY */);
 	      return null;
@@ -1409,7 +1408,7 @@ public class BTreeFile extends IndexFile
 		return null;
               }
               else if ( (siblingPage.available_space() + 8 /* 2*sizeof(slot) */ ) >=
-			( (MAX_SPACE-HFPage.DPFIXED) 
+			( (MAX_SPACE- THFPage.DPFIXED)
 			  - leafPage.available_space())) {
 		
 		// we can merge these two children
@@ -1566,7 +1565,7 @@ public class BTreeFile extends IndexFile
 	
 	// now we know the current index page is not a root
 	if ((4 /*sizeof slot*/ +indexPage.available_space()) <= 
-	    ((MAX_SPACE-HFPage.DPFIXED)/2)) {
+	    ((MAX_SPACE- THFPage.DPFIXED)/2)) {
 	  // the index page is at least half full after the deletion
 	  unpinPage(currentPageId,true);
 	  
@@ -1628,7 +1627,7 @@ public class BTreeFile extends IndexFile
 	    return null;
 	  }
 	  else if ( siblingPage.available_space()+4 /*slot size*/ >=
-		    ( (MAX_SPACE-HFPage.DPFIXED) - 
+		    ( (MAX_SPACE- THFPage.DPFIXED) -
 		      (indexPage.available_space()+4 /*slot size*/)
 		      +pushKeySize+4 /*slot size*/ + 4 /* pageId size*/)  ) { 
             

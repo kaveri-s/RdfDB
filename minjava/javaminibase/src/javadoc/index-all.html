@@ -266,7 +266,7 @@ Variable in class iterator.<A HREF="iterator/Iterator.html">Iterator</A>
 <DT><A HREF="heap/Scan.html#closescan()"><B>closescan()</B></A> - 
 Method in class heap.<A HREF="heap/Scan.html">Scan</A>
 <DD>Closes the Scan object
-<DT><A HREF="iterator/TupleUtils.html#CompareTupleWithTuple(global.AttrType, heap.Tuple, int, heap.Tuple, int)"><B>CompareTupleWithTuple(AttrType, Tuple, int, Tuple, int)</B></A> - 
+<DT><A HREF="iterator/TupleUtils.html#CompareTupleWithTuple(global.AttrType, heap.Quadruple, int, heap.Quadruple, int)"><B>CompareTupleWithTuple(AttrType, Tuple, int, Tuple, int)</B></A> -
 Static method in class iterator.<A HREF="iterator/TupleUtils.html">TupleUtils</A>
 <DD>This function compares a tuple with another tuple in respective field, and
   returns:
@@ -274,7 +274,7 @@ Static method in class iterator.<A HREF="iterator/TupleUtils.html">TupleUtils</A
     0        if the two are equal,
     1        if the tuple is greater,
    -1        if the tuple is smaller,
-<DT><A HREF="iterator/TupleUtils.html#CompareTupleWithValue(global.AttrType, heap.Tuple, int, heap.Tuple)"><B>CompareTupleWithValue(AttrType, Tuple, int, Tuple)</B></A> - 
+<DT><A HREF="iterator/TupleUtils.html#CompareTupleWithValue(global.AttrType, heap.Quadruple, int, heap.Tuple)"><B>CompareTupleWithValue(AttrType, Tuple, int, Tuple)</B></A> -
 Static method in class iterator.<A HREF="iterator/TupleUtils.html">TupleUtils</A>
 <DD>This function  compares  tuple1 with another tuple2 whose
  field number is same as the tuple1
@@ -484,7 +484,7 @@ Method in class iterator.<A HREF="iterator/pnodePQ.html">pnodePQ</A>
 <DT><A HREF="iterator/pnodeSplayPQ.html#enq(iterator.pnode)"><B>enq(pnode)</B></A> - 
 Method in class iterator.<A HREF="iterator/pnodeSplayPQ.html">pnodeSplayPQ</A>
 <DD>Inserts an element into the binary tree.
-<DT><A HREF="iterator/TupleUtils.html#Equal(heap.Tuple, heap.Tuple, global.AttrType[], int)"><B>Equal(Tuple, Tuple, AttrType[], int)</B></A> - 
+<DT><A HREF="iterator/TupleUtils.html#Equal(heap.Quadruple, heap.Quadruple, global.AttrType[], int)"><B>Equal(Tuple, Tuple, AttrType[], int)</B></A> -
 Static method in class iterator.<A HREF="iterator/TupleUtils.html">TupleUtils</A>
 <DD>This function Compares two Tuple inn all fields
 <DT><A HREF="btree/KeyDataEntry.html#equals(btree.KeyDataEntry)"><B>equals(KeyDataEntry)</B></A> - 
@@ -493,7 +493,7 @@ Method in class btree.<A HREF="btree/KeyDataEntry.html">KeyDataEntry</A>
 <DT><A HREF="global/RID.html#equals(global.RID)"><B>equals(RID)</B></A> - 
 Method in class global.<A HREF="global/RID.html">RID</A>
 <DD>Compares two RID object, i.e, this to the rid
-<DT><A HREF="iterator/PredEval.html#Eval(iterator.CondExpr[], heap.Tuple, heap.Tuple, global.AttrType[], global.AttrType[])"><B>Eval(CondExpr[], Tuple, Tuple, AttrType[], AttrType[])</B></A> - 
+<DT><A HREF="iterator/PredEval.html#Eval(iterator.CondExpr[], heap.Quadruple, heap.Quadruple, global.AttrType[], global.AttrType[])"><B>Eval(CondExpr[], Tuple, Tuple, AttrType[], AttrType[])</B></A> -
 Static method in class iterator.<A HREF="iterator/PredEval.html">PredEval</A>
 <DD>predicate evaluate, according to the condition ConExpr, judge if 
 the two tuple can join.
@@ -878,10 +878,10 @@ Constructor for class index.<A HREF="index/IndexUtils.html">IndexUtils</A>
 Method in class iterator.<A HREF="iterator/IoBuf.html">IoBuf</A>
 <DD>Initialize some necessary inormation, call Iobuf to create the
 object, and call init to finish instantiation
-<DT><A HREF="iterator/OBuf.html#init(byte[][], int, int, heap.Heapfile, boolean)"><B>init(byte[][], int, int, Heapfile, boolean)</B></A> - 
+<DT><A HREF="iterator/OBuf.html#init(byte[][], int, int, heap.QuadrupleHeapfile, boolean)"><B>init(byte[][], int, int, Heapfile, boolean)</B></A> -
 Method in class iterator.<A HREF="iterator/OBuf.html">OBuf</A>
 <DD>O_buf is an output buffer.
-<DT><A HREF="iterator/SpoofIbuf.html#init(heap.Heapfile, byte[][], int, int, int)"><B>init(Heapfile, byte[][], int, int, int)</B></A> - 
+<DT><A HREF="iterator/SpoofIbuf.html#init(heap.QuadrupleHeapfile, byte[][], int, int, int)"><B>init(Heapfile, byte[][], int, int, int)</B></A> -
 Method in class iterator.<A HREF="iterator/SpoofIbuf.html">SpoofIbuf</A>
 <DD>Initialize some necessary inormation, call Iobuf to create the
 object, and call init to finish intantiation
@@ -1045,7 +1045,7 @@ Static variable in class global.<A HREF="global/SystemDefs.html">SystemDefs</A>
 <DT><A HREF="global/SystemDefs.html#JavabaseLogName"><B>JavabaseLogName</B></A> - 
 Static variable in class global.<A HREF="global/SystemDefs.html">SystemDefs</A>
 <DD>&nbsp;
-<DT><A HREF="iterator/Projection.html#Join(heap.Tuple, global.AttrType[], heap.Tuple, global.AttrType[], heap.Tuple, iterator.FldSpec[], int)"><B>Join(Tuple, AttrType[], Tuple, AttrType[], Tuple, FldSpec[], int)</B></A> - 
+<DT><A HREF="iterator/Projection.html#Join(heap.Quadruple, global.AttrType[], heap.Quadruple, global.AttrType[], heap.Quadruple, iterator.FldSpec[], int)"><B>Join(Tuple, AttrType[], Tuple, AttrType[], Tuple, FldSpec[], int)</B></A> -
 Static method in class iterator.<A HREF="iterator/Projection.html">Projection</A>
 <DD>Tuple t1 and Tuple t2 will be joined, and the result 
 will be stored in Tuple Jtuple,before calling this mehtod.
@@ -1523,7 +1523,7 @@ Static method in class btree.<A HREF="btree/BT.html">BT</A>
 <DT><A HREF="chainexception/ChainException.html#printStackTrace()"><B>printStackTrace()</B></A> - 
 Method in class chainexception.<A HREF="chainexception/ChainException.html">ChainException</A>
 <DD>Print out all the exceptions caught across layers.
-<DT><A HREF="iterator/Projection.html#Project(heap.Tuple, global.AttrType[], heap.Tuple, iterator.FldSpec[], int)"><B>Project(Tuple, AttrType[], Tuple, FldSpec[], int)</B></A> - 
+<DT><A HREF="iterator/Projection.html#Project(heap.Quadruple, global.AttrType[], heap.Quadruple, iterator.FldSpec[], int)"><B>Project(Tuple, AttrType[], Tuple, FldSpec[], int)</B></A> -
 Static method in class iterator.<A HREF="iterator/Projection.html">Projection</A>
 <DD>Tuple t1 will be projected  
 the result will be stored in Tuple Jtuple
@@ -1717,13 +1717,13 @@ Static method in class global.<A HREF="global/Convert.html">Convert</A>
 <DT><A HREF="heap/HFPage.html#setType(short)"><B>setType(short)</B></A> - 
 Method in class heap.<A HREF="heap/HFPage.html">HFPage</A>
 <DD>sets value of type
-<DT><A HREF="iterator/TupleUtils.html#setup_op_tuple(heap.Tuple, global.AttrType[], global.AttrType[], int, global.AttrType[], int, short[], short[], iterator.FldSpec[], int)"><B>setup_op_tuple(Tuple, AttrType[], AttrType[], int, AttrType[], int, short[], short[], FldSpec[], int)</B></A> - 
+<DT><A HREF="iterator/TupleUtils.html#setup_op_tuple(heap.Quadruple, global.AttrType[], global.AttrType[], int, global.AttrType[], int, short[], short[], iterator.FldSpec[], int)"><B>setup_op_tuple(Tuple, AttrType[], AttrType[], int, AttrType[], int, short[], short[], FldSpec[], int)</B></A> -
 Static method in class iterator.<A HREF="iterator/TupleUtils.html">TupleUtils</A>
 <DD>set up the Jtuple's attrtype, string size,field number for using join
-<DT><A HREF="iterator/TupleUtils.html#setup_op_tuple(heap.Tuple, global.AttrType[], global.AttrType[], int, short[], iterator.FldSpec[], int)"><B>setup_op_tuple(Tuple, AttrType[], AttrType[], int, short[], FldSpec[], int)</B></A> - 
+<DT><A HREF="iterator/TupleUtils.html#setup_op_tuple(heap.Quadruple, global.AttrType[], global.AttrType[], int, short[], iterator.FldSpec[], int)"><B>setup_op_tuple(Tuple, AttrType[], AttrType[], int, short[], FldSpec[], int)</B></A> -
 Static method in class iterator.<A HREF="iterator/TupleUtils.html">TupleUtils</A>
 <DD>set up the Jtuple's attrtype, string size,field number for using project
-<DT><A HREF="iterator/TupleUtils.html#SetValue(heap.Tuple, heap.Tuple, int, global.AttrType)"><B>SetValue(Tuple, Tuple, int, AttrType)</B></A> - 
+<DT><A HREF="iterator/TupleUtils.html#SetValue(heap.Quadruple, heap.Quadruple, int, global.AttrType)"><B>SetValue(Tuple, Tuple, int, AttrType)</B></A> -
 Static method in class iterator.<A HREF="iterator/TupleUtils.html">TupleUtils</A>
 <DD>set up a tuple in specified field from a tuple
 <DT><A HREF="iterator/FileScan.html#show()"><B>show()</B></A> - 
@@ -1939,7 +1939,7 @@ Static variable in class heap.<A HREF="heap/HFPage.html">HFPage</A>
 <A NAME="_V_"><!-- --></A><H2>
 <B>V</B></H2>
 <DL>
-<DT><A HREF="iterator/TupleUtils.html#Value(heap.Tuple, int)"><B>Value(Tuple, int)</B></A> - 
+<DT><A HREF="iterator/TupleUtils.html#Value(heap.Quadruple, int)"><B>Value(Tuple, int)</B></A> -
 Static method in class iterator.<A HREF="iterator/TupleUtils.html">TupleUtils</A>
 <DD>get the string specified by the field number
 </DL>

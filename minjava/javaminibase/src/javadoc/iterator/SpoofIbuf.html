@@ -123,7 +123,7 @@ java.lang.Object
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../heap/Tuple.html">Tuple</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../iterator/SpoofIbuf.html#Get(heap.Tuple)">Get</A></B>(<A HREF="../heap/Tuple.html">Tuple</A>&nbsp;buf)</CODE>
+<TD><CODE><B><A HREF="../iterator/SpoofIbuf.html#Get(heap.Quadruple)">Get</A></B>(<A HREF="../heap/Tuple.html">Tuple</A>&nbsp;buf)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get a tuple from current buffer,pass reference buf to this method
@@ -132,7 +132,7 @@ usage:temp_tuple = tuple.Get(buf);</TD>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../iterator/SpoofIbuf.html#init(heap.Heapfile, byte[][], int, int, int)">init</A></B>(<A HREF="../heap/Heapfile.html">Heapfile</A>&nbsp;fd,
+<TD><CODE><B><A HREF="../iterator/SpoofIbuf.html#init(heap.QuadrupleHeapfile, byte[][], int, int, int)">init</A></B>(<A HREF="../heap/Heapfile.html">Heapfile</A>&nbsp;fd,
      byte[][]&nbsp;bufs,
      int&nbsp;n_pages,
      int&nbsp;tSize,
@@ -204,7 +204,7 @@ public void <B>SpoofIbuf</B>()</PRE>
 </DL>
 <HR>
 
-<A NAME="init(heap.Heapfile, byte[][], int, int, int)"><!-- --></A><H3>
+<A NAME="init(heap.QuadrupleHeapfile, byte[][], int, int, int)"><!-- --></A><H3>
 init</H3>
 <PRE>
 public void <B>init</B>(<A HREF="../heap/Heapfile.html">Heapfile</A>&nbsp;fd,
