@@ -113,7 +113,7 @@ public class IoBuf implements GlobalConst{
 	      buf = null;
 	      return null;
 	    }
-	  buf.quadrupleSet(_bufs[curr_page],t_rd_from_pg*t_size,t_size);
+	  buf.quadrupleSet(_bufs[curr_page],t_size);
 	  
 	  // Setup for next read
 	  t_rd_from_pg++;

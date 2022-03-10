@@ -175,8 +175,8 @@ public class THFPage extends Page
       
       for (i= 0, n=DPFIXED; i < slotCnt; n +=SIZE_OF_SLOT, i++) {
         length =  Convert.getShortValue (n, data);
-	offset =  Convert.getShortValue (n+2, data);
-	System.out.println("slotNo " + i +" offset= " + offset);
+        offset =  Convert.getShortValue (n+2, data);
+        System.out.println("slotNo " + i +" offset= " + offset);
         System.out.println("slotNo " + i +" length= " + length);
       }
       
@@ -334,10 +334,10 @@ public class THFPage extends Page
    * @exception IOException I/O errors
    * in C++ Status insertRecord(char *recPtr, int recLen, RID& rid)
    */
-  public RID insertRecord ( byte [] record)		
-    throws IOException
-    {
-      RID rid = new RID();
+  public QID insertRecord ( byte [] record)
+          throws IOException
+  {
+      QID qid = new QID();
       
       int recLen = record.length;
       int spaceNeeded = recLen + SIZE_OF_SLOT;
@@ -389,24 +389,24 @@ public class THFPage extends Page
 	// insert data onto the data page
 	System.arraycopy (record, 0, data, usedPtr, recLen);
 	curPage.pid = Convert.getIntValue (CUR_PAGE, data);
-	rid.pageNo.pid = curPage.pid;
-	rid.slotNo = i;
-	return   rid ;
+          qid.pageNo.pid = curPage.pid;
+          qid.slotNo = i;
+          return   qid ;
       }
     } 
   
   /**
    * delete the record with the specified rid
-   * @param	rid 	the record ID
+   * @param	qid 	the record ID
    * @exception	InvalidSlotNumberException Invalid slot number
    * @exception IOException I/O errors
    * in C++ Status deleteRecord(const RID& rid)
    */
-  public void deleteRecord ( RID rid )
-    throws IOException,  
-	   InvalidSlotNumberException
-    {
-      int slotNo = rid.slotNo;
+  public void deleteRecord( QID qid )
+          throws IOException,
+          InvalidSlotNumberException
+  {
+      int slotNo = qid.slotNo;
       short recLen = getSlotLength (slotNo);
       slotCnt = Convert.getShortValue (SLOT_CNT, data);
       
@@ -463,11 +463,11 @@ public class THFPage extends Page
    * @exception  IOException I/O errors
    * in C++ Status firstRecord(RID& firstRid)
    * 
-   */ 
-  public RID firstRecord() 
-    throws IOException
-    {
-      RID rid = new RID();
+   */
+  public QID firstRecord()
+          throws IOException
+  {
+      QID qid = new QID();
       // find the first non-empty slot
       
       
@@ -486,28 +486,28 @@ public class THFPage extends Page
 	return null;
       
       // found a non-empty slot
-      
-      rid.slotNo = i;
+
+      qid.slotNo = i;
       curPage.pid= Convert.getIntValue(CUR_PAGE, data);
-      rid.pageNo.pid = curPage.pid;
-      
-      return rid;
-    }
+      qid.pageNo.pid = curPage.pid;
+
+      return qid;
+  }
   
   /**
    * @return RID of next record on the page, null if no more 
    * records exist on the page
-   * @param 	curRid	current record ID
+   * @param 	curQid	current record ID
    * @exception  IOException I/O errors
    * in C++ Status nextRecord (RID curRid, RID& nextRid)
    */
-  public RID nextRecord (RID curRid) 
-    throws IOException 
-    {
-      RID rid = new RID();
+  public QID nextRecord (QID curQid)
+          throws IOException
+  {
+      QID qid = new QID();
       slotCnt = Convert.getShortValue (SLOT_CNT, data);
-      
-      int i=curRid.slotNo;
+
+      int i=curQid.slotNo;
       short length; 
       
       // find the next non-empty slot
@@ -522,35 +522,35 @@ public class THFPage extends Page
 	return null;
       
       // found a non-empty slot
-      
-      rid.slotNo = i;
+
+      qid.slotNo = i;
       curPage.pid = Convert.getIntValue(CUR_PAGE, data);
-      rid.pageNo.pid = curPage.pid;
-      
-      return rid;
-    }
+      qid.pageNo.pid = curPage.pid;
+
+      return qid;
+  }
   
   /**
    * copies out record with RID rid into record pointer.
    * <br>
    * Status getRecord(RID rid, char *recPtr, int& recLen)
-   * @param	rid 	the record ID
+   * @param	qid 	the record ID
    * @return 	a tuple contains the record
    * @exception   InvalidSlotNumberException Invalid slot number
    * @exception  	IOException I/O errors
    * @see    Quadruple
    */
-  public Quadruple getRecord (RID rid )
-    throws IOException,  
-	   InvalidSlotNumberException
-    {
+  public Quadruple getRecord ( QID qid )
+          throws IOException,
+          InvalidSlotNumberException
+  {
       short recLen;
       short offset;
       byte []record;
       PageId pageNo = new PageId();
-      pageNo.pid= rid.pageNo.pid;
+      pageNo.pid= qid.pageNo.pid;
       curPage.pid = Convert.getIntValue (CUR_PAGE, data);
-      int slotNo = rid.slotNo;
+      int slotNo = qid.slotNo;
       
       // length of record being returned
       recLen = getSlotLength (slotNo);
@@ -561,8 +561,8 @@ public class THFPage extends Page
 	  offset = getSlotOffset (slotNo);
 	  record = new byte[recLen];
 	  System.arraycopy(data, offset, record, 0, recLen);
-	  Quadruple tuple = new Quadruple(record, 0, recLen);
-	  return tuple;
+	  Quadruple quadruple = new Quadruple(record, recLen);
+	  return quadruple;
 	}
       
       else {
@@ -576,23 +576,23 @@ public class THFPage extends Page
    * returns a tuple in a byte array[pageSize] with given RID rid.
    * <br>
    * in C++	Status returnRecord(RID rid, char*& recPtr, int& recLen)
-   * @param       rid     the record ID
+   * @param       qid     the record ID
    * @return      a tuple  with its length and offset in the byte array
    * @exception   InvalidSlotNumberException Invalid slot number
    * @exception   IOException I/O errors
    * @see    Quadruple
-   */  
-  public Quadruple returnRecord (RID rid )
-    throws IOException, 
-	   InvalidSlotNumberException
-    {
+   */
+  public Quadruple returnRecord ( QID qid )
+          throws IOException,
+          InvalidSlotNumberException
+  {
       short recLen;
       short offset;
       PageId pageNo = new PageId();
-      pageNo.pid = rid.pageNo.pid;
+      pageNo.pid = qid.pageNo.pid;
       
       curPage.pid = Convert.getIntValue (CUR_PAGE, data);
-      int slotNo = rid.slotNo;
+      int slotNo = qid.slotNo;
       
       // length of record being returned
       recLen = getSlotLength (slotNo);
@@ -603,8 +603,8 @@ public class THFPage extends Page
 	{
 	  
 	  offset = getSlotOffset (slotNo);
-	  Quadruple tuple = new Quadruple(data, offset, recLen);
-	  return tuple;
+	  Quadruple quadruple = new Quadruple(data, recLen);
+	  return quadruple;
 	}
       
       else {   
