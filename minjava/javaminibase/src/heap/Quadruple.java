@@ -7,7 +7,9 @@ import java.lang.*;
 import global.*;
 
 
-public class Quadruple implements GlobalConst{
+//add value fld
+//global length?
+public class Quadruple implements GlobalConst {
 
     private EID subject;
     private PID predicate;
@@ -22,12 +24,12 @@ public class Quadruple implements GlobalConst{
     /**
      * a byte array to hold data
      */
-    private byte [] data;
+    //private byte [] data;
 
     /**
      * length of this quadruple
      */
-    private int quadruple_length;
+    //private int quadruple_length;
 
     /**
      * Class constructor
@@ -44,10 +46,14 @@ public class Quadruple implements GlobalConst{
      * @param aquadruple a byte array which contains the quadruple
      */
 
-    public Quadruple(byte [] aquadruple, int length)
-    {
-        data = aquadruple;
-        quadruple_length = length;
+    public Quadruple (byte[] aquadruple, int offset) throws IOException {
+        this.subject.slotNo=Convert.getIntValue(offset,aquadruple);
+        this.subject.pageNo=new PageId(Convert.getIntValue(offset+4,aquadruple));
+        this.predicate.slotNo=Convert.getIntValue(offset+8,aquadruple);
+        this.predicate.pageNo=new PageId(Convert.getIntValue(offset+12,aquadruple));
+        this.object.slotNo=Convert.getIntValue(offset+16,aquadruple);
+        this.object.pageNo=new PageId(Convert.getIntValue(offset+20,aquadruple));
+        //add value fld
     }
 
     /** Constructor(used as quadruple copy)
@@ -58,56 +64,6 @@ public class Quadruple implements GlobalConst{
         predicate=fromQuadruple.getPredicateID();
         object=fromQuadruple.getObjecqid();
         value=fromQuadruple.getConfidence();
-    }
-
-    /**
-     * Class constructor
-     * Creat a new quadruple with length = size,quadruple offset = 0.
-     */
-
-    public Quadruple(int size)
-    {
-       // Create a new quadruple
-       data = new byte[size];
-       quadruple_length = size;
-    }
-
-    /** Copy a quadruple to the current quadruple position
-     *  you must make sure the quadruple lengths must be equal
-     * @param fromQuadruple the quadruple being copied
-     */
-    public void quadrupleCopy(Quadruple fromQuadruple)
-    {
-        this.subject=fromQuadruple.subject;
-        this.predicate=fromQuadruple.predicate;
-        this.object=fromQuadruple.object;
-        this.value=fromQuadruple.value;
-    }
-
-    /** This is used when you don't want to use the constructor
-     * @param aquadruple  a byte array which contains the quadruple
-     * @param length the length of the quadruple
-     */
-
-    public void quadrupleInit(byte [] aquadruple, int length)
-    {
-        data = aquadruple;
-        quadruple_length = length;
-    }
-
-    /**
-     * Set a quadruple with the given quadruple length and offset
-     * @param	record	a byte array contains the quadruple
-     * @param	length	the length of the quadruple
-     */
-    public void quadrupleSet(byte [] record, int length)
-    {
-        System.arraycopy(record, 0, data, 0, length);
-        quadruple_length = length;
-    }
-
-    public void size(){
-
     }
 
     public EID getSubjecqid(){
@@ -124,22 +80,6 @@ public class Quadruple implements GlobalConst{
 
     public double getConfidence(){
         return value;
-    }
-
-    /** get the length of a quadruple, call this method if you did not
-     *  call setHdr () before
-     * @return 	length of this quadruple in bytes
-     */
-    public int getLength()
-    {
-        return quadruple_length;
-    }
-
-    public byte [] getQuadrupleByteArray()
-    {
-        byte [] quadruplecopy = new byte [quadruple_length];
-        System.arraycopy(data, 0, quadruplecopy, 0, quadruple_length);
-        return quadruplecopy;
     }
 
     public Quadruple setSubjecqid(EID subjecqid){
@@ -162,10 +102,19 @@ public class Quadruple implements GlobalConst{
         return this;
     }
 
-    /**
-     * Print out the quadruple
-     * @Exception IOException I/O exception
-     */
+    public byte[] getQuadrupleByteArray()throws IOException{
+
+        byte[] quadruplecopy= new byte[28];
+        Convert.setIntValue (subject.slotNo, 0, quadruplecopy);
+        Convert.setIntValue(subject.pageNo.pid,4,quadruplecopy);
+        Convert.setIntValue (predicate.slotNo, 8, quadruplecopy);
+        Convert.setIntValue(predicate.pageNo.pid,12,quadruplecopy);
+        Convert.setIntValue (object.slotNo, 16, quadruplecopy);
+        Convert.setIntValue(object.pageNo.pid,20,quadruplecopy);
+        //add value fld
+        return quadruplecopy;
+    }
+
     public void print(){
         System.out.print(subject.pageNo);
         System.out.print(subject.slotNo);
@@ -177,6 +126,51 @@ public class Quadruple implements GlobalConst{
         System.out.print(object.slotNo);
         System.out.print(", ");
         System.out.print(value);
+    }
+
+    public void size(){
+        //return fixed len
+    }
+
+    /** Copy a quadruple to the current quadruple position
+     *  you must make sure the quadruple lengths must be equal
+     * @param fromQuadruple the quadruple being copied
+     */
+    public void quadrupleCopy(Quadruple fromQuadruple)
+    {
+        this.subject=fromQuadruple.subject;
+        this.predicate=fromQuadruple.predicate;
+        this.object=fromQuadruple.object;
+        this.value=fromQuadruple.value;
+    }
+
+    /** This is used when you don't want to use the constructor
+     * @param aquadruple  a byte array which contains the quadruple
+     * @param offset the pos of quad in byte array
+     */
+    public void quadrupleInit(byte[] aquadruple, int offset) throws IOException {
+        this.subject.slotNo=Convert.getIntValue(offset,aquadruple);
+        this.subject.pageNo=new PageId(Convert.getIntValue(offset+4,aquadruple));
+        this.predicate.slotNo=Convert.getIntValue(offset+8,aquadruple);
+        this.predicate.pageNo=new PageId(Convert.getIntValue(offset+12,aquadruple));
+        this.object.slotNo=Convert.getIntValue(offset+16,aquadruple);
+        this.object.pageNo=new PageId(Convert.getIntValue(offset+20,aquadruple));
+        //add value fld
+    }
+
+    /**
+     * Set a quadruple with the given quadruple length and offset
+     * @param aquadruple  a byte array which contains the quadruple
+     * @param offset the pos of quad in byte array
+     */
+    public void quadrupleSet(byte[] aquadruple, int offset)throws IOException {
+        this.subject.slotNo=Convert.getIntValue(offset,aquadruple);
+        this.subject.pageNo=new PageId(Convert.getIntValue(offset+4,aquadruple));
+        this.predicate.slotNo=Convert.getIntValue(offset+8,aquadruple);
+        this.predicate.pageNo=new PageId(Convert.getIntValue(offset+12,aquadruple));
+        this.object.slotNo=Convert.getIntValue(offset+16,aquadruple);
+        this.object.pageNo=new PageId(Convert.getIntValue(offset+20,aquadruple));
+        //add value fld
     }
 
 }
