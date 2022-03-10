@@ -1,7 +1,5 @@
 package index;
 import global.*;
-import bufmgr.*;
-import diskmgr.*; 
 import btree.*;
 import iterator.*;
 import heap.*; 
@@ -9,7 +7,7 @@ import java.io.*;
 
 
 /**
- * Index Scan iterator will directly access the required tuple using
+ * Index TScan iterator will directly access the required tuple using
  * the provided key. It will also perform selections and projections.
  * information about the tuples and the index are passed to the constructor,
  * then the user calls <code>get_next()</code> to get the tuples.
@@ -61,7 +59,7 @@ public class IndexScan extends Iterator {
     
     AttrType[] Jtypes = new AttrType[noOutFlds];
     short[] ts_sizes;
-    Jtuple = new Tuple();
+    Jtuple = new Quadruple();
     
     try {
       ts_sizes = TupleUtils.setup_op_tuple(Jtuple, Jtypes, types, noInFlds, str_sizes, outFlds, noOutFlds);
@@ -76,22 +74,22 @@ public class IndexScan extends Iterator {
     _selects = selects;
     perm_mat = outFlds;
     _noOutFlds = noOutFlds;
-    tuple1 = new Tuple();    
+    tuple1 = new Quadruple();
     try {
       tuple1.setHdr((short) noInFlds, types, str_sizes);
     }
     catch (Exception e) {
-      throw new IndexException(e, "IndexScan.java: Heapfile error");
+      throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
     }
     
     t1_size = tuple1.size();
     index_only = indexOnly;  // added by bingjie miao
     
     try {
-      f = new Heapfile(relName);
+      f = new QuadrupleHeapfile(relName);
     }
     catch (Exception e) {
-      throw new IndexException(e, "IndexScan.java: Heapfile not created");
+      throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile not created");
     }
     
     switch(index.indexType) {
@@ -133,7 +131,7 @@ public class IndexScan extends Iterator {
    * @exception UnknownKeyTypeException key type unknown
    * @exception IOException from the lower layer
    */
-  public Tuple get_next() 
+  public Quadruple get_next()
     throws IndexException, 
 	   UnknownKeyTypeException,
 	   IOException
@@ -162,14 +160,14 @@ public class IndexScan extends Iterator {
 	    Jtuple.setHdr((short) 1, attrType, s_sizes);
 	  }
 	  catch (Exception e) {
-	    throw new IndexException(e, "IndexScan.java: Heapfile error");
+	    throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
 	  }
 	  
 	  try {
 	    Jtuple.setIntFld(1, ((IntegerKey)nextentry.key).getKey().intValue());
 	  }
 	  catch (Exception e) {
-	    throw new IndexException(e, "IndexScan.java: Heapfile error");
+	    throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
 	  }	  
 	}
 	else if (_types[_fldNum -1].attrType == AttrType.attrString) {
@@ -187,14 +185,14 @@ public class IndexScan extends Iterator {
 	    Jtuple.setHdr((short) 1, attrType, s_sizes);
 	  }
 	  catch (Exception e) {
-	    throw new IndexException(e, "IndexScan.java: Heapfile error");
+	    throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
 	  }
 	  
 	  try {
 	    Jtuple.setStrFld(1, ((StringKey)nextentry.key).getKey());
 	  }
 	  catch (Exception e) {
-	    throw new IndexException(e, "IndexScan.java: Heapfile error");
+	    throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
 	  }	  
 	}
 	else {
@@ -207,7 +205,7 @@ public class IndexScan extends Iterator {
       // not index_only, need to return the whole tuple
       rid = ((LeafData)nextentry.data).getData();
       try {
-	tuple1 = f.getRecord(rid);
+	tuple1 = f.getQuadruple(rid);
       }
       catch (Exception e) {
 	throw new IndexException(e, "IndexScan.java: getRecord failed");
@@ -217,7 +215,7 @@ public class IndexScan extends Iterator {
 	tuple1.setHdr((short) _noInFlds, _types, _s_sizes);
       }
       catch (Exception e) {
-	throw new IndexException(e, "IndexScan.java: Heapfile error");
+	throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
       }
     
       boolean eval;
@@ -225,7 +223,7 @@ public class IndexScan extends Iterator {
 	eval = PredEval.Eval(_selects, tuple1, null, _types, null);
       }
       catch (Exception e) {
-	throw new IndexException(e, "IndexScan.java: Heapfile error");
+	throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
       }
       
       if (eval) {
@@ -234,7 +232,7 @@ public class IndexScan extends Iterator {
 	  Projection.Project(tuple1, _types, Jtuple, perm_mat, _noOutFlds);
 	}
 	catch (Exception e) {
-	  throw new IndexException(e, "IndexScan.java: Heapfile error");
+	  throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
 	}
 
 	return Jtuple;
@@ -281,9 +279,9 @@ public class IndexScan extends Iterator {
   private CondExpr[]    _selects;
   private int           _noInFlds;
   private int           _noOutFlds;
-  private Heapfile      f;
-  private Tuple         tuple1;
-  private Tuple         Jtuple;
+  private QuadrupleHeapfile f;
+  private Quadruple tuple1;
+  private Quadruple Jtuple;
   private int           t1_size;
   private int           _fldNum;       
   private boolean       index_only;    

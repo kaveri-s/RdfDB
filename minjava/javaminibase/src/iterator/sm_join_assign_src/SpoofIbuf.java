@@ -2,8 +2,6 @@ package iterator;
 
 import heap.*;          
 import global.*;
-import diskmgr.*;
-import bufmgr.*;
 
 import java.io.*;
 
@@ -25,13 +23,13 @@ public class SpoofIbuf implements GlobalConst  {
    *@param bufs[][] the I/O buffer
    *@param n_pages the numbers of page of this buffer
    *@param tSize the tuple size
-   *@param fd the reference to an Heapfile
+   *@param fd the reference to an QuadrupleHeapfile
    *@param Ntuples the tuple numbers of the page
    *@exception IOException some I/O fault
    *@exception Exception other exceptions
    */
-  public  void init(Heapfile fd, byte bufs[][], int n_pages,
-		    int tSize, int Ntuples)
+  public  void init(QuadrupleHeapfile fd, byte bufs[][], int n_pages,
+                    int tSize, int Ntuples)
     throws IOException,
 	   Exception
     {
@@ -67,7 +65,7 @@ public class SpoofIbuf implements GlobalConst  {
    *@exception IOException some I/O fault
    *@exception Exception other exceptions
    */
-  public  Tuple Get(Tuple  buf)throws IOException, Exception
+  public Quadruple Get(Quadruple buf)throws IOException, Exception
     {
       if (tot_t_proc == n_tuples) done = true;
       
@@ -88,7 +86,7 @@ public class SpoofIbuf implements GlobalConst  {
 	  done = true; buf = null;return null;
 	}
  
-      buf.tupleSet(_bufs[curr_page],t_rd_from_pg*t_size,t_size); 
+      buf.quadrupleSet(_bufs[curr_page],t_size);
       tot_t_proc++;
       
       // Setup for next read
@@ -114,12 +112,12 @@ public class SpoofIbuf implements GlobalConst  {
    *
    *@return the numbers of tuples in the buffer
    *@exception IOException some I/O fault
-   *@exception InvalidTupleSizeException Heapfile error
+   *@exception InvalidTupleSizeException QuadrupleHeapfile error
    */
   private int readin()throws IOException,InvalidTupleSizeException
     {
       int   t_read = 0, tot_read = 0;
-      Tuple t      = new Tuple ();
+      Quadruple t      = new Quadruple();
       byte[] t_copy;
       
       curr_page = 0;
@@ -130,7 +128,7 @@ public class SpoofIbuf implements GlobalConst  {
 	      RID rid =new RID();
 	      try {
 		if ( (t = hf_scan.getNext(rid)) == null) return tot_read;
-		t_copy = t.getTupleByteArray();
+		t_copy = t.getQuadrupleByteArray();
 		System.arraycopy(t_copy,0,_bufs[curr_page],t_read*t_size,t_size); 
 	      }
 	      catch (Exception e) {
@@ -149,8 +147,8 @@ public class SpoofIbuf implements GlobalConst  {
   
   private  int   TEST_fd;
   
-  private  Heapfile _fd;
-  private  Scan hf_scan;
+  private QuadrupleHeapfile _fd;
+  private TScan hf_scan;
   private  int    _n_pages;
   private  int    t_size;
   

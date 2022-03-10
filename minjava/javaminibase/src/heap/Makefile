@@ -9,17 +9,17 @@ PROGS = together
 
 all: $(PROGS)
 
-hf:Heapfile.java
-	$(JAVAC) Heapfile.java
+qhf:QuadrupleHeapfile.java
+	$(JAVAC) QuadrupleHeapfile.java
 
-hp:HFPage.java
+thp:THFPage.java
 	$(JAVAC) HFPage.java
 
-tuple:Tuple.java
+quadruple:Tuple.java
 	$(JAVAC) Tuple.java
 
-scan:Scan.java
-	$(JAVAC) Scan.java
+tscan:TScan.java
+	$(JAVAC) TScan.java
 
 together:*.java
 	$(JAVAC) *.java

@@ -15,13 +15,13 @@ import java.io.*;
 class DataPageInfo implements GlobalConst{
 
 
-  /** HFPage returns int for avail space, so we use int here */
+  /** THFPage returns int for avail space, so we use int here */
   int    availspace; 
   
   /** for efficient implementation of getRecCnt() */
   int    recct;    
   
-  /** obvious: id of this particular data page (a HFPage) */
+  /** obvious: id of this particular data page (a THFPage) */
   PageId pageId = new PageId();   
     
   /** auxiliary fields of DataPageInfo */
@@ -72,7 +72,7 @@ class DataPageInfo implements GlobalConst{
    *  it will make a copy of the data in the tuple
    * @param atuple: the input tuple
    */
-  public DataPageInfo(Tuple _atuple)
+  public DataPageInfo(Quadruple _atuple)
        throws InvalidTupleSizeException, IOException
   {   
      // need check _atuple size == this.size ?otherwise, throw new exception
@@ -93,11 +93,11 @@ class DataPageInfo implements GlobalConst{
   }
   
   
-  /** convert this class objcet to a tuple(like cast a DataPageInfo to Tuple)
+  /** convert this class objcet to a tuple(like cast a DataPageInfo to Quadruple)
    *  
    *
    */
-  public Tuple convertToTuple()
+  public Quadruple convertToTuple()
        throws IOException
   {
 
@@ -107,8 +107,8 @@ class DataPageInfo implements GlobalConst{
     Convert.setIntValue(pageId.pid, offset+8, data);
 
 
-    // 2) creat a Tuple object using this array
-    Tuple atuple = new Tuple(data, offset, size); 
+    // 2) creat a Quadruple object using this array
+    Quadruple atuple = new Quadruple(data, offset, size);
  
     // 3) return tuple object
     return atuple;

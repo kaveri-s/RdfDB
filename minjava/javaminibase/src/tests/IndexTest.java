@@ -2,8 +2,6 @@ package tests;
 
 import java.io.*; 
 import global.*;
-import bufmgr.*;
-import diskmgr.*;
 import heap.*;
 import iterator.*;
 import index.*;
@@ -132,7 +130,7 @@ class IndexDriver extends TestDriver
     attrSize[1] = REC_LEN1;
     
     // create a tuple of appropriate size
-    Tuple t = new Tuple();
+    Quadruple t = new Quadruple();
     try {
       t.setHdr((short) 2, attrType, attrSize);
     }
@@ -145,16 +143,16 @@ class IndexDriver extends TestDriver
     
     // Create unsorted data file "test1.in"
     RID             rid;
-    Heapfile        f = null;
+    QuadrupleHeapfile f = null;
     try {
-      f = new Heapfile("test1.in");
+      f = new QuadrupleHeapfile("test1.in");
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace();
     }
     
-    t = new Tuple(size);
+    t = new Quadruple(size);
     try {
       t.setHdr((short) 2, attrType, attrSize);
     }
@@ -173,7 +171,7 @@ class IndexDriver extends TestDriver
       }
       
       try {
-	rid = f.insertRecord(t.returnTupleByteArray());
+	rid = f.insertQuadruple(t.returnTupleByteArray());
       }
       catch (Exception e) {
 	status = FAIL;
@@ -182,10 +180,10 @@ class IndexDriver extends TestDriver
     }
 
     // create an scan on the heapfile
-    Scan scan = null;
+    TScan scan = null;
     
     try {
-      scan = new Scan(f);
+      scan = new TScan(f);
     }
     catch (Exception e) {
       status = FAIL;
@@ -208,7 +206,7 @@ class IndexDriver extends TestDriver
     
     rid = new RID();
     String key = null;
-    Tuple temp = null;
+    Quadruple temp = null;
     
     try {
       temp = scan.getNext(rid);
@@ -218,7 +216,7 @@ class IndexDriver extends TestDriver
       e.printStackTrace();
     }
     while ( temp != null) {
-      t.tupleCopy(temp);
+      t.quadrupleCopy(temp);
       
       try {
 	key = t.getStrFld(2);
@@ -317,7 +315,7 @@ class IndexDriver extends TestDriver
 	status = FAIL;
     }
     else if (flag && status) {
-      System.err.println("Test1 -- Index Scan OK");
+      System.err.println("Test1 -- Index TScan OK");
     }
 
     // clean up
@@ -349,7 +347,7 @@ class IndexDriver extends TestDriver
     attrSize[1] = REC_LEN1;
     
     // create a tuple of appropriate size
-    Tuple t = new Tuple();
+    Quadruple t = new Quadruple();
     try {
       t.setHdr((short) 2, attrType, attrSize);
     }
@@ -361,18 +359,18 @@ class IndexDriver extends TestDriver
     int size = t.size();
     
     RID             rid;
-    Heapfile        f = null;
+    QuadrupleHeapfile f = null;
 
     // open existing data file
     try {
-      f = new Heapfile("test1.in");
+      f = new QuadrupleHeapfile("test1.in");
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace();
     }
     
-    t = new Tuple(size);
+    t = new Quadruple(size);
     try {
       t.setHdr((short) 2, attrType, attrSize);
     }
@@ -395,7 +393,7 @@ class IndexDriver extends TestDriver
     
     rid = new RID();
     String key = null;
-    Tuple temp = null;
+    Quadruple temp = null;
     
 
     FldSpec[] projlist = new FldSpec[2];
@@ -557,7 +555,7 @@ class IndexDriver extends TestDriver
 	status = FAIL;
     }
     else if (flag && status) {
-      System.err.println("Test2 -- Index Scan OK");
+      System.err.println("Test2 -- Index TScan OK");
     }
     
     // clean up
@@ -593,13 +591,13 @@ class IndexDriver extends TestDriver
     attrSize[0] = REC_LEN1;
     attrSize[1] = REC_LEN1;
     
-    Tuple t = new Tuple();
+    Quadruple t = new Quadruple();
 
     try {
       t.setHdr((short) 4, attrType, attrSize);
     }
     catch (Exception e) {
-      System.err.println("*** error in Tuple.setHdr() ***");
+      System.err.println("*** error in Quadruple.setHdr() ***");
       status = FAIL;
       e.printStackTrace();
     }
@@ -607,16 +605,16 @@ class IndexDriver extends TestDriver
 
     // Create unsorted data file "test3.in"
     RID             rid;
-    Heapfile        f = null;
+    QuadrupleHeapfile f = null;
     try {
-      f = new Heapfile("test3.in");
+      f = new QuadrupleHeapfile("test3.in");
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace();
     }
     
-    t = new Tuple(size);
+    t = new Quadruple(size);
     try {
       t.setHdr((short) 4, attrType, attrSize);
     }
@@ -644,7 +642,7 @@ class IndexDriver extends TestDriver
       }
 
       try {
-	rid = f.insertRecord(t.returnTupleByteArray());
+	rid = f.insertQuadruple(t.returnTupleByteArray());
       }
       catch (Exception e) {
 	status = FAIL;
@@ -653,10 +651,10 @@ class IndexDriver extends TestDriver
     }
 
     // create an scan on the heapfile
-    Scan scan = null;
+    TScan scan = null;
     
     try {
-      scan = new Scan(f);
+      scan = new TScan(f);
     }
     catch (Exception e) {
       status = FAIL;
@@ -679,7 +677,7 @@ class IndexDriver extends TestDriver
     
     rid = new RID();
     int key = 0;
-    Tuple temp = null;
+    Quadruple temp = null;
     
     try {
       temp = scan.getNext(rid);
@@ -689,7 +687,7 @@ class IndexDriver extends TestDriver
       e.printStackTrace();
     }
     while ( temp != null) {
-      t.tupleCopy(temp);
+      t.quadrupleCopy(temp);
       
       try {
 	key = t.getIntFld(3);

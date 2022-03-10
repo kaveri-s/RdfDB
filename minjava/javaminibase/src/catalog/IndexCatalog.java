@@ -14,7 +14,7 @@ import bufmgr.*;
 import diskmgr.*;
 import btree.*;
 
-public class IndexCatalog extends Heapfile
+public class IndexCatalog extends QuadrupleHeapfile
   implements GlobalConst, Catalogglobal
 {
   
@@ -27,7 +27,7 @@ public class IndexCatalog extends Heapfile
     {
       super(filename);
       
-      tuple = new Tuple(Tuple.max_size);
+      tuple = new Quadruple(Quadruple.max_size);
       attrs = new AttrType[7];
       
       attrs[0] = new AttrType(AttrType.attrString);
@@ -75,7 +75,7 @@ public class IndexCatalog extends Heapfile
       int status;
       int recSize;
       RID rid = null;
-      Scan pscan = null;
+      TScan pscan = null;
       int count = 0;
       
       if (relation == null)
@@ -89,7 +89,7 @@ public class IndexCatalog extends Heapfile
 	throw new Catalogioerror(null, "");
       }
       catch (Cataloghferror e1) {
-	System.err.println ("Catalog Heapfile Error!"+e1);
+	System.err.println ("Catalog QuadrupleHeapfile Error!"+e1);
 	throw new Cataloghferror(null, "");
       }
       catch (Catalogmissparam e2) {
@@ -112,7 +112,7 @@ public class IndexCatalog extends Heapfile
       // OPEN SCAN
       
       try {
-	pscan = new Scan(this);
+	pscan = new TScan(this);
       }
       catch (Exception e) {
 	throw new IndexCatalogException(e,"scan() failed");
@@ -162,7 +162,7 @@ public class IndexCatalog extends Heapfile
     {
       int recSize;
       RID rid = null;
-      Scan pscan = null; 
+      TScan pscan = null;
       
       if ((relation == null)||(attrName == null))
 	throw new Catalogmissparam(null, "MISSING_PARAM");
@@ -170,14 +170,14 @@ public class IndexCatalog extends Heapfile
       // OPEN SCAN
       
       try {
-	pscan = new Scan(this);
+	pscan = new TScan(this);
       }
       catch (IOException e) {
-	System.err.println ("Scan"+e);
+	System.err.println ("TScan"+e);
 	throw new IOException("");
       }
       catch (Exception e1) {
-	System.err.println ("Scan"+e1);
+	System.err.println ("TScan"+e1);
 	throw new Exception("");
       }
       
@@ -219,7 +219,7 @@ public class IndexCatalog extends Heapfile
       int status;
       int recSize;
       RID rid = null;
-      Scan pscan = null;
+      TScan pscan = null;
       int count = 0;
       
       if (relation == null)
@@ -253,7 +253,7 @@ public class IndexCatalog extends Heapfile
       // OPEN SCAN
       
       try {
-	pscan = new Scan(this);
+	pscan = new TScan(this);
       }
       catch (Exception e) {
 	throw new IndexCatalogException(e,"scan failed");
@@ -341,7 +341,7 @@ public class IndexCatalog extends Heapfile
       }
       
       try {
-	insertRecord(tuple.getTupleByteArray());
+	insertQuadruple(tuple.getQuadrupleByteArray());
       }
       catch (Exception e) {
 	throw new IndexCatalogException(e, "insertRecord() failed");
@@ -358,7 +358,7 @@ public class IndexCatalog extends Heapfile
     {
       int recSize;
       RID rid = null;
-      Scan pscan = null;
+      TScan pscan = null;
       IndexDesc record = null;
       
       if ((relation == null)||(attrName == null))
@@ -366,7 +366,7 @@ public class IndexCatalog extends Heapfile
       
       // OPEN SCAN
       try {
-	pscan = new Scan(this);
+	pscan = new TScan(this);
       }
       catch (Exception e) {
 	throw new IndexCatalogException(e,"scan failed");
@@ -392,7 +392,7 @@ public class IndexCatalog extends Heapfile
 	     && (record.accessType == accessType))
 	    {
 	      try {
-		deleteRecord(rid);  //  FOUND -  DELETE        
+		deleteQuadruple(rid);  //  FOUND -  DELETE
 	      }
 	      catch (Exception e){
 		throw new IndexCatalogException(e, "deleteRecord() failed");
@@ -428,11 +428,11 @@ public class IndexCatalog extends Heapfile
       KeyClass key = null;      
       int   	recSize = 0;
       
-      Heapfile datafile = null;
+      QuadrupleHeapfile datafile = null;
       String	indexName = null;
-      Tuple 	tuple = null;
+      Quadruple tuple = null;
       BTreeFile btree = null;
-      Scan 	pscan = null;
+      TScan pscan = null;
       AttrType [] typeArray = null;
       short 	[] sizeArray = null;
       
@@ -453,7 +453,7 @@ public class IndexCatalog extends Heapfile
 	throw new Catalogioerror(null, "");
       }
       catch (Cataloghferror e1) {
-	System.err.println ("Catalog Heapfile Error!"+e1);
+	System.err.println ("Catalog QuadrupleHeapfile Error!"+e1);
 	throw new Cataloghferror(null, "");
       }
       catch (Catalogmissparam e2) {
@@ -534,7 +534,7 @@ public class IndexCatalog extends Heapfile
       // PREPARE TO SCAN DATA FILE
       
       try {
-	datafile = new Heapfile(relation);
+	datafile = new QuadrupleHeapfile(relation);
 	if (datafile == null)
 	  throw new Catalognomem(null, "NO Enough Memory!");
       }
@@ -559,7 +559,7 @@ public class IndexCatalog extends Heapfile
 	throw new IndexCatalogException(e,"getTupleStructure");
       }
       
-      tuple = new Tuple(Tuple.max_size);
+      tuple = new Quadruple(Quadruple.max_size);
       if (tuple == null)
 	throw new Catalognomem(null, "Catalog, No Enough Memory!");
       
@@ -625,7 +625,7 @@ public class IndexCatalog extends Heapfile
   void dropRelation(String relation){};
   
   
-  void make_tuple(Tuple tuple, IndexDesc record)
+  void make_tuple(Quadruple tuple, IndexDesc record)
     throws IOException,
 	   IndexCatalogException
     {
@@ -666,7 +666,7 @@ public class IndexCatalog extends Heapfile
       return;
     };
   
-  void read_tuple(Tuple tuple, IndexDesc record)
+  void read_tuple(Quadruple tuple, IndexDesc record)
     throws IOException,
 	   IndexCatalogException
     {
@@ -712,7 +712,7 @@ public class IndexCatalog extends Heapfile
     };
   
   
-  Tuple tuple;
+  Quadruple tuple;
   short [] str_sizes;
   AttrType [] attrs;
   

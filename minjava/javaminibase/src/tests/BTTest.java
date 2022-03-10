@@ -113,8 +113,8 @@ class BTDriver  implements GlobalConst
    System.out.println("      and delete m records randomly");
    System.out.println("[11]  Delete some records");
    
-   System.out.println("\n[12]  Initialize a Scan");
-   System.out.println("[13]  Scan the next Record");                 
+   System.out.println("\n[12]  Initialize a TScan");
+   System.out.println("[13]  TScan the next Record");
    System.out.println("[14]  Delete the just-scanned record");  
    System.out.println("\n           ---String Key (for choice [15]) ---");
    System.out.println("\n[15]  Test5 (new file): insert n records in random order  ");

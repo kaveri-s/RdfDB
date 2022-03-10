@@ -1,4 +1,4 @@
-/* File HFPage.java */
+/* File THFPage.java */
 
 package heap;
 
@@ -24,7 +24,7 @@ interface ConstSlot{
  * deletions are performed. 
  */
 
-public class HFPage extends Page 
+public class THFPage extends Page
   implements ConstSlot, GlobalConst{
   
   
@@ -84,21 +84,21 @@ public class HFPage extends Page
    * Default constructor
    */
   
-  public HFPage ()   {  }
+  public THFPage()   {  }
   
   /**
-   * Constructor of class HFPage
-   * open a HFPage and make this HFpage piont to the given page
+   * Constructor of class THFPage
+   * open a THFPage and make this HFpage piont to the given page
    * @param  page  the given page in Page type
    */
   
-  public HFPage(Page page)
+  public THFPage(Page page)
     {
       data = page.getpage();
     }
   
   /**
-   * Constructor of class HFPage
+   * Constructor of class THFPage
    * open a existed hfpage
    * @param  apage   a page in buffer pool
    */
@@ -109,7 +109,7 @@ public class HFPage extends Page
     }
   
   /**
-   * Constructor of class HFPage
+   * Constructor of class THFPage
    * initialize a new page
    * @param	pageNo	the page number of a new page to be initialized
    * @param	apage	the Page to be initialized 
@@ -175,8 +175,8 @@ public class HFPage extends Page
       
       for (i= 0, n=DPFIXED; i < slotCnt; n +=SIZE_OF_SLOT, i++) {
         length =  Convert.getShortValue (n, data);
-	offset =  Convert.getShortValue (n+2, data);
-	System.out.println("slotNo " + i +" offset= " + offset);
+        offset =  Convert.getShortValue (n+2, data);
+        System.out.println("slotNo " + i +" offset= " + offset);
         System.out.println("slotNo " + i +" length= " + length);
       }
       
@@ -334,10 +334,10 @@ public class HFPage extends Page
    * @exception IOException I/O errors
    * in C++ Status insertRecord(char *recPtr, int recLen, RID& rid)
    */
-  public RID insertRecord ( byte [] record)		
-    throws IOException
-    {
-      RID rid = new RID();
+  public QID insertRecord ( byte [] record)
+          throws IOException
+  {
+      QID qid = new QID();
       
       int recLen = record.length;
       int spaceNeeded = recLen + SIZE_OF_SLOT;
@@ -389,24 +389,24 @@ public class HFPage extends Page
 	// insert data onto the data page
 	System.arraycopy (record, 0, data, usedPtr, recLen);
 	curPage.pid = Convert.getIntValue (CUR_PAGE, data);
-	rid.pageNo.pid = curPage.pid;
-	rid.slotNo = i;
-	return   rid ;
+          qid.pageNo.pid = curPage.pid;
+          qid.slotNo = i;
+          return   qid ;
       }
     } 
   
   /**
    * delete the record with the specified rid
-   * @param	rid 	the record ID
+   * @param	qid 	the record ID
    * @exception	InvalidSlotNumberException Invalid slot number
    * @exception IOException I/O errors
    * in C++ Status deleteRecord(const RID& rid)
    */
-  public void deleteRecord ( RID rid )
-    throws IOException,  
-	   InvalidSlotNumberException
-    {
-      int slotNo = rid.slotNo;
+  public void deleteRecord( QID qid )
+          throws IOException,
+          InvalidSlotNumberException
+  {
+      int slotNo = qid.slotNo;
       short recLen = getSlotLength (slotNo);
       slotCnt = Convert.getShortValue (SLOT_CNT, data);
       
@@ -463,11 +463,11 @@ public class HFPage extends Page
    * @exception  IOException I/O errors
    * in C++ Status firstRecord(RID& firstRid)
    * 
-   */ 
-  public RID firstRecord() 
-    throws IOException
-    {
-      RID rid = new RID();
+   */
+  public QID firstRecord()
+          throws IOException
+  {
+      QID qid = new QID();
       // find the first non-empty slot
       
       
@@ -486,28 +486,28 @@ public class HFPage extends Page
 	return null;
       
       // found a non-empty slot
-      
-      rid.slotNo = i;
+
+      qid.slotNo = i;
       curPage.pid= Convert.getIntValue(CUR_PAGE, data);
-      rid.pageNo.pid = curPage.pid;
-      
-      return rid;
-    }
+      qid.pageNo.pid = curPage.pid;
+
+      return qid;
+  }
   
   /**
    * @return RID of next record on the page, null if no more 
    * records exist on the page
-   * @param 	curRid	current record ID
+   * @param 	curQid	current record ID
    * @exception  IOException I/O errors
    * in C++ Status nextRecord (RID curRid, RID& nextRid)
    */
-  public RID nextRecord (RID curRid) 
-    throws IOException 
-    {
-      RID rid = new RID();
+  public QID nextRecord (QID curQid)
+          throws IOException
+  {
+      QID qid = new QID();
       slotCnt = Convert.getShortValue (SLOT_CNT, data);
-      
-      int i=curRid.slotNo;
+
+      int i=curQid.slotNo;
       short length; 
       
       // find the next non-empty slot
@@ -522,35 +522,35 @@ public class HFPage extends Page
 	return null;
       
       // found a non-empty slot
-      
-      rid.slotNo = i;
+
+      qid.slotNo = i;
       curPage.pid = Convert.getIntValue(CUR_PAGE, data);
-      rid.pageNo.pid = curPage.pid;
-      
-      return rid;
-    }
+      qid.pageNo.pid = curPage.pid;
+
+      return qid;
+  }
   
   /**
    * copies out record with RID rid into record pointer.
    * <br>
    * Status getRecord(RID rid, char *recPtr, int& recLen)
-   * @param	rid 	the record ID
+   * @param	qid 	the record ID
    * @return 	a tuple contains the record
    * @exception   InvalidSlotNumberException Invalid slot number
    * @exception  	IOException I/O errors
-   * @see 	Tuple
+   * @see    Quadruple
    */
-  public Tuple getRecord ( RID rid ) 
-    throws IOException,  
-	   InvalidSlotNumberException
-    {
+  public Quadruple getRecord ( QID qid )
+          throws IOException,
+          InvalidSlotNumberException
+  {
       short recLen;
       short offset;
       byte []record;
       PageId pageNo = new PageId();
-      pageNo.pid= rid.pageNo.pid;
+      pageNo.pid= qid.pageNo.pid;
       curPage.pid = Convert.getIntValue (CUR_PAGE, data);
-      int slotNo = rid.slotNo;
+      int slotNo = qid.slotNo;
       
       // length of record being returned
       recLen = getSlotLength (slotNo);
@@ -561,8 +561,8 @@ public class HFPage extends Page
 	  offset = getSlotOffset (slotNo);
 	  record = new byte[recLen];
 	  System.arraycopy(data, offset, record, 0, recLen);
-	  Tuple tuple = new Tuple(record, 0, recLen);
-	  return tuple;
+	  Quadruple quadruple = new Quadruple(record, recLen);
+	  return quadruple;
 	}
       
       else {
@@ -576,23 +576,23 @@ public class HFPage extends Page
    * returns a tuple in a byte array[pageSize] with given RID rid.
    * <br>
    * in C++	Status returnRecord(RID rid, char*& recPtr, int& recLen)
-   * @param       rid     the record ID
+   * @param       qid     the record ID
    * @return      a tuple  with its length and offset in the byte array
    * @exception   InvalidSlotNumberException Invalid slot number
    * @exception   IOException I/O errors
-   * @see 	Tuple
-   */  
-  public Tuple returnRecord ( RID rid )
-    throws IOException, 
-	   InvalidSlotNumberException
-    {
+   * @see    Quadruple
+   */
+  public Quadruple returnRecord ( QID qid )
+          throws IOException,
+          InvalidSlotNumberException
+  {
       short recLen;
       short offset;
       PageId pageNo = new PageId();
-      pageNo.pid = rid.pageNo.pid;
+      pageNo.pid = qid.pageNo.pid;
       
       curPage.pid = Convert.getIntValue (CUR_PAGE, data);
-      int slotNo = rid.slotNo;
+      int slotNo = qid.slotNo;
       
       // length of record being returned
       recLen = getSlotLength (slotNo);
@@ -603,8 +603,8 @@ public class HFPage extends Page
 	{
 	  
 	  offset = getSlotOffset (slotNo);
-	  Tuple tuple = new Tuple(data, offset, recLen);
-	  return tuple;
+	  Quadruple quadruple = new Quadruple(data, recLen);
+	  return quadruple;
 	}
       
       else {   
@@ -627,7 +627,7 @@ public class HFPage extends Page
   
   /**      
    * Determining if the page is empty
-   * @return true if the HFPage is has no records in it, false otherwise  
+   * @return true if the THFPage is has no records in it, false otherwise
    * @exception  IOException I/O errors
    */
   public boolean empty() 
@@ -649,7 +649,7 @@ public class HFPage extends Page
     }
   
   /**
-   * Compacts the slot directory on an HFPage.
+   * Compacts the slot directory on an THFPage.
    * WARNING -- this will probably lead to a change in the RIDs of
    * records on the page.  You CAN'T DO THIS on most kinds of pages.
    * @exception  IOException I/O errors

@@ -1,11 +1,8 @@
 package tests;
 
 import java.io.*;
-import java.util.*;
 import java.lang.*;
 import heap.*;
-import bufmgr.*;
-import diskmgr.*;
 import global.*;
 import chainexception.*;
 
@@ -95,11 +92,11 @@ public boolean runTests () {
     System.out.println ("\n  Test 1: Insert and scan fixed-size records\n");
     boolean status = OK;
     RID rid = new RID();
-    Heapfile f = null;
+    QuadrupleHeapfile f = null;
 
     System.out.println ("  - Create a heap file\n");
     try {
-      f = new Heapfile("file_1");
+      f = new QuadrupleHeapfile("file_1");
     }
     catch (Exception e) {
       status = FAIL;
@@ -124,7 +121,7 @@ public boolean runTests () {
 	rec.name = "record" + i;
 
 	try {
-	  rid = f.insertRecord(rec.toByteArray());
+	  rid = f.insertQuadruple(rec.toByteArray());
 	}
 	catch (Exception e) {
 	  status = FAIL;
@@ -141,9 +138,9 @@ public boolean runTests () {
       }
       
       try {
-	if ( f.getRecCnt() != choice ) {
+	if ( f.getQuadrupleCnt() != choice ) {
 	  status = FAIL;
-	  System.err.println ("*** File reports " + f.getRecCnt() + 
+	  System.err.println ("*** File reports " + f.getQuadrupleCnt() +
 			      " records, not " + choice + "\n");
 	}
       }
@@ -158,10 +155,10 @@ public boolean runTests () {
     // insertions.  However, we're inserting fixed-length records here, and
     // in this case the scan must return the insertion order.
     
-    Scan scan = null;
+    TScan scan = null;
     
     if ( status == OK ) {	
-      System.out.println ("  - Scan the records just inserted\n");
+      System.out.println ("  - TScan the records just inserted\n");
       
       try {
 	scan = f.openScan();
@@ -182,7 +179,7 @@ public boolean runTests () {
     if ( status == OK ) {
       int len, i = 0;
       DummyRecord rec = null;
-      Tuple tuple = new Tuple();
+      Quadruple tuple = new Quadruple();
       
       boolean done = false;
       while (!done) { 
@@ -270,13 +267,13 @@ public boolean runTests () {
 
     System.out.println ("\n  Test 2: Delete fixed-size records\n");
     boolean status = OK;
-    Scan scan = null;
+    TScan scan = null;
     RID rid = new RID();
-    Heapfile f = null;
+    QuadrupleHeapfile f = null;
 
     System.out.println ("  - Open the same heap file as test 1\n");
     try {
-      f = new Heapfile("file_1");
+      f = new QuadrupleHeapfile("file_1");
     }
     catch (Exception e) {
       status = FAIL;
@@ -298,7 +295,7 @@ public boolean runTests () {
     
     if ( status == OK ) {
       int len, i = 0;
-      Tuple tuple = new Tuple();
+      Quadruple tuple = new Quadruple();
       boolean done = false;
 
       while (!done) { 
@@ -319,7 +316,7 @@ public boolean runTests () {
 	  if ( i % 2 == 0 ) odd = false;
 	  if ( odd )  {       // Delete the odd-numbered ones.
 	    try {
-	      status = f.deleteRecord( rid );
+	      status = f.deleteQuadruple( rid );
 	    }
 	    catch (Exception e) {
 	      status = FAIL;
@@ -348,7 +345,7 @@ public boolean runTests () {
     }
     
     if ( status == OK ) {
-      System.out.println ("  - Scan the remaining records\n");
+      System.out.println ("  - TScan the remaining records\n");
       try {
 	scan = f.openScan();
       }
@@ -362,7 +359,7 @@ public boolean runTests () {
     if ( status == OK ) {
       int len, i = 0;
       DummyRecord rec = null;
-      Tuple tuple = new Tuple();
+      Quadruple tuple = new Quadruple();
       boolean done = false;
 
       while ( !done ) {
@@ -412,13 +409,13 @@ public boolean runTests () {
 
     System.out.println ("\n  Test 3: Update fixed-size records\n");
     boolean status = OK;
-    Scan scan = null;
+    TScan scan = null;
     RID rid = new RID();
-    Heapfile f = null; 
+    QuadrupleHeapfile f = null;
 
     System.out.println ("  - Open the same heap file as tests 1 and 2\n");
     try {
-      f = new Heapfile("file_1");
+      f = new QuadrupleHeapfile("file_1");
     }
     catch (Exception e) {
       status = FAIL;
@@ -442,7 +439,7 @@ public boolean runTests () {
 
       int len, i = 0;
       DummyRecord rec = null; 
-      Tuple tuple = new Tuple();
+      Quadruple tuple = new Quadruple();
       boolean done = false;
       
       while ( !done ) {
@@ -468,9 +465,9 @@ public boolean runTests () {
 
 	  rec.fval =(float) 7*i;     // We'll check that i==rec.ival below.
 
-	  Tuple newTuple = null; 
+	  Quadruple newTuple = null;
 	  try {
-	    newTuple = new Tuple (rec.toByteArray(),0,rec.getRecLength()); 
+	    newTuple = new Quadruple(rec.toByteArray(),0,rec.getRecLength());
 	  }
 	  catch (Exception e) {
 	    status = FAIL;
@@ -478,7 +475,7 @@ public boolean runTests () {
 	    e.printStackTrace();
 	  }
 	  try {
-	    status = f.updateRecord(rid, newTuple); 
+	    status = f.updateQuadruple(rid, newTuple);
 	  }
 	  catch (Exception e) {
 	    status = FAIL;
@@ -526,8 +523,8 @@ public boolean runTests () {
       int len, i = 0;
       DummyRecord rec = null;
       DummyRecord rec2 = null;
-      Tuple tuple = new Tuple(); 
-      Tuple tuple2 = new Tuple(); 
+      Quadruple tuple = new Quadruple();
+      Quadruple tuple2 = new Quadruple();
       boolean done = false;
       
       while ( !done ) {
@@ -553,7 +550,7 @@ public boolean runTests () {
 
 	  // While we're at it, test the getRecord method too.
 	  try {
-	    tuple2 = f.getRecord( rid ); 
+	    tuple2 = f.getQuadruple( rid );
 	  }
 	  catch (Exception e) {
 	    status = FAIL;
@@ -605,12 +602,12 @@ public boolean runTests () {
 
     System.out.println ("\n  Test 4: Test some error conditions\n");
     boolean status = OK;
-    Scan scan = null;
+    TScan scan = null;
     RID rid = new RID();
-    Heapfile f = null; 
+    QuadrupleHeapfile f = null;
     
     try {
-      f = new Heapfile ("file_1");
+      f = new QuadrupleHeapfile("file_1");
     }
     catch (Exception e) {
       status = FAIL;
@@ -636,7 +633,7 @@ public boolean runTests () {
     if ( status == OK ) {
       int len;
       DummyRecord rec = null;
-      Tuple tuple = new Tuple();
+      Quadruple tuple = new Quadruple();
       
       try {
 	tuple = scan.getNext(rid);
@@ -661,16 +658,16 @@ public boolean runTests () {
 	  status = FAIL;
 	}
 	len = tuple.getLength();
-	  Tuple newTuple = null;
+	  Quadruple newTuple = null;
 	try {
-	  newTuple = new Tuple(rec.toByteArray(), 0, len-1);
+	  newTuple = new Quadruple(rec.toByteArray(), 0, len-1);
 	}
 	catch (Exception e) {
 	  System.err.println (""+e);
 	  e.printStackTrace();
 	}
 	try {
-	  status = f.updateRecord( rid, newTuple );
+	  status = f.updateQuadruple( rid, newTuple );
 	}
 	catch (ChainException e) { 
 	  status = checkException (e, "heap.InvalidUpdateException");
@@ -702,16 +699,16 @@ public boolean runTests () {
 	}
 	
 	len = tuple.getLength();
-	Tuple newTuple = null;
+	Quadruple newTuple = null;
 	try {
-	  newTuple = new Tuple(rec.toByteArray(), 0, len+1);
+	  newTuple = new Quadruple(rec.toByteArray(), 0, len+1);
 	}
 	catch (Exception e) {
 	  System.err.println( ""+e );
 	  e.printStackTrace();
 	}
 	try {
-	  status = f.updateRecord( rid, newTuple );
+	  status = f.updateQuadruple( rid, newTuple );
 	}
 	catch (ChainException e) {
 	  status = checkException(e, "heap.InvalidUpdateException");
@@ -740,7 +737,7 @@ public boolean runTests () {
       System.out.println ("  - Try to insert a record that's too long\n");
       byte [] record = new byte [MINIBASE_PAGESIZE+4];
       try {
-	rid = f.insertRecord( record );
+	rid = f.insertQuadruple( record );
       }
       catch (ChainException e) {
 	status = checkException (e, "heap.SpaceNotAvailableException");
@@ -832,10 +829,10 @@ class DummyRecord  {
    *  it will make a copy of the data in the tuple
    * @param atuple: the input tuple
    */
-  public DummyRecord(Tuple _atuple) 
+  public DummyRecord(Quadruple _atuple)
 	throws java.io.IOException{   
     data = new byte[_atuple.getLength()];
-    data = _atuple.getTupleByteArray();
+    data = _atuple.getQuadrupleByteArray();
     setRecLen(_atuple.getLength());
     
     setIntRec (data);

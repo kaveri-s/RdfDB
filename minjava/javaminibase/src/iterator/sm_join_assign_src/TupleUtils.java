@@ -7,7 +7,7 @@ import java.io.*;
 import java.lang.*;
 
 /**
- *some useful method when processing Tuple 
+ *some useful method when processing Quadruple
  */
 public class TupleUtils
 {
@@ -33,8 +33,8 @@ public class TupleUtils
    *         -1        if the tuple is smaller,                              
    */
   public static int CompareTupleWithTuple(AttrType fldType,
-					  Tuple  t1, int t1_fld_no,
-					  Tuple  t2, int t2_fld_no)
+                                          Quadruple t1, int t1_fld_no,
+                                          Quadruple t2, int t2_fld_no)
     throws IOException,
 	   UnknowAttrType,
 	   TupleUtilsException
@@ -104,8 +104,8 @@ public class TupleUtils
    *@exception TupleUtilsException exception from this class   
    */            
   public static int CompareTupleWithValue(AttrType fldType,
-					  Tuple  t1, int t1_fld_no,
-					  Tuple  value)
+                                          Quadruple t1, int t1_fld_no,
+                                          Quadruple value)
     throws IOException,
 	   UnknowAttrType,
 	   TupleUtilsException
@@ -114,7 +114,7 @@ public class TupleUtils
     }
   
   /**
-   *This function Compares two Tuple inn all fields 
+   *This function Compares two Quadruple inn all fields
    * @param t1 the first tuple
    * @param t2 the secocnd tuple
    * @param type[] the field types
@@ -126,7 +126,7 @@ public class TupleUtils
    *@exception TupleUtilsException exception from this class
    */            
   
-  public static boolean Equal(Tuple t1, Tuple t2, AttrType types[], int len)
+  public static boolean Equal(Quadruple t1, Quadruple t2, AttrType types[], int len)
     throws IOException,UnknowAttrType,TupleUtilsException
     {
       int i;
@@ -145,7 +145,7 @@ public class TupleUtils
    *@exception IOException some I/O fault
    *@exception TupleUtilsException exception from this class
    */
-  public static String Value(Tuple  tuple, int fldno)
+  public static String Value(Quadruple tuple, int fldno)
     throws IOException,
 	   TupleUtilsException
     {
@@ -169,7 +169,7 @@ public class TupleUtils
    *@exception IOException some I/O fault
    *@exception TupleUtilsException exception from this class
    */  
-  public static void SetValue(Tuple value, Tuple  tuple, int fld_no, AttrType fldType)
+  public static void SetValue(Quadruple value, Quadruple tuple, int fld_no, AttrType fldType)
     throws IOException,
 	   UnknowAttrType,
 	   TupleUtilsException
@@ -222,11 +222,11 @@ public class TupleUtils
    *@exception IOException some I/O fault
    *@exception TupleUtilsException exception from this class
    */
-  public static short[] setup_op_tuple(Tuple Jtuple, AttrType[] res_attrs,
-				       AttrType in1[], int len_in1, AttrType in2[], 
-				       int len_in2, short t1_str_sizes[], 
-				       short t2_str_sizes[], 
-				       FldSpec proj_list[], int nOutFlds)
+  public static short[] setup_op_tuple(Quadruple Jtuple, AttrType[] res_attrs,
+                                       AttrType in1[], int len_in1, AttrType in2[],
+                                       int len_in2, short t1_str_sizes[],
+                                       short t2_str_sizes[],
+                                       FldSpec proj_list[], int nOutFlds)
     throws IOException,
 	   TupleUtilsException
     {
@@ -292,10 +292,10 @@ public class TupleUtils
    *@exception InvalidRelation invalid relation 
    */
 
-  public static short[] setup_op_tuple(Tuple Jtuple, AttrType res_attrs[],
-				       AttrType in1[], int len_in1,
-				       short t1_str_sizes[], 
-				       FldSpec proj_list[], int nOutFlds)
+  public static short[] setup_op_tuple(Quadruple Jtuple, AttrType res_attrs[],
+                                       AttrType in1[], int len_in1,
+                                       short t1_str_sizes[],
+                                       FldSpec proj_list[], int nOutFlds)
     throws IOException,
 	   TupleUtilsException, 
 	   InvalidRelation

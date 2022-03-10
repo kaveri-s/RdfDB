@@ -19,7 +19,7 @@ import heap.*;
  * just holds abstract records in sorted order, based 
  * on how they compare using the key interface from BT.java.
  */
-public class BTSortedPage  extends HFPage{
+public class BTSortedPage  extends THFPage {
 
   
   int keyType; //it will be initialized in BTFile
@@ -164,7 +164,7 @@ public class BTSortedPage  extends HFPage{
  
 
   /**  Deletes a record from a sorted record page. It also calls
-   *    HFPage.compact_slot_dir() to compact the slot directory.
+   *    THFPage.compact_slot_dir() to compact the slot directory.
    *@param rid it specifies where a record will be deleted
    *@return true if success; false if rid is invalid(no record in the rid).
    *@exception DeleteRecException error when delete

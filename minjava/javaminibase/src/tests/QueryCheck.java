@@ -1,6 +1,5 @@
 package tests;
 
-import java.io.*;
 import java.lang.*;
 import java.util.*;
 import global.*;
@@ -25,7 +24,7 @@ class Order {
   int count;               // The count for correct answers in the group.
   Order order;             // order of tuples in the group
   int   mark[Max_answer];  // 1:tuple correct. 0:not yet checked
-  Tuple * mytuple[Max_answer]; // The answer in the group.
+  Quadruple * mytuple[Max_answer]; // The answer in the group.
   };
 */
 
@@ -35,23 +34,23 @@ class Group {
   int count;
   Order order;
   int [] mark;
-  Tuple [] mytuple;
+  Quadruple[] mytuple;
 
   public Group () {
     mark = new int[Max_answer];
-    mytuple = new Tuple[Max_answer];
+    mytuple = new Quadruple[Max_answer];
   }
 }
 
 /*
   struct TupleList{
-  Tuple *       tuple;
+  Quadruple *       tuple;
   TupleList *   next;
   };
 */
 
 class TupleList {
-  Tuple tuple;
+  Quadruple tuple;
   TupleList next;
 
   public TupleList(){};
@@ -205,7 +204,7 @@ public class QueryCheck {
       mygroup[0].order = new Order(Order.UNSORT); // the tuple in group is sorted or not
       for(int i=0; i<mygroup[0].len;i++)  {// set tuple value. 
 	try {
-          mygroup[0].mytuple[i] = new Tuple();
+          mygroup[0].mytuple[i] = new Quadruple();
           mygroup[0].mytuple[i].setHdr(columnum, types, sizes); 
           mygroup[0].mytuple[i].setStrFld(1,((S1)Q1result.elementAt(i)).sname);  
           mygroup[0].mytuple[i].setStrFld(2,((S1)Q1result.elementAt(i)).date);  
@@ -228,7 +227,7 @@ public class QueryCheck {
       mygroup[0].order = new Order(Order.SORT);
       for(int i=0; i<mygroup[0].len;i++)  {// set tuple value.
         try {
-          mygroup[0].mytuple[i] = new Tuple();
+          mygroup[0].mytuple[i] = new Quadruple();
           mygroup[0].mytuple[i].setHdr(columnum, types, sizes);
           mygroup[0].mytuple[i].setStrFld(1,((S2)Q2result.elementAt(i)).sname);
 	}
@@ -250,7 +249,7 @@ public class QueryCheck {
         mygroup[0].order = new Order(Order.UNSORT);
         for(int i=0; i<mygroup[0].len;i++) {
 	  try {
-	    mygroup[0].mytuple[i] = new Tuple();
+	    mygroup[0].mytuple[i] = new Quadruple();
 	    mygroup[0].mytuple[i].setHdr(columnum, types, sizes);
 	    mygroup[0].mytuple[i].setStrFld(1,((S2)Q3result.elementAt(i)).sname);
 	  }
@@ -272,7 +271,7 @@ public class QueryCheck {
         mygroup[0].order = new Order(Order.UNSORT);
         for(int i=0; i<mygroup[0].len;i++)  {// set tuple value.
 	  try {
-	    mygroup[0].mytuple[i] = new Tuple();
+	    mygroup[0].mytuple[i] = new Quadruple();
 	    mygroup[0].mytuple[i].setHdr(columnum, types, sizes);
 	    mygroup[0].mytuple[i].setStrFld(1,((S2)Q4result.elementAt(i)).sname);
 	  }
@@ -296,7 +295,7 @@ public class QueryCheck {
         mygroup[0].order = new Order(Order.UNSORT);
         for(int i=0; i<mygroup[0].len;i++)  {// set tuple value.
 	  try {
-	    mygroup[0].mytuple[i] = new Tuple();
+	    mygroup[0].mytuple[i] = new Quadruple();
 	    mygroup[0].mytuple[i].setHdr(columnum, types, sizes);
 	    mygroup[0].mytuple[i].setStrFld(1,((S5)Q5result.elementAt(i)).sname);
 	    mygroup[0].mytuple[i].setIntFld(2,((S5)Q5result.elementAt(i)).rating);
@@ -320,7 +319,7 @@ public class QueryCheck {
         mygroup[0].order = new Order(Order.SORT);
         for(int i=0; i<mygroup[0].len;i++) { // set tuple value.
 	  try {
-            mygroup[0].mytuple[i] = new Tuple();
+            mygroup[0].mytuple[i] = new Quadruple();
             mygroup[0].mytuple[i].setHdr(columnum, types, sizes);
             mygroup[0].mytuple[i].setStrFld(1,((S2)Q6result.elementAt(i)).sname);
 	  }
@@ -358,10 +357,10 @@ public class QueryCheck {
   }
   
   
-  void AddtoList(TupleList list, Tuple t) {        
+  void AddtoList(TupleList list, Quadruple t) {
 
     TupleList cur = new TupleList();
-    cur.tuple = new Tuple();
+    cur.tuple = new Quadruple();
     try {
       cur.tuple.setHdr(columnum, types, sizes);
     }
@@ -373,7 +372,7 @@ public class QueryCheck {
     list = cur;
   }
   
-  void TupleCopy(Tuple to, Tuple from, int fldnum, AttrType []type) {
+  void TupleCopy(Quadruple to, Quadruple from, int fldnum, AttrType []type) {
 
     int   temp_i;
     float temp_f;
@@ -418,7 +417,7 @@ public class QueryCheck {
     }
   }
   
-  public void Check(Tuple t) {
+  public void Check(Quadruple t) {
     
     // first find curGroup
     if( curGroup == -1 ) {
@@ -491,7 +490,7 @@ public class QueryCheck {
     }
   }
   
-  void MisMatch(Tuple t) {
+  void MisMatch(Quadruple t) {
     int t_num[] = new int[1];
     
     t_num[0] = -1;
@@ -505,7 +504,7 @@ public class QueryCheck {
     else if( tempGroup == curGroup ) {   
       if( mygroup[curGroup].order.order == Order.UNSORT ) {
 	// this should not happen
-	System.out.print ("*****Tuple in current group, but "
+	System.out.print ("*****Quadruple in current group, but "
 			  + "checking failed to find it.\n\n");
 	return;
       }
@@ -613,7 +612,7 @@ public class QueryCheck {
   
   // Search() will look for a tuple and return the group number 
   // and tuple number if found
-  int Search(Tuple t, int [] t_num) {
+  int Search(Quadruple t, int [] t_num) {
     for( int i=0; i<groupnum; i++) {
       if(gmark[i] == 0) {
 	for( int j=0; j<mygroup[i].len; j++) {
