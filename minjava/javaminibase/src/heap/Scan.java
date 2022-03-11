@@ -187,7 +187,7 @@ public class Scan implements GlobalConst{
      *
      * @param hf A HeapFile object
      */
-    private void init(Heapfile hf) 
+    private void init(Heapfile hf)
       throws InvalidTupleSizeException,
 	     IOException
   {
