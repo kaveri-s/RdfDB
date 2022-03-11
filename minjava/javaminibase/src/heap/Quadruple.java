@@ -17,21 +17,6 @@ public class Quadruple implements GlobalConst {
     private double value;
 
     /**
-     * Maximum size of any quadruple
-     */
-    public static final int max_size = MINIBASE_PAGESIZE;
-
-    /**
-     * a byte array to hold data
-     */
-    //private byte [] data;
-
-    /**
-     * length of this quadruple
-     */
-    //private int quadruple_length;
-
-    /**
      * Class constructor
      * Creat a new quadruple with length = max_size,quadruple offset = 0.
      */
@@ -128,8 +113,8 @@ public class Quadruple implements GlobalConst {
         System.out.print(value);
     }
 
-    public void size(){
-        //return fixed len
+    public int size(){
+        return MINIBASE_QUADRUPLESIZE;
     }
 
     /** Copy a quadruple to the current quadruple position
