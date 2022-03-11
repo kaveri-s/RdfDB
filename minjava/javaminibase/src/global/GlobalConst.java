@@ -5,6 +5,9 @@ public interface GlobalConst {
   public static final int MINIBASE_MAXARRSIZE = 50;
   public static final int NUMBUF = 50;
 
+  /** Size of quadruple. */
+  public static final int MINIBASE_QUADRUPLESIZE = 32;        // in bytes
+
   /** Size of page. */
   public static final int MINIBASE_PAGESIZE = 1024;           // in bytes
 
