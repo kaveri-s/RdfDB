@@ -9,20 +9,20 @@ PROGS = together
 
 all: $(PROGS)
 
-qhf:QuadrupleHeapfile.java
-	$(JAVAC) QuadrupleHeapfile.java
+lhf:LabelHeapfile.java
+	$(JAVAC) LabelHeapfile.java
 
-thp:THFPage.java
-	$(JAVAC) HFPage.java
+lhp:LHFPage.java
+	$(JAVAC) LFPage.java
 
-quadruple:Quadruple.java
-	$(JAVAC) Quadruple.java
+label:Label.java
+	$(JAVAC) Label.java
 
-tscan:TScan.java
-	$(JAVAC) TScan.java
+lscan:LScan.java
+	$(JAVAC) LScan.java
 
 together:*.java
 	$(JAVAC) *.java
 
 clean:
-	\rm -f *.class *~ \#* core 
+	\rm -f *.class *~ \#* core
