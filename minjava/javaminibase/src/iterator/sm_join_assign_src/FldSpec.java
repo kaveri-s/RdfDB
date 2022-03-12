@@ -1,5 +1,4 @@
 package iterator;
-import heap.*;
 
 public class FldSpec {
   public  RelSpec relation;

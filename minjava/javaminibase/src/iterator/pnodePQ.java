@@ -1,9 +1,7 @@
 
 package iterator;
 import global.*;
-import bufmgr.*;
-import diskmgr.*;
-import heap.*;
+
 import java.io.*;
 
 /**

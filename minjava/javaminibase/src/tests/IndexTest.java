@@ -2,7 +2,7 @@ package tests;
 
 import java.io.*; 
 import global.*;
-import heap.*;
+import quadrupleheap.*;
 import iterator.*;
 import index.*;
 import btree.*; 
@@ -143,9 +143,9 @@ class IndexDriver extends TestDriver
     
     // Create unsorted data file "test1.in"
     RID             rid;
-    QuadrupleHeapfile f = null;
+    QuadrupleHeapFile f = null;
     try {
-      f = new QuadrupleHeapfile("test1.in");
+      f = new QuadrupleHeapFile("test1.in");
     }
     catch (Exception e) {
       status = FAIL;
@@ -359,11 +359,11 @@ class IndexDriver extends TestDriver
     int size = t.size();
     
     RID             rid;
-    QuadrupleHeapfile f = null;
+    QuadrupleHeapFile f = null;
 
     // open existing data file
     try {
-      f = new QuadrupleHeapfile("test1.in");
+      f = new QuadrupleHeapFile("test1.in");
     }
     catch (Exception e) {
       status = FAIL;
@@ -605,9 +605,9 @@ class IndexDriver extends TestDriver
 
     // Create unsorted data file "test3.in"
     RID             rid;
-    QuadrupleHeapfile f = null;
+    QuadrupleHeapFile f = null;
     try {
-      f = new QuadrupleHeapfile("test3.in");
+      f = new QuadrupleHeapFile("test3.in");
     }
     catch (Exception e) {
       status = FAIL;

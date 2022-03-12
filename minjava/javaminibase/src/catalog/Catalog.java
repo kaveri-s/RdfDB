@@ -9,7 +9,7 @@ package catalog;
 import java.io.*;
 
 import global.*;
-import heap.*;
+import quadrupleheap.*;
 
 public class Catalog 
   implements GlobalConst, Catalogglobal

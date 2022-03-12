@@ -1,5 +1,5 @@
 package iterator;
-import heap.*;
+import quadrupleheap.*;
 import global.*;
 
 import java.io.*;
@@ -29,7 +29,7 @@ public class OBuf implements GlobalConst{
    *                      a nasty message. it is false by default.
   */
   public void init(byte[][] bufs, int n_pages, int tSize,
-                   QuadrupleHeapfile temp_fd, boolean buffer )
+                   QuadrupleHeapFile temp_fd, boolean buffer )
     {
       _bufs    = bufs;
       _n_pages = n_pages;
@@ -143,7 +143,7 @@ public class OBuf implements GlobalConst{
   private  int  t_size;                                // Size of a tuple
   private  long t_written;                        // # of tuples written so far.
   private  int  TEST_temp_fd;                        // fd of a temporary file
-  private QuadrupleHeapfile _temp_fd;
+  private QuadrupleHeapFile _temp_fd;
   private  boolean buffer_only;
 }
 

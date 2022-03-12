@@ -1,7 +1,7 @@
 package iterator;
    
 
-import heap.*;
+import quadrupleheap.*;
 import global.*;
 import bufmgr.*;
 
@@ -18,7 +18,7 @@ public class FileScan extends  Iterator
   private AttrType[] _in1;
   private short in1_len;
   private short[] s_sizes; 
-  private QuadrupleHeapfile f;
+  private QuadrupleHeapFile f;
   private TScan scan;
   private Quadruple tuple1;
   private Quadruple Jtuple;
@@ -78,7 +78,7 @@ public class FileScan extends  Iterator
       t1_size = tuple1.size();
       
       try {
-	f = new QuadrupleHeapfile(file_name);
+	f = new QuadrupleHeapFile(file_name);
 	
       }
       catch(Exception e) {

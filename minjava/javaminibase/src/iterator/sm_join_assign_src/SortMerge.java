@@ -1,6 +1,6 @@
 package iterator;
 
-import heap.*;
+import quadrupleheap.*;
 import global.*;
 import bufmgr.*;
 import index.*;
@@ -33,7 +33,7 @@ public class SortMerge extends Iterator implements GlobalConst
   private  boolean       done;
   private  byte    _bufs1[][],_bufs2[][];
   private  int        _n_pages; 
-  private QuadrupleHeapfile temp_file_fd1, temp_file_fd2;
+  private QuadrupleHeapFile temp_file_fd1, temp_file_fd2;
   private  AttrType   sortFldType;
   private  int        t1_size, t2_size;
   private Quadruple Jtuple;
@@ -195,12 +195,12 @@ public class SortMerge extends Iterator implements GlobalConst
       temp_file_fd1 = null;
       temp_file_fd2 = null;
       try {
-	temp_file_fd1 = new QuadrupleHeapfile(null);
-	temp_file_fd2 = new QuadrupleHeapfile(null);
+	temp_file_fd1 = new QuadrupleHeapFile(null);
+	temp_file_fd2 = new QuadrupleHeapFile(null);
 	
       }
       catch(Exception e) {
-	throw new SortException (e, "Create heap file failed");
+	throw new SortException (e, "Create quadrupleheap file failed");
       }
       
       sortFldType = _in1[jc_in1-1];

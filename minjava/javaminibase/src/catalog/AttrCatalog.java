@@ -8,10 +8,10 @@ package catalog;
 
 import java.io.*;
 import global.*;
-import heap.*;
+import quadrupleheap.*;
 
 
-public class AttrCatalog extends QuadrupleHeapfile
+public class AttrCatalog extends QuadrupleHeapFile
 	implements GlobalConst, Catalogglobal
 {
   //OPEN ATTRIBUTE CATALOG
@@ -143,7 +143,7 @@ public class AttrCatalog extends QuadrupleHeapfile
 	throw new Catalogioerror(null, "");
       }
       catch (Cataloghferror e1) {
-	System.err.println ("Catalog QuadrupleHeapfile Error!"+e1);
+	System.err.println ("Catalog QuadrupleHeapFile Error!"+e1);
 	throw new Cataloghferror(null, "");
       }
       catch (Catalogmissparam e2) {
@@ -235,7 +235,7 @@ public class AttrCatalog extends QuadrupleHeapfile
 	throw new Catalogioerror(null, "");
       }
       catch (Cataloghferror e1) {
-	System.err.println ("Catalog QuadrupleHeapfile Error!"+e1);
+	System.err.println ("Catalog QuadrupleHeapFile Error!"+e1);
 	throw new Cataloghferror(null, "");
       }
       catch (Catalogmissparam e2) {

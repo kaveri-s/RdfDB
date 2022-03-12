@@ -3,9 +3,7 @@ package tests;
 import java.io.*;
 import java.util.*;
 import java.lang.*;
-import heap.*;
-import bufmgr.*;
-import diskmgr.*;
+
 import global.*;
 import btree.*;
 

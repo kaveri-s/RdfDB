@@ -2,7 +2,7 @@ package index;
 import global.*;
 import btree.*;
 import iterator.*;
-import heap.*; 
+import quadrupleheap.*;
 import java.io.*;
 
 
@@ -79,17 +79,17 @@ public class IndexScan extends Iterator {
       tuple1.setHdr((short) noInFlds, types, str_sizes);
     }
     catch (Exception e) {
-      throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
+      throw new IndexException(e, "IndexScan.java: QuadrupleHeapFile error");
     }
     
     t1_size = tuple1.size();
     index_only = indexOnly;  // added by bingjie miao
     
     try {
-      f = new QuadrupleHeapfile(relName);
+      f = new QuadrupleHeapFile(relName);
     }
     catch (Exception e) {
-      throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile not created");
+      throw new IndexException(e, "IndexScan.java: QuadrupleHeapFile not created");
     }
     
     switch(index.indexType) {
@@ -160,14 +160,14 @@ public class IndexScan extends Iterator {
 	    Jtuple.setHdr((short) 1, attrType, s_sizes);
 	  }
 	  catch (Exception e) {
-	    throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
+	    throw new IndexException(e, "IndexScan.java: QuadrupleHeapFile error");
 	  }
 	  
 	  try {
 	    Jtuple.setIntFld(1, ((IntegerKey)nextentry.key).getKey().intValue());
 	  }
 	  catch (Exception e) {
-	    throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
+	    throw new IndexException(e, "IndexScan.java: QuadrupleHeapFile error");
 	  }	  
 	}
 	else if (_types[_fldNum -1].attrType == AttrType.attrString) {
@@ -185,14 +185,14 @@ public class IndexScan extends Iterator {
 	    Jtuple.setHdr((short) 1, attrType, s_sizes);
 	  }
 	  catch (Exception e) {
-	    throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
+	    throw new IndexException(e, "IndexScan.java: QuadrupleHeapFile error");
 	  }
 	  
 	  try {
 	    Jtuple.setStrFld(1, ((StringKey)nextentry.key).getKey());
 	  }
 	  catch (Exception e) {
-	    throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
+	    throw new IndexException(e, "IndexScan.java: QuadrupleHeapFile error");
 	  }	  
 	}
 	else {
@@ -215,7 +215,7 @@ public class IndexScan extends Iterator {
 	tuple1.setHdr((short) _noInFlds, _types, _s_sizes);
       }
       catch (Exception e) {
-	throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
+	throw new IndexException(e, "IndexScan.java: QuadrupleHeapFile error");
       }
     
       boolean eval;
@@ -223,7 +223,7 @@ public class IndexScan extends Iterator {
 	eval = PredEval.Eval(_selects, tuple1, null, _types, null);
       }
       catch (Exception e) {
-	throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
+	throw new IndexException(e, "IndexScan.java: QuadrupleHeapFile error");
       }
       
       if (eval) {
@@ -232,7 +232,7 @@ public class IndexScan extends Iterator {
 	  Projection.Project(tuple1, _types, Jtuple, perm_mat, _noOutFlds);
 	}
 	catch (Exception e) {
-	  throw new IndexException(e, "IndexScan.java: QuadrupleHeapfile error");
+	  throw new IndexException(e, "IndexScan.java: QuadrupleHeapFile error");
 	}
 
 	return Jtuple;
@@ -279,7 +279,7 @@ public class IndexScan extends Iterator {
   private CondExpr[]    _selects;
   private int           _noInFlds;
   private int           _noOutFlds;
-  private QuadrupleHeapfile f;
+  private QuadrupleHeapFile f;
   private Quadruple tuple1;
   private Quadruple Jtuple;
   private int           t1_size;

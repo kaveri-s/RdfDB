@@ -1,6 +1,6 @@
 /* File THFPage.java */
 
-package heap;
+package quadrupleheap;
 
 import java.io.*;
 import java.lang.*;
@@ -19,7 +19,7 @@ interface ConstSlot{
   int EMPTY_SLOT = -1;
 }
 
-/** Class heap file page.
+/** Class quadrupleheap file page.
  * The design assumes that records are kept compacted when
  * deletions are performed. 
  */

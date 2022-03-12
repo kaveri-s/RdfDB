@@ -1,4 +1,4 @@
-package heap;
+package quadrupleheap;
 
 import java.io.*;
 import diskmgr.*;
@@ -39,7 +39,7 @@ interface  Filetype {
   
 } // end of Filetype
 
-public class QuadrupleHeapfile implements Filetype,  GlobalConst {
+public class QuadrupleHeapFile implements Filetype,  GlobalConst {
   
   
   PageId      _firstDirPageId;   // page number of header page
@@ -212,7 +212,7 @@ public class QuadrupleHeapfile implements Filetype,  GlobalConst {
    * @exception HFDiskMgrException exception thrown from diskmgr layer
    * @exception IOException I/O errors
    */
-  public  QuadrupleHeapfile(String name)
+  public QuadrupleHeapFile(String name)
 		  throws HFException,
 		  HFBufMgrException,
 		  HFDiskMgrException,
@@ -868,7 +868,7 @@ public class QuadrupleHeapfile implements Filetype,  GlobalConst {
       SystemDefs.JavabaseBM.pinPage(pageno, page, emptyPage);
     }
     catch (Exception e) {
-      throw new HFBufMgrException(e,"QuadrupleHeapfile.java: pinPage() failed");
+      throw new HFBufMgrException(e,"QuadrupleHeapFile.java: pinPage() failed");
     }
 
   } // end of pinPage
@@ -884,7 +884,7 @@ public class QuadrupleHeapfile implements Filetype,  GlobalConst {
       SystemDefs.JavabaseBM.unpinPage(pageno, dirty);
     }
     catch (Exception e) {
-      throw new HFBufMgrException(e,"QuadrupleHeapfile.java: unpinPage() failed");
+      throw new HFBufMgrException(e,"QuadrupleHeapFile.java: unpinPage() failed");
     }
 
   } // end of unpinPage
@@ -896,7 +896,7 @@ public class QuadrupleHeapfile implements Filetype,  GlobalConst {
       SystemDefs.JavabaseBM.freePage(pageno);
     }
     catch (Exception e) {
-      throw new HFBufMgrException(e,"QuadrupleHeapfile.java: freePage() failed");
+      throw new HFBufMgrException(e,"QuadrupleHeapFile.java: freePage() failed");
     }
 
   } // end of freePage
@@ -910,7 +910,7 @@ public class QuadrupleHeapfile implements Filetype,  GlobalConst {
       tmpId = SystemDefs.JavabaseBM.newPage(page,num);
     }
     catch (Exception e) {
-      throw new HFBufMgrException(e,"QuadrupleHeapfile.java: newPage() failed");
+      throw new HFBufMgrException(e,"QuadrupleHeapFile.java: newPage() failed");
     }
 
     return tmpId;
@@ -926,7 +926,7 @@ public class QuadrupleHeapfile implements Filetype,  GlobalConst {
       tmpId = SystemDefs.JavabaseDB.get_file_entry(filename);
     }
     catch (Exception e) {
-      throw new HFDiskMgrException(e,"QuadrupleHeapfile.java: get_file_entry() failed");
+      throw new HFDiskMgrException(e,"QuadrupleHeapFile.java: get_file_entry() failed");
     }
 
     return tmpId;
@@ -940,7 +940,7 @@ public class QuadrupleHeapfile implements Filetype,  GlobalConst {
       SystemDefs.JavabaseDB.add_file_entry(filename,pageno);
     }
     catch (Exception e) {
-      throw new HFDiskMgrException(e,"QuadrupleHeapfile.java: add_file_entry() failed");
+      throw new HFDiskMgrException(e,"QuadrupleHeapFile.java: add_file_entry() failed");
     }
 
   } // end of add_file_entry
@@ -952,7 +952,7 @@ public class QuadrupleHeapfile implements Filetype,  GlobalConst {
       SystemDefs.JavabaseDB.delete_file_entry(filename);
     }
     catch (Exception e) {
-      throw new HFDiskMgrException(e,"QuadrupleHeapfile.java: delete_file_entry() failed");
+      throw new HFDiskMgrException(e,"QuadrupleHeapFile.java: delete_file_entry() failed");
     }
 
   } // end of delete_file_entry

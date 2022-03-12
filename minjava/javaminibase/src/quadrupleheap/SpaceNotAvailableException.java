@@ -1,4 +1,4 @@
-package heap;
+package quadrupleheap;
 import chainexception.*;
 
 public class SpaceNotAvailableException extends ChainException{

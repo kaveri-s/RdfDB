@@ -4,7 +4,7 @@ import java.lang.*;
 import java.util.*;
 import global.*;
 import iterator.*;
-import heap.*;
+import quadrupleheap.*;
 
 //Set set the structures needed
 //enum Order{UNSORT,SORT};

@@ -9,10 +9,10 @@ package catalog;
 import java.io.*;
 import bufmgr.*;
 import global.*;
-import heap.*;
+import quadrupleheap.*;
 import diskmgr.*;
 
-public class RelCatalog extends QuadrupleHeapfile
+public class RelCatalog extends QuadrupleHeapFile
   implements  GlobalConst, Catalogglobal
 {
   // Helps runStats
@@ -101,7 +101,7 @@ public class RelCatalog extends QuadrupleHeapfile
 	   Catalogioerror,
 	   Cataloghferror
     {
-      QuadrupleHeapfile rel;
+      QuadrupleHeapFile rel;
       RelDesc rd = null;
       AttrDesc ad = null;
       int tupleWidth = 0;
@@ -122,7 +122,7 @@ public class RelCatalog extends QuadrupleHeapfile
 	throw new Catalogioerror(null, "");
       }
       catch (Cataloghferror e1) {
-	System.err.println ("Catalog QuadrupleHeapfile Error!"+e1);
+	System.err.println ("Catalog QuadrupleHeapFile Error!"+e1);
 	throw new Cataloghferror(null, "");
       }
       catch (Catalogmissparam e2) {
@@ -206,12 +206,12 @@ public class RelCatalog extends QuadrupleHeapfile
       // NOW CREATE HEAPFILE
       
       try {
-	rel = new QuadrupleHeapfile(relation);
+	rel = new QuadrupleHeapFile(relation);
 	if (rel == null)
 	  throw new Catalognomem(null, "NO Memory!");
       }
       catch (Exception e2) {
-	System.err.println ("QuadrupleHeapfile"+e2);
+	System.err.println ("QuadrupleHeapFile"+e2);
 	throw new RelCatalogException(e2, "create heapfile failed");
       }
       
@@ -247,7 +247,7 @@ public class RelCatalog extends QuadrupleHeapfile
 	throw new Catalogioerror(null, "");
       }
       catch (Cataloghferror e1) {
-	System.err.println ("Catalog QuadrupleHeapfile Error!"+e1);
+	System.err.println ("Catalog QuadrupleHeapFile Error!"+e1);
 	throw new Cataloghferror(null, "");
       }
       catch (Catalogmissparam e2) {

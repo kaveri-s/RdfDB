@@ -1,6 +1,6 @@
 /* File Quadruple.java */
 
-package heap;
+package quadrupleheap;
 
 import java.io.*;
 import java.lang.*;

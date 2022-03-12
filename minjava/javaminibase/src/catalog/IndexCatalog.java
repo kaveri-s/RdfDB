@@ -9,12 +9,12 @@ package catalog;
 import java.io.*;
 
 import global.*;
-import heap.*;
+import quadrupleheap.*;
 import bufmgr.*;
 import diskmgr.*;
 import btree.*;
 
-public class IndexCatalog extends QuadrupleHeapfile
+public class IndexCatalog extends QuadrupleHeapFile
   implements GlobalConst, Catalogglobal
 {
   
@@ -89,7 +89,7 @@ public class IndexCatalog extends QuadrupleHeapfile
 	throw new Catalogioerror(null, "");
       }
       catch (Cataloghferror e1) {
-	System.err.println ("Catalog QuadrupleHeapfile Error!"+e1);
+	System.err.println ("Catalog QuadrupleHeapFile Error!"+e1);
 	throw new Cataloghferror(null, "");
       }
       catch (Catalogmissparam e2) {
@@ -428,7 +428,7 @@ public class IndexCatalog extends QuadrupleHeapfile
       KeyClass key = null;      
       int   	recSize = 0;
       
-      QuadrupleHeapfile datafile = null;
+      QuadrupleHeapFile datafile = null;
       String	indexName = null;
       Quadruple tuple = null;
       BTreeFile btree = null;
@@ -453,7 +453,7 @@ public class IndexCatalog extends QuadrupleHeapfile
 	throw new Catalogioerror(null, "");
       }
       catch (Cataloghferror e1) {
-	System.err.println ("Catalog QuadrupleHeapfile Error!"+e1);
+	System.err.println ("Catalog QuadrupleHeapFile Error!"+e1);
 	throw new Cataloghferror(null, "");
       }
       catch (Catalogmissparam e2) {
@@ -534,7 +534,7 @@ public class IndexCatalog extends QuadrupleHeapfile
       // PREPARE TO SCAN DATA FILE
       
       try {
-	datafile = new QuadrupleHeapfile(relation);
+	datafile = new QuadrupleHeapFile(relation);
 	if (datafile == null)
 	  throw new Catalognomem(null, "NO Enough Memory!");
       }

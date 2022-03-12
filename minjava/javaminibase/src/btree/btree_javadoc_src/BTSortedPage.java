@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.*;
 import global.*;
 import diskmgr.*;
-import heap.*;
+import quadrupleheap.*;
 
 
 /**

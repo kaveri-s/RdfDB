@@ -1,6 +1,6 @@
 
 package iterator;
-import heap.*;
+import quadrupleheap.*;
 import global.*;
 
 import java.io.*;
@@ -17,9 +17,9 @@ public class IoBuf implements GlobalConst{
    *@param bufs[][] the I/O buffer
    *@param n_pages the numbers of page of this buffer
    *@param tSize the page size
-   *@param temp_fd the reference to a QuadrupleHeapfile
+   *@param temp_fd the reference to a QuadrupleHeapFile
    */ 
-  public void init(byte bufs[][], int n_pages, int tSize, QuadrupleHeapfile temp_fd)
+  public void init(byte bufs[][], int n_pages, int tSize, QuadrupleHeapFile temp_fd)
     {
       _bufs    = bufs;
       _n_pages = n_pages;
@@ -113,7 +113,7 @@ public class IoBuf implements GlobalConst{
 	      buf = null;
 	      return null;
 	    }
-	  buf.quadrupleSet(_bufs[curr_page],t_size);
+	  buf.quadrupleSet(_bufs[curr_page],t_rd_from_pg*t_size);
 	  
 	  // Setup for next read
 	  t_rd_from_pg++;
@@ -202,7 +202,7 @@ public class IoBuf implements GlobalConst{
   private  int  t_size;               // Size of a tuple
   private  long t_written;           // # of tuples written so far
   private  int  _TEST_temp_fd;       // fd of a temporary file
-  private QuadrupleHeapfile _temp_fd;
+  private QuadrupleHeapFile _temp_fd;
   private  boolean  flushed;        // TRUE => buffer has been flushed.
   private  int  mode;
   private  int  t_rd_from_pg;      // # of tuples read from current page

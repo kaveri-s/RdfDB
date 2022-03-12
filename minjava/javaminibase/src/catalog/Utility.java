@@ -9,7 +9,7 @@ package catalog;
 import java.io.*;
 
 import global.*;
-import heap.*;
+import quadrupleheap.*;
 import btree.*;
 
 public class Utility implements Catalogglobal{
@@ -97,7 +97,7 @@ public static void insertRecUT(String relation, int attrCnt, attrNode [] attrLis
  BTreeFile btree = null;
  AttrType  [] typeArray = null;
  short []    sizeArray = null;
- QuadrupleHeapfile heap = null;
+ QuadrupleHeapFile heap = null;
 
  // GET RELATION
 
@@ -197,7 +197,7 @@ ExtendedSystemDefs.MINIBASE_RELCAT.getInfo(relation, relRec);
 
 // GET DATAFILE
  
- heap = new QuadrupleHeapfile(relation);
+ heap = new QuadrupleHeapFile(relation);
 
 
 // INSERT INTO DATAFILE

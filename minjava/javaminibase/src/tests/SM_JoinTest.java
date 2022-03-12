@@ -2,7 +2,7 @@ package tests;
 //originally from : joins.C
 
 import iterator.*;
-import heap.*;
+import quadrupleheap.*;
 import global.*;
 
 import java.io.*;
@@ -176,12 +176,12 @@ class JoinsDriver implements GlobalConst {
     
     // inserting the tuple into file "sailors"
     RID             rid;
-    QuadrupleHeapfile f = null;
+    QuadrupleHeapFile f = null;
     try {
-      f = new QuadrupleHeapfile("sailors.in");
+      f = new QuadrupleHeapFile("sailors.in");
     }
     catch (Exception e) {
-      System.err.println("*** error in QuadrupleHeapfile constructor ***");
+      System.err.println("*** error in QuadrupleHeapFile constructor ***");
       status = FAIL;
       e.printStackTrace();
     }
@@ -204,7 +204,7 @@ class JoinsDriver implements GlobalConst {
 	t.setFloFld(4, (float)((Sailor)sailors.elementAt(i)).age);
       }
       catch (Exception e) {
-	System.err.println("*** QuadrupleHeapfile error in Quadruple.setStrFld() ***");
+	System.err.println("*** QuadrupleHeapFile error in Quadruple.setStrFld() ***");
 	status = FAIL;
 	e.printStackTrace();
       }
@@ -213,7 +213,7 @@ class JoinsDriver implements GlobalConst {
 	rid = f.insertQuadruple(t.returnTupleByteArray());
       }
       catch (Exception e) {
-	System.err.println("*** error in QuadrupleHeapfile.insertRecord() ***");
+	System.err.println("*** error in QuadrupleHeapFile.insertRecord() ***");
 	status = FAIL;
 	e.printStackTrace();
       }      
@@ -250,10 +250,10 @@ class JoinsDriver implements GlobalConst {
     //RID             rid;
     f = null;
     try {
-      f = new QuadrupleHeapfile("boats.in");
+      f = new QuadrupleHeapFile("boats.in");
     }
     catch (Exception e) {
-      System.err.println("*** error in QuadrupleHeapfile constructor ***");
+      System.err.println("*** error in QuadrupleHeapFile constructor ***");
       status = FAIL;
       e.printStackTrace();
     }
@@ -284,7 +284,7 @@ class JoinsDriver implements GlobalConst {
 	rid = f.insertQuadruple(t.returnTupleByteArray());
       }
       catch (Exception e) {
-	System.err.println("*** error in QuadrupleHeapfile.insertRecord() ***");
+	System.err.println("*** error in QuadrupleHeapFile.insertRecord() ***");
 	status = FAIL;
 	e.printStackTrace();
       }      
@@ -319,10 +319,10 @@ class JoinsDriver implements GlobalConst {
     //RID             rid;
     f = null;
     try {
-      f = new QuadrupleHeapfile("reserves.in");
+      f = new QuadrupleHeapFile("reserves.in");
     }
     catch (Exception e) {
-      System.err.println("*** error in QuadrupleHeapfile constructor ***");
+      System.err.println("*** error in QuadrupleHeapFile constructor ***");
       status = FAIL;
       e.printStackTrace();
     }
@@ -354,7 +354,7 @@ class JoinsDriver implements GlobalConst {
 	rid = f.insertQuadruple(t.returnTupleByteArray());
       }
       catch (Exception e) {
-	System.err.println("*** error in QuadrupleHeapfile.insertRecord() ***");
+	System.err.println("*** error in QuadrupleHeapFile.insertRecord() ***");
 	status = FAIL;
 	e.printStackTrace();
       }      

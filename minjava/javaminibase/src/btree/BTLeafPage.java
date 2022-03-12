@@ -10,7 +10,6 @@ import java.io.*;
 import java.lang.*;
 import global.*;
 import diskmgr.*;
-import heap.*;
 
 /**
  * A BTLeafPage is a leaf page on a B+ tree.  It holds abstract 
