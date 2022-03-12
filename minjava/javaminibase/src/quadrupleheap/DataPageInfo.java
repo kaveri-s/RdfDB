@@ -1,4 +1,4 @@
-package heap;
+package quadrupleheap;
 
 
 /** File DataPageInfo.java */
@@ -16,20 +16,20 @@ class DataPageInfo implements GlobalConst{
 
 
   /** THFPage returns int for avail space, so we use int here */
-  int    availspace; 
-  
+  int    availspace;
+
   /** for efficient implementation of getRecCnt() */
-  int    recct;    
+  int    recct;
   
   /** obvious: id of this particular data page (a THFPage) */
-  PageId pageId = new PageId();   
-    
+  PageId pageId = new PageId();
+
   /** auxiliary fields of DataPageInfo */
 
   public static final int size = 12;// size of DataPageInfo object in bytes
 
   private byte [] data;  // a data buffer
-  
+
   private int offset;
 
 
@@ -51,8 +51,8 @@ class DataPageInfo implements GlobalConst{
     pageId.pid = INVALID_PAGE;
     offset = 0;
   }
-  
-  /** Constructor 
+
+  /** Constructor
    * @param array  a byte array
    */
   public DataPageInfo(byte[] array)
@@ -61,43 +61,39 @@ class DataPageInfo implements GlobalConst{
     offset = 0;
   }
 
-      
+
    public byte [] returnByteArray()
    {
      return data;
    }
-      
-      
-  /** constructor: translate a tuple to a DataPageInfo object
-   *  it will make a copy of the data in the tuple
-   * @param atuple: the input tuple
-   */
-  public DataPageInfo(Quadruple _atuple)
-       throws InvalidTupleSizeException, IOException
-  {   
-     // need check _atuple size == this.size ?otherwise, throw new exception
-    if (_atuple.getLength()!=12){
-      throw new InvalidTupleSizeException(null, "HEAPFILE: TUPLE SIZE ERROR");
-    }
 
-    else{
-      data = _atuple.returnTupleByteArray();
-      offset = _atuple.getOffset();
+      
+  /** constructor: translate a quadruple to a DataPageInfo object
+   *  it will make a copy of the data in the quadruple
+   * @param _aquadruple: the input quadruple
+   */
+  public DataPageInfo(Quadruple _aquadruple)
+       throws IOException
+  {
+     // need check _aquadruple size == this.size ?otherwise, throw new exception
+//    if (_aquadruple.getLength()!=12){
+//      throw new InvalidTupleSizeException(null, "HEAPFILE: quadruple SIZE ERROR");
+//    }
+
+      data = _aquadruple.getQuadrupleByteArray();
       
       availspace = Convert.getIntValue(offset, data);
       recct = Convert.getIntValue(offset+4, data);
       pageId = new PageId();
       pageId.pid = Convert.getIntValue(offset+8, data);
-      
-    }
   }
   
   
-  /** convert this class objcet to a tuple(like cast a DataPageInfo to Quadruple)
+  /** convert this class objcet to a quadruple(like cast a DataPageInfo to Quadruple)
    *  
    *
    */
-  public Quadruple convertToTuple()
+  public Quadruple convertToQuadruple()
        throws IOException
   {
 
@@ -108,10 +104,10 @@ class DataPageInfo implements GlobalConst{
 
 
     // 2) creat a Quadruple object using this array
-    Quadruple atuple = new Quadruple(data, offset, size);
+    Quadruple aquadruple = new Quadruple(data, offset);
  
-    // 3) return tuple object
-    return atuple;
+    // 3) return quadruple object
+    return aquadruple;
 
   }
   
@@ -120,7 +116,7 @@ class DataPageInfo implements GlobalConst{
    *  to the data[](may be in buffer pool)
    *  
    */
-  public void flushToTuple() throws IOException
+  public void flushToQuadruple() throws IOException
   {
      // write availspace, recct, pageId into "data[]"
     Convert.setIntValue(availspace, offset, data);

@@ -2,7 +2,7 @@ package tests;
 
 import java.io.*;
 import java.lang.*;
-import heap.*;
+import quadrupleheap.*;
 import global.*;
 import chainexception.*;
 
@@ -92,21 +92,21 @@ public boolean runTests () {
     System.out.println ("\n  Test 1: Insert and scan fixed-size records\n");
     boolean status = OK;
     RID rid = new RID();
-    QuadrupleHeapfile f = null;
+    QuadrupleHeapFile f = null;
 
-    System.out.println ("  - Create a heap file\n");
+    System.out.println ("  - Create a quadrupleheap file\n");
     try {
-      f = new QuadrupleHeapfile("file_1");
+      f = new QuadrupleHeapFile("file_1");
     }
     catch (Exception e) {
       status = FAIL;
-      System.err.println ("*** Could not create heap file\n");
+      System.err.println ("*** Could not create quadrupleheap file\n");
       e.printStackTrace();
     }
 
     if ( status == OK && SystemDefs.JavabaseBM.getNumUnpinnedBuffers()
 	 != SystemDefs.JavabaseBM.getNumBuffers() ) {
-      System.err.println ("*** The heap file has left pages pinned\n");
+      System.err.println ("*** The quadrupleheap file has left pages pinned\n");
       status = FAIL;
     }
 
@@ -171,7 +171,7 @@ public boolean runTests () {
 
       if ( status == OK &&  SystemDefs.JavabaseBM.getNumUnpinnedBuffers() 
 	   == SystemDefs.JavabaseBM.getNumBuffers() ) {
-	System.err.println ("*** The heap-file scan has not pinned the first page\n");
+	System.err.println ("*** The quadrupleheap-file scan has not pinned the first page\n");
 	status = FAIL;
       }
     }	
@@ -214,7 +214,7 @@ public boolean runTests () {
 	  else if ( SystemDefs.JavabaseBM.getNumUnpinnedBuffers()
 		    == SystemDefs.JavabaseBM.getNumBuffers() ) {
 	    System.err.println ("On record " + i + ":\n");
-	    System.err.println ("*** The heap-file scan has not left its " +
+	    System.err.println ("*** The quadrupleheap-file scan has not left its " +
 				"page pinned\n");
 	    status = FAIL;
 	    break;
@@ -243,7 +243,7 @@ public boolean runTests () {
       if (status == OK) {
 	if ( SystemDefs.JavabaseBM.getNumUnpinnedBuffers() 
 	     != SystemDefs.JavabaseBM.getNumBuffers() ) {
-	  System.err.println ("*** The heap-file scan has not unpinned " + 
+	  System.err.println ("*** The quadrupleheap-file scan has not unpinned " +
 			      "its page after finishing\n");
 	  status = FAIL;
 	}
@@ -269,11 +269,11 @@ public boolean runTests () {
     boolean status = OK;
     TScan scan = null;
     RID rid = new RID();
-    QuadrupleHeapfile f = null;
+    QuadrupleHeapFile f = null;
 
-    System.out.println ("  - Open the same heap file as test 1\n");
+    System.out.println ("  - Open the same quadrupleheap file as test 1\n");
     try {
-      f = new QuadrupleHeapfile("file_1");
+      f = new QuadrupleHeapFile("file_1");
     }
     catch (Exception e) {
       status = FAIL;
@@ -411,15 +411,15 @@ public boolean runTests () {
     boolean status = OK;
     TScan scan = null;
     RID rid = new RID();
-    QuadrupleHeapfile f = null;
+    QuadrupleHeapFile f = null;
 
-    System.out.println ("  - Open the same heap file as tests 1 and 2\n");
+    System.out.println ("  - Open the same quadrupleheap file as tests 1 and 2\n");
     try {
-      f = new QuadrupleHeapfile("file_1");
+      f = new QuadrupleHeapFile("file_1");
     }
     catch (Exception e) {
       status = FAIL;
-      System.err.println ("*** Could not create heap file\n");
+      System.err.println ("*** Could not create quadrupleheap file\n");
       e.printStackTrace();
     }
 
@@ -604,14 +604,14 @@ public boolean runTests () {
     boolean status = OK;
     TScan scan = null;
     RID rid = new RID();
-    QuadrupleHeapfile f = null;
+    QuadrupleHeapFile f = null;
     
     try {
-      f = new QuadrupleHeapfile("file_1");
+      f = new QuadrupleHeapFile("file_1");
     }
     catch (Exception e) {
       status = FAIL;
-      System.err.println ("*** Could not create heap file\n");
+      System.err.println ("*** Could not create quadrupleheap file\n");
       e.printStackTrace();
     }
 
@@ -670,7 +670,7 @@ public boolean runTests () {
 	  status = f.updateQuadruple( rid, newTuple );
 	}
 	catch (ChainException e) { 
-	  status = checkException (e, "heap.InvalidUpdateException");
+	  status = checkException (e, "quadrupleheap.InvalidUpdateException");
 	  if (status == FAIL) {
 	    System.err.println( "**** Shortening a record" );
 	    System.out.println ("  --> Failed as expected \n");
@@ -711,7 +711,7 @@ public boolean runTests () {
 	  status = f.updateQuadruple( rid, newTuple );
 	}
 	catch (ChainException e) {
-	  status = checkException(e, "heap.InvalidUpdateException");
+	  status = checkException(e, "quadrupleheap.InvalidUpdateException");
 	  if (status == FAIL) {
 	    System.err.println( "**** Lengthening a record" );
 	    System.out.println ("  --> Failed as expected \n");
@@ -740,7 +740,7 @@ public boolean runTests () {
 	rid = f.insertQuadruple( record );
       }
       catch (ChainException e) {
-	status = checkException (e, "heap.SpaceNotAvailableException");
+	status = checkException (e, "quadrupleheap.SpaceNotAvailableException");
 	if (status == FAIL) {
 	  System.err.println( "**** Inserting a too-long record" );
 	  System.out.println ("  --> Failed as expected \n");

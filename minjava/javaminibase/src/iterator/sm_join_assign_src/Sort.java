@@ -2,7 +2,7 @@ package iterator;
 
 import java.io.*; 
 import global.*;
-import heap.*;
+import quadrupleheap.*;
 
 /**
  * The Sort class sorts a file. All necessary information are passed as 
@@ -30,7 +30,7 @@ public class Sort extends Iterator implements GlobalConst
   private int         tuple_size;
   
   private pnodeSplayPQ Q;
-  private QuadrupleHeapfile[]   temp_files;
+  private QuadrupleHeapFile[]   temp_files;
   private int          n_tempfiles;
   private Quadruple output_tuple;
   private int[]        n_tuples;
@@ -44,7 +44,7 @@ public class Sort extends Iterator implements GlobalConst
   /**
    * Set up for merging the runs.
    * Open an input buffer for each run, and insert the first element (min)
-   * from each run into a heap. <code>delete_min() </code> will then get 
+   * from each run into a quadrupleheap. <code>delete_min() </code> will then get
    * the minimum of all runs.
    * @param tuple_size size (in bytes) of each tuple
    * @param n_R_runs number of runs
@@ -119,8 +119,8 @@ public class Sort extends Iterator implements GlobalConst
   
   /**
    * Generate sorted runs.
-   * Using heap sort.
-   * @param  max_elems    maximum number of elements in heap
+   * Using quadrupleheap sort.
+   * @param  max_elems    maximum number of elements in quadrupleheap
    * @param  sortFldType  attribute type of the sort field
    * @param  sortFldLen   length of the sort field
    * @return number of runs generated
@@ -180,7 +180,7 @@ public class Sort extends Iterator implements GlobalConst
       } 
     }
     
-    // maintain a fixed maximum number of elements in the heap
+    // maintain a fixed maximum number of elements in the quadrupleheap
     while ((p_elems_curr_Q + p_elems_other_Q) < max_elems) {
       try {
 	tuple = _am.get_next();  // according to Iterator.java
@@ -238,7 +238,7 @@ public class Sort extends Iterator implements GlobalConst
 
 	// check to see whether need to expand the array
 	if (run_num == n_tempfiles) {
-	  QuadrupleHeapfile[] temp1 = new QuadrupleHeapfile[2*n_tempfiles];
+	  QuadrupleHeapFile[] temp1 = new QuadrupleHeapFile[2*n_tempfiles];
 	  for (int i=0; i<n_tempfiles; i++) {
 	    temp1[i] = temp_files[i];
 	  }
@@ -254,10 +254,10 @@ public class Sort extends Iterator implements GlobalConst
 	}
 	
 	try {
-	    temp_files[run_num] = new QuadrupleHeapfile(null);
+	    temp_files[run_num] = new QuadrupleHeapFile(null);
 	}
 	catch (Exception e) {
-	  throw new SortException(e, "Sort.java: create QuadrupleHeapfile failed");
+	  throw new SortException(e, "Sort.java: create QuadrupleHeapFile failed");
 	}
 	
 	// need io_bufs.java
@@ -283,7 +283,7 @@ public class Sort extends Iterator implements GlobalConst
 	  } 
 	}
     
-	// switch the current heap and the other heap
+	// switch the current quadrupleheap and the other quadrupleheap
 	pnodeSplayPQ tempQ = pcurr_Q;
 	pcurr_Q = pother_Q;
 	pother_Q = tempQ;
@@ -333,7 +333,7 @@ public class Sort extends Iterator implements GlobalConst
 	  
 	  // check to see whether need to expand the array
 	  if (run_num == n_tempfiles) {
-	    QuadrupleHeapfile[] temp1 = new QuadrupleHeapfile[2*n_tempfiles];
+	    QuadrupleHeapFile[] temp1 = new QuadrupleHeapFile[2*n_tempfiles];
 	    for (int i=0; i<n_tempfiles; i++) {
 	      temp1[i] = temp_files[i];
 	    }
@@ -349,10 +349,10 @@ public class Sort extends Iterator implements GlobalConst
 	  }
 
 	  try {
-	    temp_files[run_num] = new QuadrupleHeapfile(null);
+	    temp_files[run_num] = new QuadrupleHeapFile(null);
 	  }
 	  catch (Exception e) {
-	    throw new SortException(e, "Sort.java: create QuadrupleHeapfile failed");
+	    throw new SortException(e, "Sort.java: create QuadrupleHeapFile failed");
 	  }
 	  
 	  // need io_bufs.java
@@ -378,7 +378,7 @@ public class Sort extends Iterator implements GlobalConst
 	    } 
 	  }
 	
-	  // switch the current heap and the other heap
+	  // switch the current quadrupleheap and the other quadrupleheap
 	  pnodeSplayPQ tempQ = pcurr_Q;
 	  pcurr_Q = pother_Q;
 	  pother_Q = tempQ;
@@ -618,16 +618,16 @@ public class Sort extends Iterator implements GlobalConst
     
     // as a heuristic, we set the number of runs to an arbitrary value
     // of ARBIT_RUNS
-    temp_files = new QuadrupleHeapfile[ARBIT_RUNS];
+    temp_files = new QuadrupleHeapFile[ARBIT_RUNS];
     n_tempfiles = ARBIT_RUNS;
     n_tuples = new int[ARBIT_RUNS]; 
     n_runs = ARBIT_RUNS;
 
     try {
-      temp_files[0] = new QuadrupleHeapfile(null);
+      temp_files[0] = new QuadrupleHeapFile(null);
     }
     catch (Exception e) {
-      throw new SortException(e, "Sort.java: QuadrupleHeapfile error");
+      throw new SortException(e, "Sort.java: QuadrupleHeapFile error");
     }
     
     o_buf = new OBuf();
@@ -730,7 +730,7 @@ public class Sort extends Iterator implements GlobalConst
 	    temp_files[i].deleteFile();
 	  }
 	  catch (Exception e) {
-	    throw new SortException(e, "Sort.java: QuadrupleHeapfile error");
+	    throw new SortException(e, "Sort.java: QuadrupleHeapFile error");
 	  }
 	  temp_files[i] = null; 
 	}

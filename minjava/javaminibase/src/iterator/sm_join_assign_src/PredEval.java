@@ -1,6 +1,6 @@
 package iterator;
 
-import heap.*;
+import quadrupleheap.*;
 import global.*;
 import java.io.*;
 

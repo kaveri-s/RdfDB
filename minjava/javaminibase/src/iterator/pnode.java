@@ -1,6 +1,6 @@
 package iterator; 
 
-import heap.*;
+import quadrupleheap.*;
 
 /**
  * A structure describing a tuple.

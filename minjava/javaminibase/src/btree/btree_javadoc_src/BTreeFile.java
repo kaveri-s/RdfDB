@@ -10,7 +10,7 @@ package btree;
 import java.io.*;
 import diskmgr.*;
 import global.*;
-import heap.*;
+import quadrupleheap.*;
 
 /** btfile.java
  * This is the main definition of class BTreeFile, which derives from 

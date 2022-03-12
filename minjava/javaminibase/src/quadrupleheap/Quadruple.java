@@ -1,6 +1,6 @@
 /* File Quadruple.java */
 
-package heap;
+package quadrupleheap;
 
 import java.io.*;
 import java.lang.*;
@@ -15,21 +15,6 @@ public class Quadruple implements GlobalConst {
     private PID predicate;
     private EID object;
     private double value;
-
-    /**
-     * Maximum size of any quadruple
-     */
-    public static final int max_size = MINIBASE_PAGESIZE;
-
-    /**
-     * a byte array to hold data
-     */
-    //private byte [] data;
-
-    /**
-     * length of this quadruple
-     */
-    //private int quadruple_length;
 
     /**
      * Class constructor
@@ -128,8 +113,8 @@ public class Quadruple implements GlobalConst {
         System.out.print(value);
     }
 
-    public void size(){
-        //return fixed len
+    public int size(){
+        return MINIBASE_QUADRUPLESIZE;
     }
 
     /** Copy a quadruple to the current quadruple position

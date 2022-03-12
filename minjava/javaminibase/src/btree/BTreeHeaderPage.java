@@ -11,7 +11,7 @@ package btree;
 import java.io.*;
 import diskmgr.*;
 import global.*;
-import heap.*;
+import quadrupleheap.*;
 
   /**
    * Intefrace of a B+ tree index header page.  

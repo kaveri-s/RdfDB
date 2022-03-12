@@ -7,7 +7,6 @@
 package btree;
 import java.io.*;
 import global.*;
-import heap.*;
 
 /**
  * BTFileScan implements a search/iterate interface to B+ tree 

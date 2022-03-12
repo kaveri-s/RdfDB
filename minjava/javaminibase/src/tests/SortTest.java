@@ -2,7 +2,7 @@ package tests;
 
 import java.io.*; 
 import global.*;
-import heap.*;
+import quadrupleheap.*;
 import iterator.*;
 
 import java.util.Random;
@@ -146,9 +146,9 @@ class SORTDriver extends TestDriver
     
     // Create unsorted data file "test1.in"
     RID             rid;
-    QuadrupleHeapfile f = null;
+    QuadrupleHeapFile f = null;
     try {
-      f = new QuadrupleHeapfile("test1.in");
+      f = new QuadrupleHeapFile("test1.in");
     }
     catch (Exception e) {
       status = FAIL;
@@ -305,9 +305,9 @@ class SORTDriver extends TestDriver
     
     // Create unsorted data file "test2.in"
     RID             rid;
-    QuadrupleHeapfile f = null;
+    QuadrupleHeapFile f = null;
     try {
-      f = new QuadrupleHeapfile("test2.in");
+      f = new QuadrupleHeapFile("test2.in");
     }
     catch (Exception e) {
       status = FAIL;
@@ -470,9 +470,9 @@ class SORTDriver extends TestDriver
 
     // Create unsorted data file "test3.in"
     RID             rid;
-    QuadrupleHeapfile f = null;
+    QuadrupleHeapFile f = null;
     try {
-      f = new QuadrupleHeapfile("test3.in");
+      f = new QuadrupleHeapFile("test3.in");
     }
     catch (Exception e) {
       status = FAIL;
@@ -755,11 +755,11 @@ class SORTDriver extends TestDriver
     
     // Create unsorted data file 
     RID             rid1, rid2;
-    QuadrupleHeapfile f1 = null;
-    QuadrupleHeapfile f2 = null;
+    QuadrupleHeapFile f1 = null;
+    QuadrupleHeapFile f2 = null;
     try {
-      f1 = new QuadrupleHeapfile("test4-1.in");
-      f2 = new QuadrupleHeapfile("test4-2.in");
+      f1 = new QuadrupleHeapFile("test4-1.in");
+      f2 = new QuadrupleHeapFile("test4-2.in");
     }
     catch (Exception e) {
       status = FAIL;

@@ -1,6 +1,6 @@
 package iterator;
 
-import heap.*;          
+import quadrupleheap.*;
 import global.*;
 
 import java.io.*;
@@ -23,12 +23,12 @@ public class SpoofIbuf implements GlobalConst  {
    *@param bufs[][] the I/O buffer
    *@param n_pages the numbers of page of this buffer
    *@param tSize the tuple size
-   *@param fd the reference to an QuadrupleHeapfile
+   *@param fd the reference to an QuadrupleHeapFile
    *@param Ntuples the tuple numbers of the page
    *@exception IOException some I/O fault
    *@exception Exception other exceptions
    */
-  public  void init(QuadrupleHeapfile fd, byte bufs[][], int n_pages,
+  public  void init(QuadrupleHeapFile fd, byte bufs[][], int n_pages,
                     int tSize, int Ntuples)
     throws IOException,
 	   Exception
@@ -86,7 +86,7 @@ public class SpoofIbuf implements GlobalConst  {
 	  done = true; buf = null;return null;
 	}
  
-      buf.quadrupleSet(_bufs[curr_page],t_size);
+      buf.quadrupleSet(_bufs[curr_page],t_rd_from_pg*t_size);
       tot_t_proc++;
       
       // Setup for next read
@@ -112,7 +112,7 @@ public class SpoofIbuf implements GlobalConst  {
    *
    *@return the numbers of tuples in the buffer
    *@exception IOException some I/O fault
-   *@exception InvalidTupleSizeException QuadrupleHeapfile error
+   *@exception InvalidTupleSizeException QuadrupleHeapFile error
    */
   private int readin()throws IOException,InvalidTupleSizeException
     {
@@ -147,7 +147,7 @@ public class SpoofIbuf implements GlobalConst  {
   
   private  int   TEST_fd;
   
-  private QuadrupleHeapfile _fd;
+  private QuadrupleHeapFile _fd;
   private TScan hf_scan;
   private  int    _n_pages;
   private  int    t_size;

@@ -1,4 +1,4 @@
-package heap;
+package quadrupleheap;
 
 /** JAVA */
 /**
@@ -28,7 +28,7 @@ public class TScan implements GlobalConst{
      */
 
     /** The heapfile we are using. */
-    private QuadrupleHeapfile _qhf;
+    private QuadrupleHeapFile _qhf;
 
     /** PageId of current directory page (which is itself an THFPage) */
     private PageId dirpageId = new PageId();
@@ -63,7 +63,7 @@ public class TScan implements GlobalConst{
      *
      * @param qhf A HeapFile object
      */
-  public TScan(QuadrupleHeapfile qhf)
+  public TScan(QuadrupleHeapFile qhf)
     throws InvalidTupleSizeException,
 	   IOException
   {
@@ -186,7 +186,7 @@ public class TScan implements GlobalConst{
      *
      * @param qhf A HeapFile object
      */
-    private void init(QuadrupleHeapfile qhf)
+    private void init(QuadrupleHeapFile qhf)
       throws InvalidTupleSizeException,
 	     IOException
   {

@@ -1,7 +1,7 @@
 package iterator;
    
 
-import heap.*;
+import quadrupleheap.*;
 import global.*;
 import bufmgr.*;
 import index.*;
@@ -33,7 +33,7 @@ public class NestedLoopsJoins  extends Iterator
   private Quadruple Jtuple;           // Joined tuple
   private   FldSpec   perm_mat[];
   private   int        nOutFlds;
-  private QuadrupleHeapfile hf;
+  private QuadrupleHeapFile hf;
   private TScan inner;
   
   
@@ -108,7 +108,7 @@ public class NestedLoopsJoins  extends Iterator
       
       
       try {
-	  hf = new QuadrupleHeapfile(relationName);
+	  hf = new QuadrupleHeapFile(relationName);
 	  
       }
       catch(Exception e) {
