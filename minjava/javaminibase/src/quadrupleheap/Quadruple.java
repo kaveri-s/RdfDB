@@ -6,9 +6,6 @@ import java.io.*;
 import java.lang.*;
 import global.*;
 
-
-//add value fld
-//global length?
 public class Quadruple implements GlobalConst {
 
     private EID subject;
