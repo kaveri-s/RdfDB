@@ -1,5 +1,6 @@
 package labelheap;
 
-public class LScan {
+import heap;
+public class LScan extends Scan{
 
 }

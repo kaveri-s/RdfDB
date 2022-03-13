@@ -19,6 +19,159 @@ public class LabelHeapFile implements Filetype,  GlobalConst {
     private     String 	 _fileName;
     private static int tempfilecount = 0;
 
+    /* get a new datapage from the buffer manager and initialize dpinfo
+   @param dpinfop the information in the new THFPage
+*/
+    private THFPage _newDatapage(quadrupleheap.DataPageInfo dpinfop)
+            throws HFException,
+            HFBufMgrException,
+            HFDiskMgrException,
+            IOException
+    {
+        Page apage = new Page();
+        PageId pageId = new PageId();
+        pageId = newPage(apage, 1);
+
+        if(pageId == null)
+            throw new HFException(null, "can't new pae");
+
+        // initialize internal values of the new page:
+
+        THFPage hfpage = new THFPage();
+        hfpage.init(pageId, apage);
+
+        dpinfop.pageId.pid = pageId.pid;
+        dpinfop.recct = 0;
+        dpinfop.availspace = hfpage.available_space();
+
+        return hfpage;
+
+    } // end of _newDatapage
+
+    /* Internal HeapFile function (used in getRecord and updateRecord):
+       returns pinned directory page and pinned data page of the specified
+       user record(rid) and true if record is found.
+       If the user record cannot be found, return false.
+    */
+    private boolean  _findDataPage( QID qid,
+                                    PageId dirPageId, THFPage dirpage,
+                                    PageId dataPageId, THFPage datapage,
+                                    QID rpDataPageQid)
+            throws InvalidSlotNumberException,
+            InvalidTupleSizeException,
+            HFException,
+            HFBufMgrException,
+            HFDiskMgrException,
+            Exception
+    {
+        PageId currentDirPageId = new PageId(_firstDirPageId.pid);
+
+        THFPage currentDirPage = new THFPage();
+        THFPage currentDataPage = new THFPage();
+        QID currentDataPageQid = new QID();
+        PageId nextDirPageId = new PageId();
+        // datapageId is stored in dpinfo.pageId
+
+
+        pinPage(currentDirPageId, currentDirPage, false/*read disk*/);
+
+        Quadruple aquad = new Quadruple();
+
+        while (currentDirPageId.pid != INVALID_PAGE)
+        {// Start While01
+            // ASSERTIONS:
+            //  currentDirPage, currentDirPageId valid and pinned and Locked.
+
+            for( currentDataPageQid = currentDirPage.firstRecord();
+                 currentDataPageQid != null;
+                 currentDataPageQid = currentDirPage.nextRecord(currentDataPageQid))
+            {
+                try{
+                    aquad = currentDirPage.getRecord(currentDataPageQid);
+                }
+                catch (InvalidSlotNumberException e)// check error! return false(done)
+                {
+                    return false;
+                }
+
+                quadrupleheap.DataPageInfo dpinfo = new quadrupleheap.DataPageInfo(aquad);
+                try{
+                    pinPage(dpinfo.pageId, currentDataPage, false/*Rddisk*/);
+
+
+                    //check error;need unpin currentDirPage
+                }catch (Exception e)
+                {
+                    unpinPage(currentDirPageId, false/*undirty*/);
+                    dirpage = null;
+                    datapage = null;
+                    throw e;
+                }
+
+
+
+                // ASSERTIONS:
+                // - currentDataPage, currentDataPageRid, dpinfo valid
+                // - currentDataPage pinned
+
+                if(dpinfo.pageId.pid==qid.pageNo.pid)
+                {
+                    aquad = currentDataPage.returnRecord(qid);
+                    // found user's record on the current datapage which itself
+                    // is indexed on the current dirpage.  Return both of these.
+
+                    dirpage.setpage(currentDirPage.getpage());
+                    dirPageId.pid = currentDirPageId.pid;
+
+                    datapage.setpage(currentDataPage.getpage());
+                    dataPageId.pid = dpinfo.pageId.pid;
+
+                    rpDataPageQid.pageNo.pid = currentDataPageQid.pageNo.pid;
+                    rpDataPageQid.slotNo = currentDataPageQid.slotNo;
+                    return true;
+                }
+                else
+                {
+                    // user record not found on this datapage; unpin it
+                    // and try the next one
+                    unpinPage(dpinfo.pageId, false /*undirty*/);
+
+                }
+
+            }
+
+            // if we would have found the correct datapage on the current
+            // directory page we would have already returned.
+            // therefore:
+            // read in next directory page:
+
+            nextDirPageId = currentDirPage.getNextPage();
+            try{
+                unpinPage(currentDirPageId, false /*undirty*/);
+            }
+            catch(Exception e) {
+                throw new HFException (e, "heapfile,_find,unpinpage failed");
+            }
+
+            currentDirPageId.pid = nextDirPageId.pid;
+            if(currentDirPageId.pid != INVALID_PAGE)
+            {
+                pinPage(currentDirPageId, currentDirPage, false/*Rdisk*/);
+                if(currentDirPage == null)
+                    throw new HFException(null, "pinPage return null page");
+            }
+
+
+        } // end of While01
+        // checked all dir pages and all data pages; user record not found:(
+
+        dirPageId.pid = dataPageId.pid = INVALID_PAGE;
+
+        return false;
+
+
+    } // end of _findDatapage
+
     public LabelHeapFile (String name) throws HFException,
             HFBufMgrException,
             HFDiskMgrException,

@@ -1,4 +1,4 @@
 package labelheap;
 
-public class LHFPage {
+public class LHFPage extends HFPage{
 }
