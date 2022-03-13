@@ -1,20 +1,29 @@
 package labelheap;
 
+import java.io.*;
+import java.lang.*;
+import global.*;
+
 public class Label {
 
+    private LID ID;
+    private String name;
     Label() {
-
+        ID= new LID();
+        name="";
     }
 
     String getLabel() {
-        return null;
+        return name;
     }
 
     Label setLabel(String label) {
-        return new Label();
+        this.name=label;
+        return this;
     }
 
     void print() {
-
+        System.out.println(ID);
+        System.out.println(name);
     }
 }

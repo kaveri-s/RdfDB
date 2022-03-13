@@ -459,7 +459,7 @@ public class THFPage extends Page
     }
   
   /**
-   * @return RID of first record on page, null if page contains no records.  
+   * @return QID of first record on page, null if page contains no records.
    * @exception  IOException I/O errors
    * in C++ Status firstRecord(RID& firstRid)
    * 
@@ -495,7 +495,7 @@ public class THFPage extends Page
   }
   
   /**
-   * @return RID of next record on the page, null if no more 
+   * @return QID of next record on the page, null if no more
    * records exist on the page
    * @param 	curQid	current record ID
    * @exception  IOException I/O errors
@@ -531,9 +531,9 @@ public class THFPage extends Page
   }
   
   /**
-   * copies out record with RID rid into record pointer.
+   * copies out record with QID qid into record pointer.
    * <br>
-   * Status getRecord(RID rid, char *recPtr, int& recLen)
+   * Status getRecord(QID qid, char *recPtr, int& recLen)
    * @param	qid 	the record ID
    * @return 	a tuple contains the record
    * @exception   InvalidSlotNumberException Invalid slot number

@@ -757,12 +757,12 @@ public class QuadrupleHeapFile implements Filetype,  GlobalConst {
 	  PageId currentDirPageId = new PageId();
 	  THFPage dataPage = new THFPage();
 	  PageId currentDataPageId = new PageId();
-	  QID currentDataPageRid = new QID();
+	  QID currentDataPageQid = new QID();
 
 	  status = _findDataPage(qid,
 			  currentDirPageId, dirPage,
 			  currentDataPageId, dataPage,
-			  currentDataPageRid);
+			  currentDataPageQid);
 
 	  if(status != true) return null; // record not found
 
