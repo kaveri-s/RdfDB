@@ -36,6 +36,8 @@ db:
 	make -C heap
 	make -C index
 	make -C iterator
+	make -C labelheap
+	make -C quadrupleheap
 	
 doc:
 	$(JAVADOC) $(DOCFILES)
