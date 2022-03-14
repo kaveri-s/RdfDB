@@ -34,13 +34,7 @@ import global.*;
 */
 
 
-interface  Filetype {
-  int TEMP = 0;
-  int ORDINARY = 1;
-  
-} // end of Filetype
-
-public class Heapfile implements Filetype,  GlobalConst {
+public class Heapfile implements GlobalConst {
   
   
   public PageId      _firstDirPageId;   // page number of header page

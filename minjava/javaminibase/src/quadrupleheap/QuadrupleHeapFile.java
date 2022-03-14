@@ -33,8 +33,13 @@ import heap.*;
  * April 9, 1998
  */
 
+public class QuadrupleHeapFile implements GlobalConst {
 
-public class QuadrupleHeapFile extends Heapfile implements GlobalConst {
+	public PageId      _firstDirPageId;   // page number of header page
+	protected int         _ftype;
+	protected     boolean     _file_deleted;
+	protected     String 	 _fileName;
+	protected static int tempfilecount = 0;
 
 	private THFPage _newDatapage(DataPageInfo dpinfop)
 			throws HFException,
@@ -62,7 +67,7 @@ public class QuadrupleHeapFile extends Heapfile implements GlobalConst {
 
 	}
 
-	private boolean  _findDataPage( RID rid,
+	private boolean  _findDataPage( QID qid,
 									PageId dirPageId, HFPage dirpage,
 									PageId dataPageId, THFPage datapage,
 									RID rpDataPageRid)
@@ -114,7 +119,7 @@ public class QuadrupleHeapFile extends Heapfile implements GlobalConst {
 					throw e;
 				}
 
-				if(dpinfo.pageId.pid==rid.pageNo.pid)
+				if(dpinfo.pageId.pid==qid.pageNo.pid)
 				{
 					dirpage.setpage(currentDirPage.getpage());
 					dirPageId.pid = currentDirPageId.pid;
@@ -175,7 +180,75 @@ public class QuadrupleHeapFile extends Heapfile implements GlobalConst {
 			HFBufMgrException,
 			HFDiskMgrException,
 			IOException {
-		super("QuadrupleHeapFile");
+		// Give us a prayer of destructing cleanly if construction fails.
+		_file_deleted = true;
+		_fileName = null;
+
+		if(name == null)
+		{
+			// If the name is NULL, allocate a temporary name
+			// and no logging is required.
+			_fileName = "tempQuadrupleHeapFile";
+			String useId = new String("user.name");
+			String userAccName;
+			userAccName = System.getProperty(useId);
+			_fileName = _fileName + userAccName;
+
+			String filenum = Integer.toString(tempfilecount);
+			_fileName = _fileName + filenum;
+			_ftype = TEMP;
+			tempfilecount ++;
+
+		}
+		else
+		{
+			_fileName = name;
+			_ftype = ORDINARY;
+		}
+
+		// The constructor gets run in two different cases.
+		// In the first case, the file is new and the header page
+		// must be initialized.  This case is detected via a failure
+		// in the db->get_file_entry() call.  In the second case, the
+		// file already exists and all that must be done is to fetch
+		// the header page into the buffer pool
+
+		// try to open the file
+
+		Page apage = new Page();
+		_firstDirPageId = null;
+		if (_ftype == ORDINARY)
+			_firstDirPageId = get_file_entry(_fileName);
+
+		if(_firstDirPageId==null)
+		{
+			// file doesn't exist. First create it.
+			_firstDirPageId = newPage(apage, 1);
+			// check error
+			if(_firstDirPageId == null)
+				throw new HFException(null, "can't new page");
+
+			add_file_entry(_fileName, _firstDirPageId);
+			// check error(new exception: Could not add file entry
+
+			HFPage firstDirPage = new HFPage();
+			firstDirPage.init(_firstDirPageId, apage);
+			PageId pageId = new PageId(INVALID_PAGE);
+
+			firstDirPage.setNextPage(pageId);
+			firstDirPage.setPrevPage(pageId);
+			unpinPage(_firstDirPageId, true /*dirty*/ );
+
+
+		}
+		_file_deleted = false;
+		// ASSERTIONS:
+		// - ALL private data members of class Heapfile are valid:
+		//
+		//  - _firstDirPageId valid
+		//  - _fileName valid
+		//  - no datapage pinned yet
+
 	} // end of constructor
 
 	/** Return number of records in file.
@@ -192,14 +265,45 @@ public class QuadrupleHeapFile extends Heapfile implements GlobalConst {
 			HFDiskMgrException,
 			HFBufMgrException,
 			IOException {
-		return getRecCnt();
+		int answer = 0;
+		PageId currentDirPageId = new PageId(_firstDirPageId.pid);
+
+		PageId nextDirPageId = new PageId(0);
+
+		HFPage currentDirPage = new HFPage();
+		Page pageinbuffer = new Page();
+
+		while(currentDirPageId.pid != INVALID_PAGE)
+		{
+			pinPage(currentDirPageId, currentDirPage, false);
+
+			RID rid = new RID();
+			Tuple atuple;
+			for (rid = currentDirPage.firstRecord();
+				 rid != null;	// rid==NULL means no more record
+				 rid = currentDirPage.nextRecord(rid))
+			{
+				atuple = currentDirPage.getRecord(rid);
+				DataPageInfo dpinfo = new DataPageInfo(atuple);
+
+				answer += dpinfo.recct;
+			}
+
+			// ASSERTIONS: no more record
+			// - we have read all datapage records on
+			//   the current directory page.
+
+			nextDirPageId = currentDirPage.getNextPage();
+			unpinPage(currentDirPageId, false /*undirty*/);
+			currentDirPageId.pid = nextDirPageId.pid;
+		}
+
+		return answer;
 	} // end of getRecCnt
 
 	/** Insert record into file, return its Rid.
 	 *
 	 * @param quadruplePtr pointer of the record
-	 * @param recLen the length of the record
-	 *
 	 * @exception InvalidSlotNumberException invalid slot number
 	 * @exception InvalidTupleSizeException invalid tuple size
 	 * @exception SpaceNotAvailableException no space left
@@ -398,15 +502,15 @@ public class QuadrupleHeapFile extends Heapfile implements GlobalConst {
 
 			// delete corresponding DataPageInfo-entry on the directory page:
 			// currentDataPageRid points to datapage (from for loop above)
-			currentDirPage.deleteRecord(currentDataPageQid);
+			currentDirPage.deleteRecord(currentDataPageRid);
 
 			// now check whether the directory page is empty:
-			currentDataPageQid = currentDirPage.firstRecord();
+			currentDataPageRid = currentDirPage.firstRecord();
 
 			// st == OK: we still found a datapageinfo record on this directory page
 			PageId pageId;
 			pageId = currentDirPage.getPrevPage();
-			if((currentDataPageQid == null)&&(pageId.pid != INVALID_PAGE))
+			if((currentDataPageRid == null)&&(pageId.pid != INVALID_PAGE))
 			{
 				// the directory-page is not the first directory page and it is empty:
 				// delete it
@@ -449,8 +553,8 @@ public class QuadrupleHeapFile extends Heapfile implements GlobalConst {
 	}
 
 	/** Updates the specified record in the heapfile.
-	 * @param rid: the record which needs update
-	 * @param newtuple: the new content of the record
+	 * @param qid: the record which needs update
+	 * @param newquadruple: the new content of the record
 	 *
 	 * @exception InvalidSlotNumberException invalid slot number
 	 * @exception InvalidUpdateException invalid update on record
@@ -471,20 +575,19 @@ public class QuadrupleHeapFile extends Heapfile implements GlobalConst {
 			Exception
 	{
 		boolean status;
-		THFPage dirPage = new THFPage();
+		HFPage dirPage = new HFPage();
 		PageId currentDirPageId = new PageId();
 		THFPage dataPage = new THFPage();
 		PageId currentDataPageId = new PageId();
-		QID currentDataPageQid = new QID();
+		RID currentDataPageRid = new RID();
 
 		status = _findDataPage(qid,
 				currentDirPageId, dirPage,
 				currentDataPageId, dataPage,
-				currentDataPageQid);
+				currentDataPageRid);
 
 		if(status != true) return status;	// record not found
-		Quadruple aquad = new Quadruple();
-		aquad = dataPage.returnRecord(qid);
+		Quadruple aquad = dataPage.returnRecord(qid);
 
 		// new copy of this record fits in old space;
 		aquad.quadrupleCopy(newquadruple);
@@ -499,7 +602,7 @@ public class QuadrupleHeapFile extends Heapfile implements GlobalConst {
 
 
 	/** Read record from file, returning pointer and length.
-	 * @param rid Record ID
+	 * @param qid Record ID
 	 *
 	 * @exception InvalidSlotNumberException invalid slot number
 	 * @exception InvalidTupleSizeException invalid tuple size
@@ -520,21 +623,20 @@ public class QuadrupleHeapFile extends Heapfile implements GlobalConst {
 			Exception
 	{
 		boolean status;
-		THFPage dirPage = new THFPage();
+		HFPage dirPage = new HFPage();
 		PageId currentDirPageId = new PageId();
 		THFPage dataPage = new THFPage();
 		PageId currentDataPageId = new PageId();
-		QID currentDataPageQid = new QID();
+		RID currentDataPageRid = new RID();
 
 		status = _findDataPage(qid,
 				currentDirPageId, dirPage,
 				currentDataPageId, dataPage,
-				currentDataPageQid);
+				currentDataPageRid);
 
 		if(status != true) return null; // record not found
 
-		Quadruple aquad = new Quadruple();
-		aquad = dataPage.getRecord(qid);
+		Quadruple aquad = dataPage.getRecord(qid);
 
 		/*
 		 * getRecord has copied the contents of qid into recPtr and fixed up

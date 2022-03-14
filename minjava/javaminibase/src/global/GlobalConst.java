@@ -36,4 +36,10 @@ public interface GlobalConst {
 
   public static final int INVALID_SLOT =  -1;
   public static final int EMPTY_SLOT = -1;
+
+  /**
+   * FileTypes in HeapFiles
+   */
+  public static final int TEMP = 0;
+  public static final int ORDINARY = 1;
 }
