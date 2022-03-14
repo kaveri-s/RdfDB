@@ -5,8 +5,9 @@ package quadrupleheap;
 import java.io.*;
 import java.lang.*;
 import global.*;
+import heap.Tuple;
 
-public class Quadruple implements GlobalConst {
+public class Quadruple extends Tuple implements GlobalConst {
 
     private EID subject;
     private PID predicate;
@@ -19,6 +20,7 @@ public class Quadruple implements GlobalConst {
      */
 
     public Quadruple(){
+        super(MINIBASE_QUADRUPLESIZE);
         subject= new EID();
         predicate=new PID();
         object=new EID();
@@ -29,6 +31,7 @@ public class Quadruple implements GlobalConst {
      */
 
     public Quadruple (byte[] aquadruple, int offset) throws IOException {
+        super(aquadruple, offset, MINIBASE_QUADRUPLESIZE);
         this.subject.slotNo=Convert.getIntValue(offset,aquadruple);
         this.subject.pageNo=new PageId(Convert.getIntValue(offset+4,aquadruple));
         this.predicate.slotNo=Convert.getIntValue(offset+8,aquadruple);
@@ -42,6 +45,7 @@ public class Quadruple implements GlobalConst {
      * @param fromQuadruple   a byte array which contains the quadruple
      */
     public Quadruple(Quadruple fromQuadruple){
+        super(fromQuadruple);
         subject=fromQuadruple.getSubjecqid();
         predicate=fromQuadruple.getPredicateID();
         object=fromQuadruple.getObjecqid();
@@ -86,17 +90,8 @@ public class Quadruple implements GlobalConst {
 
     public byte[] getQuadrupleByteArray()throws IOException{
 
-        byte[] quadruplecopy= new byte[28];
-        Convert.setIntValue (subject.slotNo, 0, quadruplecopy);
-        Convert.setIntValue(subject.pageNo.pid,4,quadruplecopy);
-        Convert.setIntValue (predicate.slotNo, 8, quadruplecopy);
-        Convert.setIntValue(predicate.pageNo.pid,12,quadruplecopy);
-        Convert.setIntValue (object.slotNo, 16, quadruplecopy);
-        Convert.setIntValue(object.pageNo.pid,20,quadruplecopy);
-        //add value fld
-        return quadruplecopy;
+        return getTupleByteArray();
     }
-
     public void print(){
         System.out.print(subject.pageNo);
         System.out.print(subject.slotNo);
@@ -110,16 +105,17 @@ public class Quadruple implements GlobalConst {
         System.out.print(value);
     }
 
-    public int size(){
+    @Override
+    public short size(){
         return MINIBASE_QUADRUPLESIZE;
     }
 
     /** Copy a quadruple to the current quadruple position
-     *  you must make sure the quadruple lengths must be equal
      * @param fromQuadruple the quadruple being copied
      */
     public void quadrupleCopy(Quadruple fromQuadruple)
     {
+        tupleCopy(fromQuadruple);
         this.subject=fromQuadruple.subject;
         this.predicate=fromQuadruple.predicate;
         this.object=fromQuadruple.object;
