@@ -3,12 +3,14 @@ package labelheap;
 import java.io.*;
 import java.lang.*;
 import global.*;
+import heap.Tuple;
 
-public class Label {
+public class Label extends Tuple {
 
     private LID ID;
     private String name;
     Label() {
+        super(5);
         ID= new LID();
         name="";
     }
