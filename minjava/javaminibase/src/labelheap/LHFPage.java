@@ -418,17 +418,17 @@ public class LHFPage extends Page {
     /**
      * @return LID of next record on the page, null if no more
      * records exist on the page
-     * @param 	curQid	current record ID
+     * @param 	curLid	current record ID
      * @exception  IOException I/O errors
      * in C++ Status nextRecord (RID curRid, RID& nextRid)
      */
-    public LID nextRecord (LID curQid)
+    public LID nextRecord (LID curLid)
             throws IOException
     {
         LID lid = new LID();
         slotCnt = Convert.getShortValue (SLOT_CNT, data);
 
-        int i=curQid.slotNo;
+        int i=curLid.slotNo;
         short length;
 
         // find the next non-empty slot
@@ -532,6 +532,41 @@ public class LHFPage extends Page {
             throw new InvalidSlotNumberException (null, "HEAPFILE: INVALID_SLOTNO");
         }
 
+    }
+
+    /**
+     * returns the amount of available space on the page.
+     * @return  the amount of available space on the page
+     * @exception  IOException I/O errors
+     */
+    public int available_space()
+            throws IOException
+    {
+        freeSpace = Convert.getShortValue (FREE_SPACE, data);
+        return (freeSpace - SIZE_OF_SLOT);
+    }
+
+    /**
+     * Determining if the page is empty
+     * @return true if the HFPage is has no records in it, false otherwise
+     * @exception  IOException I/O errors
+     */
+    public boolean empty()
+            throws IOException
+    {
+        int i;
+        short length;
+        // look for an empty slot
+        slotCnt = Convert.getShortValue (SLOT_CNT, data);
+
+        for (i= 0; i < slotCnt; i++)
+        {
+            length = getSlotLength(i);
+            if (length != EMPTY_SLOT)
+                return false;
+        }
+
+        return true;
     }
 
     protected void compact_slot_dir()
