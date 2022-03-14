@@ -4,6 +4,7 @@ import java.io.*;
 import diskmgr.*;
 import bufmgr.*;
 import global.*;
+import heap.InvalidSlotNumberException;
 import quadrupleheap.*;
 
 interface  Filetype {
@@ -458,13 +459,13 @@ public class LabelHeapFile implements Filetype,  GlobalConst {
         return  alabel.name;  //(true?)OK, but the caller need check if atuple==NULL
     }
 
-    public LID insertLabel(String Label)throws InvalidSlotNumberException,
+    public LID insertLabel(String Label) throws InvalidSlotNumberException,
             InvalidTupleSizeException,
             SpaceNotAvailableException,
             HFException,
             HFBufMgrException,
             HFDiskMgrException,
-            IOException {
+            IOException, InvalidSlotNumberException {
         int dpinfoLen = 0;
         int labLen = Label.length;
         boolean found;

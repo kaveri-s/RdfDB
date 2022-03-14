@@ -43,11 +43,11 @@ interface  Filetype {
 public class Heapfile implements Filetype,  GlobalConst {
   
   
-  PageId      _firstDirPageId;   // page number of header page
-  int         _ftype;
-  private     boolean     _file_deleted;
-  private     String 	 _fileName;
-  private static int tempfilecount = 0;
+  public PageId      _firstDirPageId;   // page number of header page
+  protected int         _ftype;
+  protected     boolean     _file_deleted;
+  protected     String 	 _fileName;
+  protected static int tempfilecount = 0;
   
   
   
