@@ -7,9 +7,11 @@
 
 
 package btree;
+import java.io.*;
 import java.lang.*;
 import global.*;
 import diskmgr.*;
+import heap.*;
 
 /**
  * A BTIndexPage is an index page on a B+ tree.  It holds abstract 

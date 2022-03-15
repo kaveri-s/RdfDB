@@ -2,7 +2,11 @@ package iterator;
 
 import java.io.*; 
 import global.*;
-import quadrupleheap.*;
+import bufmgr.*;
+import diskmgr.*;
+import heap.*;
+import index.*;
+import chainexception.*;
 
 /**
  * The Sort class sorts a file. All necessary information are passed as 
@@ -30,12 +34,12 @@ public class Sort extends Iterator implements GlobalConst
   private int         tuple_size;
   
   private pnodeSplayPQ Q;
-  private QuadrupleHeapFile[]   temp_files;
+  private Heapfile[]   temp_files; 
   private int          n_tempfiles;
-  private Quadruple output_tuple;
+  private Tuple        output_tuple;  
   private int[]        n_tuples;
   private int          n_runs;
-  private Quadruple op_buf;
+  private Tuple        op_buf;
   private OBuf         o_buf;
   private SpoofIbuf[]  i_buf;
   private PageId[]     bufs_pids;
@@ -44,7 +48,7 @@ public class Sort extends Iterator implements GlobalConst
   /**
    * Set up for merging the runs.
    * Open an input buffer for each run, and insert the first element (min)
-   * from each run into a quadrupleheap. <code>delete_min() </code> will then get
+   * from each run into a heap. <code>delete_min() </code> will then get 
    * the minimum of all runs.
    * @param tuple_size size (in bytes) of each tuple
    * @param n_R_runs number of runs
@@ -85,13 +89,13 @@ public class Sort extends Iterator implements GlobalConst
       
       // may need change depending on whether Get() returns the original
       // or make a copy of the tuple, need io_bufs.java ???
-      Quadruple temp_tuple = new Quadruple(tuple_size);
+      Tuple temp_tuple = new Tuple(tuple_size);
 
       try {
 	temp_tuple.setHdr(n_cols, _in, str_lens);
       }
       catch (Exception e) {
-	throw new SortException(e, "Sort.java: Quadruple.setHdr() failed");
+	throw new SortException(e, "Sort.java: Tuple.setHdr() failed");
       }
       
       temp_tuple =i_buf[i].Get(temp_tuple);  // need io_bufs.java
@@ -119,8 +123,8 @@ public class Sort extends Iterator implements GlobalConst
   
   /**
    * Generate sorted runs.
-   * Using quadrupleheap sort.
-   * @param  max_elems    maximum number of elements in quadrupleheap
+   * Using heap sort.
+   * @param  max_elems    maximum number of elements in heap
    * @param  sortFldType  attribute type of the sort field
    * @param  sortFldLen   length of the sort field
    * @return number of runs generated
@@ -136,13 +140,13 @@ public class Sort extends Iterator implements GlobalConst
 	   JoinsException,
 	   Exception
   {
-    Quadruple tuple;
+    Tuple tuple; 
     pnode cur_node;
     pnodeSplayPQ Q1 = new pnodeSplayPQ(_sort_fld, sortFldType, order);
     pnodeSplayPQ Q2 = new pnodeSplayPQ(_sort_fld, sortFldType, order);
     pnodeSplayPQ pcurr_Q = Q1;
     pnodeSplayPQ pother_Q = Q2; 
-    Quadruple lastElem = new Quadruple(tuple_size);  // need tuple.java
+    Tuple lastElem = new Tuple(tuple_size);  // need tuple.java
     try {
       lastElem.setHdr(n_cols, _in, str_lens);
     }
@@ -180,7 +184,7 @@ public class Sort extends Iterator implements GlobalConst
       } 
     }
     
-    // maintain a fixed maximum number of elements in the quadrupleheap
+    // maintain a fixed maximum number of elements in the heap
     while ((p_elems_curr_Q + p_elems_other_Q) < max_elems) {
       try {
 	tuple = _am.get_next();  // according to Iterator.java
@@ -193,7 +197,7 @@ public class Sort extends Iterator implements GlobalConst
 	break;
       }
       cur_node = new pnode();
-      cur_node.tuple = new Quadruple(tuple); // tuple copy needed --  Bingjie 4/29/98
+      cur_node.tuple = new Tuple(tuple); // tuple copy needed --  Bingjie 4/29/98 
 
       pcurr_Q.enq(cur_node);
       p_elems_curr_Q ++;
@@ -238,7 +242,7 @@ public class Sort extends Iterator implements GlobalConst
 
 	// check to see whether need to expand the array
 	if (run_num == n_tempfiles) {
-	  QuadrupleHeapFile[] temp1 = new QuadrupleHeapFile[2*n_tempfiles];
+	  Heapfile[] temp1 = new Heapfile[2*n_tempfiles];
 	  for (int i=0; i<n_tempfiles; i++) {
 	    temp1[i] = temp_files[i];
 	  }
@@ -254,10 +258,10 @@ public class Sort extends Iterator implements GlobalConst
 	}
 	
 	try {
-	    temp_files[run_num] = new QuadrupleHeapFile(null);
+	    temp_files[run_num] = new Heapfile(null);
 	}
 	catch (Exception e) {
-	  throw new SortException(e, "Sort.java: create QuadrupleHeapFile failed");
+	  throw new SortException(e, "Sort.java: create Heapfile failed");
 	}
 	
 	// need io_bufs.java
@@ -283,7 +287,7 @@ public class Sort extends Iterator implements GlobalConst
 	  } 
 	}
     
-	// switch the current quadrupleheap and the other quadrupleheap
+	// switch the current heap and the other heap
 	pnodeSplayPQ tempQ = pcurr_Q;
 	pcurr_Q = pother_Q;
 	pother_Q = tempQ;
@@ -305,7 +309,7 @@ public class Sort extends Iterator implements GlobalConst
 	    break;
 	  }
 	  cur_node = new pnode();
-	  cur_node.tuple = new Quadruple(tuple); // tuple copy needed --  Bingjie 4/29/98
+	  cur_node.tuple = new Tuple(tuple); // tuple copy needed --  Bingjie 4/29/98 
 
 	  try {
 	    pcurr_Q.enq(cur_node);
@@ -333,7 +337,7 @@ public class Sort extends Iterator implements GlobalConst
 	  
 	  // check to see whether need to expand the array
 	  if (run_num == n_tempfiles) {
-	    QuadrupleHeapFile[] temp1 = new QuadrupleHeapFile[2*n_tempfiles];
+	    Heapfile[] temp1 = new Heapfile[2*n_tempfiles];
 	    for (int i=0; i<n_tempfiles; i++) {
 	      temp1[i] = temp_files[i];
 	    }
@@ -349,10 +353,10 @@ public class Sort extends Iterator implements GlobalConst
 	  }
 
 	  try {
-	    temp_files[run_num] = new QuadrupleHeapFile(null);
+	    temp_files[run_num] = new Heapfile(null); 
 	  }
 	  catch (Exception e) {
-	    throw new SortException(e, "Sort.java: create QuadrupleHeapFile failed");
+	    throw new SortException(e, "Sort.java: create Heapfile failed");
 	  }
 	  
 	  // need io_bufs.java
@@ -378,7 +382,7 @@ public class Sort extends Iterator implements GlobalConst
 	    } 
 	  }
 	
-	  // switch the current quadrupleheap and the other quadrupleheap
+	  // switch the current heap and the other heap
 	  pnodeSplayPQ tempQ = pcurr_Q;
 	  pcurr_Q = pother_Q;
 	  pother_Q = tempQ;
@@ -402,13 +406,13 @@ public class Sort extends Iterator implements GlobalConst
    * @exception IOException from lower layers
    * @exception SortException something went wrong in the lower layer. 
    */
-  private Quadruple delete_min()
+  private Tuple delete_min() 
     throws IOException, 
 	   SortException,
 	   Exception
   {
     pnode cur_node;                // needs pq_defs.java  
-    Quadruple new_tuple, old_tuple;
+    Tuple new_tuple, old_tuple;  
 
     cur_node = Q.deq();
     old_tuple = cur_node.tuple;
@@ -420,7 +424,7 @@ public class Sort extends Iterator implements GlobalConst
     // tuple of the same run into the queue
     if (i_buf[cur_node.run_num].empty() != true) { 
       // run not exhausted 
-      new_tuple = new Quadruple(tuple_size); // need tuple.java??
+      new_tuple = new Tuple(tuple_size); // need tuple.java??
 
       try {
 	new_tuple.setHdr(n_cols, _in, str_lens);
@@ -450,7 +454,7 @@ public class Sort extends Iterator implements GlobalConst
       
     }
 
-    // changed to return Quadruple instead of return char array ????
+    // changed to return Tuple instead of return char array ????
     return old_tuple; 
   }
   
@@ -461,12 +465,12 @@ public class Sort extends Iterator implements GlobalConst
    * @exception IOException from lower layers
    * @exception UnknowAttrType attrSymbol or attrNull encountered
    */
-  private void MIN_VAL(Quadruple lastElem, AttrType sortFldType)
+  private void MIN_VAL(Tuple lastElem, AttrType sortFldType) 
     throws IOException, 
 	   FieldNumberOutOfBoundException,
 	   UnknowAttrType {
 
-    //    short[] s_size = new short[Quadruple.max_size]; // need Quadruple.java
+    //    short[] s_size = new short[Tuple.max_size]; // need Tuple.java
     //    AttrType[] junk = new AttrType[1];
     //    junk[0] = new AttrType(sortFldType.attrType);
     char[] c = new char[1];
@@ -503,12 +507,12 @@ public class Sort extends Iterator implements GlobalConst
    * @exception IOException from lower layers
    * @exception UnknowAttrType attrSymbol or attrNull encountered
    */
-  private void MAX_VAL(Quadruple lastElem, AttrType sortFldType)
+  private void MAX_VAL(Tuple lastElem, AttrType sortFldType) 
     throws IOException, 
 	   FieldNumberOutOfBoundException,
 	   UnknowAttrType {
 
-    //    short[] s_size = new short[Quadruple.max_size]; // need Quadruple.java
+    //    short[] s_size = new short[Tuple.max_size]; // need Tuple.java
     //    AttrType[] junk = new AttrType[1];
     //    junk[0] = new AttrType(sortFldType.attrType);
     char[] c = new char[1];
@@ -583,7 +587,7 @@ public class Sort extends Iterator implements GlobalConst
       }
     }
     
-    Quadruple t = new Quadruple(); // need Quadruple.java
+    Tuple t = new Tuple(); // need Tuple.java
     try {
       t.setHdr(len_in, _in, str_sizes);
     }
@@ -618,16 +622,16 @@ public class Sort extends Iterator implements GlobalConst
     
     // as a heuristic, we set the number of runs to an arbitrary value
     // of ARBIT_RUNS
-    temp_files = new QuadrupleHeapFile[ARBIT_RUNS];
+    temp_files = new Heapfile[ARBIT_RUNS];
     n_tempfiles = ARBIT_RUNS;
     n_tuples = new int[ARBIT_RUNS]; 
     n_runs = ARBIT_RUNS;
 
     try {
-      temp_files[0] = new QuadrupleHeapFile(null);
+      temp_files[0] = new Heapfile(null);
     }
     catch (Exception e) {
-      throw new SortException(e, "Sort.java: QuadrupleHeapFile error");
+      throw new SortException(e, "Sort.java: Heapfile error");
     }
     
     o_buf = new OBuf();
@@ -640,7 +644,7 @@ public class Sort extends Iterator implements GlobalConst
     
     Q = new pnodeSplayPQ(sort_fld, in[sort_fld - 1], order);
 
-    op_buf = new Quadruple(tuple_size);   // need Quadruple.java
+    op_buf = new Tuple(tuple_size);   // need Tuple.java
     try {
       op_buf.setHdr(n_cols, _in, str_lens);
     }
@@ -661,7 +665,7 @@ public class Sort extends Iterator implements GlobalConst
    * @exception LowMemException memory low exception
    * @exception Exception other exceptions
    */
-  public Quadruple get_next()
+  public Tuple get_next() 
     throws IOException, 
 	   SortException, 
 	   UnknowAttrType,
@@ -689,7 +693,7 @@ public class Sort extends Iterator implements GlobalConst
     
     output_tuple = delete_min();
     if (output_tuple != null){
-      op_buf.quadrupleCopy(output_tuple);
+      op_buf.tupleCopy(output_tuple);
       return op_buf; 
     }
     else 
@@ -730,7 +734,7 @@ public class Sort extends Iterator implements GlobalConst
 	    temp_files[i].deleteFile();
 	  }
 	  catch (Exception e) {
-	    throw new SortException(e, "Sort.java: QuadrupleHeapFile error");
+	    throw new SortException(e, "Sort.java: Heapfile error");
 	  }
 	  temp_files[i] = null; 
 	}

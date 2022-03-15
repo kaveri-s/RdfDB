@@ -1,6 +1,6 @@
 package iterator;
 
-import quadrupleheap.*;
+import heap.*;
 import global.*;
 import java.io.*;
 
@@ -22,8 +22,8 @@ public class PredEval
    *@exception FieldNumberOutOfBoundException field number exceeds limit
    *@exception PredEvalException exception from this method
    */
-  public static boolean Eval(CondExpr p[], Quadruple t1, Quadruple t2, AttrType in1[],
-                             AttrType in2[])
+  public static boolean Eval(CondExpr p[], Tuple t1, Tuple t2, AttrType in1[], 
+			     AttrType in2[])
     throws IOException,
 	   UnknowAttrType,
 	   InvalidTupleSizeException,
@@ -33,9 +33,9 @@ public class PredEval
     {
       CondExpr temp_ptr;
       int       i = 0;
-      Quadruple tuple1 = null, tuple2 = null;
+      Tuple    tuple1 = null, tuple2 = null;
       int      fld1, fld2;
-      Quadruple value =   new Quadruple();
+      Tuple    value =   new Tuple();
       short[]     str_size = new short[1];
       AttrType[]  val_type = new AttrType[1];
       

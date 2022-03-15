@@ -1,9 +1,10 @@
 package iterator;
    
 
-import quadrupleheap.*;
+import heap.*;
 import global.*;
 import bufmgr.*;
+import diskmgr.*;
 import index.*;
 import java.lang.*;
 import java.io.*;
@@ -29,12 +30,12 @@ public class NestedLoopsJoins  extends Iterator
   private   int        n_buf_pgs;        // # of buffer pages available.
   private   boolean        done,         // Is the join complete
     get_from_outer;                 // if TRUE, a tuple is got from outer
-  private Quadruple outer_tuple, inner_tuple;
-  private Quadruple Jtuple;           // Joined tuple
+  private   Tuple     outer_tuple, inner_tuple;
+  private   Tuple     Jtuple;           // Joined tuple
   private   FldSpec   perm_mat[];
   private   int        nOutFlds;
-  private QuadrupleHeapFile hf;
-  private TScan inner;
+  private   Heapfile  hf;
+  private   Scan      inner;
   
   
   /**constructor
@@ -81,8 +82,8 @@ public class NestedLoopsJoins  extends Iterator
       
       outer = am1;
       t2_str_sizescopy =  t2_str_sizes;
-      inner_tuple = new Quadruple();
-      Jtuple = new Quadruple();
+      inner_tuple = new Tuple();
+      Jtuple = new Tuple();
       OutputFilter = outFilter;
       RightFilter  = rightFilter;
       
@@ -108,7 +109,7 @@ public class NestedLoopsJoins  extends Iterator
       
       
       try {
-	  hf = new QuadrupleHeapFile(relationName);
+	  hf = new Heapfile(relationName);
 	  
       }
       catch(Exception e) {
@@ -133,7 +134,7 @@ public class NestedLoopsJoins  extends Iterator
    *@exception Exception other exceptions
 
    */
-  public Quadruple get_next()
+  public Tuple get_next()
     throws IOException,
 	   JoinsException ,
 	   IndexException,

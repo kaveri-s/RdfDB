@@ -1,9 +1,10 @@
 package iterator;
    
 
-import quadrupleheap.*;
+import heap.*;
 import global.*;
 import bufmgr.*;
+import diskmgr.*;
 
 
 import java.lang.*;
@@ -18,10 +19,10 @@ public class FileScan extends  Iterator
   private AttrType[] _in1;
   private short in1_len;
   private short[] s_sizes; 
-  private QuadrupleHeapFile f;
-  private TScan scan;
-  private Quadruple tuple1;
-  private Quadruple Jtuple;
+  private Heapfile f;
+  private Scan scan;
+  private Tuple     tuple1;
+  private Tuple    Jtuple;
   private int        t1_size;
   private int nOutFlds;
   private CondExpr[]  OutputFilter;
@@ -60,7 +61,7 @@ public class FileScan extends  Iterator
       in1_len = len_in1;
       s_sizes = s1_sizes;
       
-      Jtuple =  new Quadruple();
+      Jtuple =  new Tuple();
       AttrType[] Jtypes = new AttrType[n_out_flds];
       short[]    ts_size;
       ts_size = TupleUtils.setup_op_tuple(Jtuple, Jtypes, in1, len_in1, s1_sizes, proj_list, n_out_flds);
@@ -68,7 +69,7 @@ public class FileScan extends  Iterator
       OutputFilter = outFilter;
       perm_mat = proj_list;
       nOutFlds = n_out_flds; 
-      tuple1 =  new Quadruple();
+      tuple1 =  new Tuple();
 
       try {
 	tuple1.setHdr(in1_len, _in1, s1_sizes);
@@ -78,7 +79,7 @@ public class FileScan extends  Iterator
       t1_size = tuple1.size();
       
       try {
-	f = new QuadrupleHeapFile(file_name);
+	f = new Heapfile(file_name);
 	
       }
       catch(Exception e) {
@@ -113,7 +114,7 @@ public class FileScan extends  Iterator
    *@exception FieldNumberOutOfBoundException array out of bounds
    *@exception WrongPermat exception for wrong FldSpec argument
    */
-  public Quadruple get_next()
+  public Tuple get_next()
     throws JoinsException,
 	   IOException,
 	   InvalidTupleSizeException,

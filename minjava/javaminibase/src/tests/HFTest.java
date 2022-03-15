@@ -1,8 +1,11 @@
 package tests;
 
 import java.io.*;
+import java.util.*;
 import java.lang.*;
-import quadrupleheap.*;
+import heap.*;
+import bufmgr.*;
+import diskmgr.*;
 import global.*;
 import chainexception.*;
 
@@ -92,21 +95,21 @@ public boolean runTests () {
     System.out.println ("\n  Test 1: Insert and scan fixed-size records\n");
     boolean status = OK;
     RID rid = new RID();
-    QuadrupleHeapFile f = null;
+    Heapfile f = null;
 
-    System.out.println ("  - Create a quadrupleheap file\n");
+    System.out.println ("  - Create a heap file\n");
     try {
-      f = new QuadrupleHeapFile("file_1");
+      f = new Heapfile("file_1");
     }
     catch (Exception e) {
       status = FAIL;
-      System.err.println ("*** Could not create quadrupleheap file\n");
+      System.err.println ("*** Could not create heap file\n");
       e.printStackTrace();
     }
 
     if ( status == OK && SystemDefs.JavabaseBM.getNumUnpinnedBuffers()
 	 != SystemDefs.JavabaseBM.getNumBuffers() ) {
-      System.err.println ("*** The quadrupleheap file has left pages pinned\n");
+      System.err.println ("*** The heap file has left pages pinned\n");
       status = FAIL;
     }
 
@@ -121,7 +124,7 @@ public boolean runTests () {
 	rec.name = "record" + i;
 
 	try {
-	  rid = f.insertQuadruple(rec.toByteArray());
+	  rid = f.insertRecord(rec.toByteArray());
 	}
 	catch (Exception e) {
 	  status = FAIL;
@@ -138,9 +141,9 @@ public boolean runTests () {
       }
       
       try {
-	if ( f.getQuadrupleCnt() != choice ) {
+	if ( f.getRecCnt() != choice ) {
 	  status = FAIL;
-	  System.err.println ("*** File reports " + f.getQuadrupleCnt() +
+	  System.err.println ("*** File reports " + f.getRecCnt() + 
 			      " records, not " + choice + "\n");
 	}
       }
@@ -155,10 +158,10 @@ public boolean runTests () {
     // insertions.  However, we're inserting fixed-length records here, and
     // in this case the scan must return the insertion order.
     
-    TScan scan = null;
+    Scan scan = null;
     
     if ( status == OK ) {	
-      System.out.println ("  - TScan the records just inserted\n");
+      System.out.println ("  - Scan the records just inserted\n");
       
       try {
 	scan = f.openScan();
@@ -171,7 +174,7 @@ public boolean runTests () {
 
       if ( status == OK &&  SystemDefs.JavabaseBM.getNumUnpinnedBuffers() 
 	   == SystemDefs.JavabaseBM.getNumBuffers() ) {
-	System.err.println ("*** The quadrupleheap-file scan has not pinned the first page\n");
+	System.err.println ("*** The heap-file scan has not pinned the first page\n");
 	status = FAIL;
       }
     }	
@@ -179,7 +182,7 @@ public boolean runTests () {
     if ( status == OK ) {
       int len, i = 0;
       DummyRecord rec = null;
-      Quadruple tuple = new Quadruple();
+      Tuple tuple = new Tuple();
       
       boolean done = false;
       while (!done) { 
@@ -214,7 +217,7 @@ public boolean runTests () {
 	  else if ( SystemDefs.JavabaseBM.getNumUnpinnedBuffers()
 		    == SystemDefs.JavabaseBM.getNumBuffers() ) {
 	    System.err.println ("On record " + i + ":\n");
-	    System.err.println ("*** The quadrupleheap-file scan has not left its " +
+	    System.err.println ("*** The heap-file scan has not left its " +
 				"page pinned\n");
 	    status = FAIL;
 	    break;
@@ -243,7 +246,7 @@ public boolean runTests () {
       if (status == OK) {
 	if ( SystemDefs.JavabaseBM.getNumUnpinnedBuffers() 
 	     != SystemDefs.JavabaseBM.getNumBuffers() ) {
-	  System.err.println ("*** The quadrupleheap-file scan has not unpinned " +
+	  System.err.println ("*** The heap-file scan has not unpinned " + 
 			      "its page after finishing\n");
 	  status = FAIL;
 	}
@@ -267,13 +270,13 @@ public boolean runTests () {
 
     System.out.println ("\n  Test 2: Delete fixed-size records\n");
     boolean status = OK;
-    TScan scan = null;
+    Scan scan = null;
     RID rid = new RID();
-    QuadrupleHeapFile f = null;
+    Heapfile f = null;
 
-    System.out.println ("  - Open the same quadrupleheap file as test 1\n");
+    System.out.println ("  - Open the same heap file as test 1\n");
     try {
-      f = new QuadrupleHeapFile("file_1");
+      f = new Heapfile("file_1");
     }
     catch (Exception e) {
       status = FAIL;
@@ -295,7 +298,7 @@ public boolean runTests () {
     
     if ( status == OK ) {
       int len, i = 0;
-      Quadruple tuple = new Quadruple();
+      Tuple tuple = new Tuple();
       boolean done = false;
 
       while (!done) { 
@@ -316,7 +319,7 @@ public boolean runTests () {
 	  if ( i % 2 == 0 ) odd = false;
 	  if ( odd )  {       // Delete the odd-numbered ones.
 	    try {
-	      status = f.deleteQuadruple( rid );
+	      status = f.deleteRecord( rid );
 	    }
 	    catch (Exception e) {
 	      status = FAIL;
@@ -345,7 +348,7 @@ public boolean runTests () {
     }
     
     if ( status == OK ) {
-      System.out.println ("  - TScan the remaining records\n");
+      System.out.println ("  - Scan the remaining records\n");
       try {
 	scan = f.openScan();
       }
@@ -359,7 +362,7 @@ public boolean runTests () {
     if ( status == OK ) {
       int len, i = 0;
       DummyRecord rec = null;
-      Quadruple tuple = new Quadruple();
+      Tuple tuple = new Tuple();
       boolean done = false;
 
       while ( !done ) {
@@ -409,17 +412,17 @@ public boolean runTests () {
 
     System.out.println ("\n  Test 3: Update fixed-size records\n");
     boolean status = OK;
-    TScan scan = null;
+    Scan scan = null;
     RID rid = new RID();
-    QuadrupleHeapFile f = null;
+    Heapfile f = null; 
 
-    System.out.println ("  - Open the same quadrupleheap file as tests 1 and 2\n");
+    System.out.println ("  - Open the same heap file as tests 1 and 2\n");
     try {
-      f = new QuadrupleHeapFile("file_1");
+      f = new Heapfile("file_1");
     }
     catch (Exception e) {
       status = FAIL;
-      System.err.println ("*** Could not create quadrupleheap file\n");
+      System.err.println ("*** Could not create heap file\n");
       e.printStackTrace();
     }
 
@@ -439,7 +442,7 @@ public boolean runTests () {
 
       int len, i = 0;
       DummyRecord rec = null; 
-      Quadruple tuple = new Quadruple();
+      Tuple tuple = new Tuple();
       boolean done = false;
       
       while ( !done ) {
@@ -465,9 +468,9 @@ public boolean runTests () {
 
 	  rec.fval =(float) 7*i;     // We'll check that i==rec.ival below.
 
-	  Quadruple newTuple = null;
+	  Tuple newTuple = null; 
 	  try {
-	    newTuple = new Quadruple(rec.toByteArray(),0,rec.getRecLength());
+	    newTuple = new Tuple (rec.toByteArray(),0,rec.getRecLength()); 
 	  }
 	  catch (Exception e) {
 	    status = FAIL;
@@ -475,7 +478,7 @@ public boolean runTests () {
 	    e.printStackTrace();
 	  }
 	  try {
-	    status = f.updateQuadruple(rid, newTuple);
+	    status = f.updateRecord(rid, newTuple); 
 	  }
 	  catch (Exception e) {
 	    status = FAIL;
@@ -523,8 +526,8 @@ public boolean runTests () {
       int len, i = 0;
       DummyRecord rec = null;
       DummyRecord rec2 = null;
-      Quadruple tuple = new Quadruple();
-      Quadruple tuple2 = new Quadruple();
+      Tuple tuple = new Tuple(); 
+      Tuple tuple2 = new Tuple(); 
       boolean done = false;
       
       while ( !done ) {
@@ -550,7 +553,7 @@ public boolean runTests () {
 
 	  // While we're at it, test the getRecord method too.
 	  try {
-	    tuple2 = f.getQuadruple( rid );
+	    tuple2 = f.getRecord( rid ); 
 	  }
 	  catch (Exception e) {
 	    status = FAIL;
@@ -602,16 +605,16 @@ public boolean runTests () {
 
     System.out.println ("\n  Test 4: Test some error conditions\n");
     boolean status = OK;
-    TScan scan = null;
+    Scan scan = null;
     RID rid = new RID();
-    QuadrupleHeapFile f = null;
+    Heapfile f = null; 
     
     try {
-      f = new QuadrupleHeapFile("file_1");
+      f = new Heapfile ("file_1");
     }
     catch (Exception e) {
       status = FAIL;
-      System.err.println ("*** Could not create quadrupleheap file\n");
+      System.err.println ("*** Could not create heap file\n");
       e.printStackTrace();
     }
 
@@ -633,7 +636,7 @@ public boolean runTests () {
     if ( status == OK ) {
       int len;
       DummyRecord rec = null;
-      Quadruple tuple = new Quadruple();
+      Tuple tuple = new Tuple();
       
       try {
 	tuple = scan.getNext(rid);
@@ -658,19 +661,19 @@ public boolean runTests () {
 	  status = FAIL;
 	}
 	len = tuple.getLength();
-	  Quadruple newTuple = null;
+	  Tuple newTuple = null;
 	try {
-	  newTuple = new Quadruple(rec.toByteArray(), 0, len-1);
+	  newTuple = new Tuple(rec.toByteArray(), 0, len-1);
 	}
 	catch (Exception e) {
 	  System.err.println (""+e);
 	  e.printStackTrace();
 	}
 	try {
-	  status = f.updateQuadruple( rid, newTuple );
+	  status = f.updateRecord( rid, newTuple );
 	}
 	catch (ChainException e) { 
-	  status = checkException (e, "quadrupleheap.InvalidUpdateException");
+	  status = checkException (e, "heap.InvalidUpdateException");
 	  if (status == FAIL) {
 	    System.err.println( "**** Shortening a record" );
 	    System.out.println ("  --> Failed as expected \n");
@@ -699,19 +702,19 @@ public boolean runTests () {
 	}
 	
 	len = tuple.getLength();
-	Quadruple newTuple = null;
+	Tuple newTuple = null;
 	try {
-	  newTuple = new Quadruple(rec.toByteArray(), 0, len+1);
+	  newTuple = new Tuple(rec.toByteArray(), 0, len+1);
 	}
 	catch (Exception e) {
 	  System.err.println( ""+e );
 	  e.printStackTrace();
 	}
 	try {
-	  status = f.updateQuadruple( rid, newTuple );
+	  status = f.updateRecord( rid, newTuple );
 	}
 	catch (ChainException e) {
-	  status = checkException(e, "quadrupleheap.InvalidUpdateException");
+	  status = checkException(e, "heap.InvalidUpdateException");
 	  if (status == FAIL) {
 	    System.err.println( "**** Lengthening a record" );
 	    System.out.println ("  --> Failed as expected \n");
@@ -737,10 +740,10 @@ public boolean runTests () {
       System.out.println ("  - Try to insert a record that's too long\n");
       byte [] record = new byte [MINIBASE_PAGESIZE+4];
       try {
-	rid = f.insertQuadruple( record );
+	rid = f.insertRecord( record );
       }
       catch (ChainException e) {
-	status = checkException (e, "quadrupleheap.SpaceNotAvailableException");
+	status = checkException (e, "heap.SpaceNotAvailableException");
 	if (status == FAIL) {
 	  System.err.println( "**** Inserting a too-long record" );
 	  System.out.println ("  --> Failed as expected \n");
@@ -829,10 +832,10 @@ class DummyRecord  {
    *  it will make a copy of the data in the tuple
    * @param atuple: the input tuple
    */
-  public DummyRecord(Quadruple _atuple)
+  public DummyRecord(Tuple _atuple) 
 	throws java.io.IOException{   
     data = new byte[_atuple.getLength()];
-    data = _atuple.getQuadrupleByteArray();
+    data = _atuple.getTupleByteArray();
     setRecLen(_atuple.getLength());
     
     setIntRec (data);

@@ -10,18 +10,19 @@ package btree;
 
 import java.io.*;
 import diskmgr.*;
+import bufmgr.*;
 import global.*;
-import quadrupleheap.*;
+import heap.*;
 
   /**
    * Intefrace of a B+ tree index header page.  
-   * Here we use a THFPage as head page of the file
+   * Here we use a HFPage as head page of the file
    * Inside the headpage, Logicaly, there are only seven
    * elements inside the head page, they are
    * magic0, rootId, keyType, maxKeySize, deleteFashion,
    * and type(=NodeType.BTHEAD)
    */
-class BTreeHeaderPage extends THFPage {
+class BTreeHeaderPage extends HFPage {
   
   void setPageId(PageId pageno) 
     throws IOException 

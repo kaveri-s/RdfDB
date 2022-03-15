@@ -2,9 +2,11 @@ package tests;
 
 import java.io.*; 
 import global.*;
-import quadrupleheap.*;
+import bufmgr.*;
+import diskmgr.*;
+import heap.*;
 import iterator.*;
-
+import index.*;
 import java.util.Random;
 
 
@@ -133,7 +135,7 @@ class SORTDriver extends TestDriver
     order[1] = new TupleOrder(TupleOrder.Descending);
     
     // create a tuple of appropriate size
-    Quadruple t = new Quadruple();
+    Tuple t = new Tuple();
     try {
       t.setHdr((short) 2, attrType, attrSize);
     }
@@ -146,16 +148,16 @@ class SORTDriver extends TestDriver
     
     // Create unsorted data file "test1.in"
     RID             rid;
-    QuadrupleHeapFile f = null;
+    Heapfile        f = null;
     try {
-      f = new QuadrupleHeapFile("test1.in");
+      f = new Heapfile("test1.in");
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace();
     }
     
-    t = new Quadruple(size);
+    t = new Tuple(size);
     try {
       t.setHdr((short) 2, attrType, attrSize);
     }
@@ -174,7 +176,7 @@ class SORTDriver extends TestDriver
       }
       
       try {
-	rid = f.insertQuadruple(t.returnTupleByteArray());
+	rid = f.insertRecord(t.returnTupleByteArray());
       }
       catch (Exception e) {
 	status = FAIL;
@@ -293,7 +295,7 @@ class SORTDriver extends TestDriver
     order[1] = new TupleOrder(TupleOrder.Descending);
     
     // create a tuple of appropriate size
-    Quadruple t = new Quadruple();
+    Tuple t = new Tuple();
     try {
       t.setHdr((short) 1, attrType, attrSize);
     }
@@ -305,16 +307,16 @@ class SORTDriver extends TestDriver
     
     // Create unsorted data file "test2.in"
     RID             rid;
-    QuadrupleHeapFile f = null;
+    Heapfile        f = null;
     try {
-      f = new QuadrupleHeapFile("test2.in");
+      f = new Heapfile("test2.in");
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace();
     }
     
-    t = new Quadruple(size);
+    t = new Tuple(size);
     try {
       t.setHdr((short) 1, attrType, attrSize);
     }
@@ -333,7 +335,7 @@ class SORTDriver extends TestDriver
       }
       
       try {
-	rid = f.insertQuadruple(t.returnTupleByteArray());
+	rid = f.insertRecord(t.returnTupleByteArray());
       }
       catch (Exception e) {
 	status = FAIL;
@@ -455,13 +457,13 @@ class SORTDriver extends TestDriver
     order[0] = new TupleOrder(TupleOrder.Ascending);
     order[1] = new TupleOrder(TupleOrder.Descending);
     
-    Quadruple t = new Quadruple();
+    Tuple t = new Tuple();
 
     try {
       t.setHdr((short) 4, attrType, attrSize);
     }
     catch (Exception e) {
-      System.err.println("*** error in Quadruple.setHdr() ***");
+      System.err.println("*** error in Tuple.setHdr() ***");
       status = FAIL;
       e.printStackTrace();
     }
@@ -470,16 +472,16 @@ class SORTDriver extends TestDriver
 
     // Create unsorted data file "test3.in"
     RID             rid;
-    QuadrupleHeapFile f = null;
+    Heapfile        f = null;
     try {
-      f = new QuadrupleHeapFile("test3.in");
+      f = new Heapfile("test3.in");
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace();
     }
     
-    t = new Quadruple(size);
+    t = new Tuple(size);
     try {
       t.setHdr((short) 4, attrType, attrSize);
     }
@@ -507,7 +509,7 @@ class SORTDriver extends TestDriver
       }
 
       try {
-	rid = f.insertQuadruple(t.returnTupleByteArray());
+	rid = f.insertRecord(t.returnTupleByteArray());
       }
       catch (Exception e) {
 	status = FAIL;
@@ -743,7 +745,7 @@ class SORTDriver extends TestDriver
     order[1] = new TupleOrder(TupleOrder.Descending);
     
     // create a tuple of appropriate size
-    Quadruple t = new Quadruple();
+    Tuple t = new Tuple();
     try {
       t.setHdr((short) 2, attrType, attrSize);
     }
@@ -755,18 +757,18 @@ class SORTDriver extends TestDriver
     
     // Create unsorted data file 
     RID             rid1, rid2;
-    QuadrupleHeapFile f1 = null;
-    QuadrupleHeapFile f2 = null;
+    Heapfile        f1 = null;
+    Heapfile        f2 = null;
     try {
-      f1 = new QuadrupleHeapFile("test4-1.in");
-      f2 = new QuadrupleHeapFile("test4-2.in");
+      f1 = new Heapfile("test4-1.in");
+      f2 = new Heapfile("test4-2.in");
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace();
     }
     
-    t = new Quadruple(size);
+    t = new Tuple(size);
     try {
       t.setHdr((short) 2, attrType, attrSize);
     }
@@ -785,8 +787,8 @@ class SORTDriver extends TestDriver
       }
       
       try {
-	rid1 = f1.insertQuadruple(t.returnTupleByteArray());
-	rid2 = f2.insertQuadruple(t.returnTupleByteArray());
+	rid1 = f1.insertRecord(t.returnTupleByteArray());
+	rid2 = f2.insertRecord(t.returnTupleByteArray());
       }
       catch (Exception e) {
 	status = FAIL;
@@ -828,8 +830,8 @@ class SORTDriver extends TestDriver
     
 
     int count = 0;
-    Quadruple t1 = null;
-    Quadruple t2 = null;
+    Tuple t1 = null;
+    Tuple t2 = null; 
     String outval = null;
     
     try {

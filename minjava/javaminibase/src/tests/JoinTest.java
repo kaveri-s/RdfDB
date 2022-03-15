@@ -2,14 +2,16 @@ package tests;
 //originally from : joins.C
 
 import iterator.*;
-import quadrupleheap.*;
+import heap.*;
 import global.*;
 import index.*;
 import java.io.*;
 import java.util.*;
 import java.lang.*;
-
-import btree.*;
+import diskmgr.*;
+import bufmgr.*;
+import btree.*; 
+import catalog.*;
 
 /**
    Here is the implementation for the tests. There are N tests performed.
@@ -164,12 +166,12 @@ class JoinsDriver implements GlobalConst {
     short [] Ssizes = new short [1];
     Ssizes[0] = 30; //first elt. is 30
     
-    Quadruple t = new Quadruple();
+    Tuple t = new Tuple();
     try {
       t.setHdr((short) 4,Stypes, Ssizes);
     }
     catch (Exception e) {
-      System.err.println("*** error in Quadruple.setHdr() ***");
+      System.err.println("*** error in Tuple.setHdr() ***");
       status = FAIL;
       e.printStackTrace();
     }
@@ -178,22 +180,22 @@ class JoinsDriver implements GlobalConst {
     
     // inserting the tuple into file "sailors"
     RID             rid;
-    QuadrupleHeapFile f = null;
+    Heapfile        f = null;
     try {
-      f = new QuadrupleHeapFile("sailors.in");
+      f = new Heapfile("sailors.in");
     }
     catch (Exception e) {
-      System.err.println("*** error in QuadrupleHeapFile constructor ***");
+      System.err.println("*** error in Heapfile constructor ***");
       status = FAIL;
       e.printStackTrace();
     }
     
-    t = new Quadruple(size);
+    t = new Tuple(size);
     try {
       t.setHdr((short) 4, Stypes, Ssizes);
     }
     catch (Exception e) {
-      System.err.println("*** error in Quadruple.setHdr() ***");
+      System.err.println("*** error in Tuple.setHdr() ***");
       status = FAIL;
       e.printStackTrace();
     }
@@ -206,16 +208,16 @@ class JoinsDriver implements GlobalConst {
 	t.setFloFld(4, (float)((Sailor)sailors.elementAt(i)).age);
       }
       catch (Exception e) {
-	System.err.println("*** QuadrupleHeapFile error in Quadruple.setStrFld() ***");
+	System.err.println("*** Heapfile error in Tuple.setStrFld() ***");
 	status = FAIL;
 	e.printStackTrace();
       }
       
       try {
-	rid = f.insertQuadruple(t.returnTupleByteArray());
+	rid = f.insertRecord(t.returnTupleByteArray());
       }
       catch (Exception e) {
-	System.err.println("*** error in QuadrupleHeapFile.insertRecord() ***");
+	System.err.println("*** error in Heapfile.insertRecord() ***");
 	status = FAIL;
 	e.printStackTrace();
       }      
@@ -236,12 +238,12 @@ class JoinsDriver implements GlobalConst {
     short  []  Bsizes = new short[2];
     Bsizes[0] = 30;
     Bsizes[1] = 20;
-    t = new Quadruple();
+    t = new Tuple();
     try {
       t.setHdr((short) 3,Btypes, Bsizes);
     }
     catch (Exception e) {
-      System.err.println("*** error in Quadruple.setHdr() ***");
+      System.err.println("*** error in Tuple.setHdr() ***");
       status = FAIL;
       e.printStackTrace();
     }
@@ -252,20 +254,20 @@ class JoinsDriver implements GlobalConst {
     //RID             rid;
     f = null;
     try {
-      f = new QuadrupleHeapFile("boats.in");
+      f = new Heapfile("boats.in");
     }
     catch (Exception e) {
-      System.err.println("*** error in QuadrupleHeapFile constructor ***");
+      System.err.println("*** error in Heapfile constructor ***");
       status = FAIL;
       e.printStackTrace();
     }
     
-    t = new Quadruple(size);
+    t = new Tuple(size);
     try {
       t.setHdr((short) 3, Btypes, Bsizes);
     }
     catch (Exception e) {
-      System.err.println("*** error in Quadruple.setHdr() ***");
+      System.err.println("*** error in Tuple.setHdr() ***");
       status = FAIL;
       e.printStackTrace();
     }
@@ -277,16 +279,16 @@ class JoinsDriver implements GlobalConst {
 	t.setStrFld(3, ((Boats)boats.elementAt(i)).color);
       }
       catch (Exception e) {
-	System.err.println("*** error in Quadruple.setStrFld() ***");
+	System.err.println("*** error in Tuple.setStrFld() ***");
 	status = FAIL;
 	e.printStackTrace();
       }
       
       try {
-	rid = f.insertQuadruple(t.returnTupleByteArray());
+	rid = f.insertRecord(t.returnTupleByteArray());
       }
       catch (Exception e) {
-	System.err.println("*** error in QuadrupleHeapFile.insertRecord() ***");
+	System.err.println("*** error in Heapfile.insertRecord() ***");
 	status = FAIL;
 	e.printStackTrace();
       }      
@@ -305,12 +307,12 @@ class JoinsDriver implements GlobalConst {
 
     short [] Rsizes = new short [1];
     Rsizes[0] = 15; 
-    t = new Quadruple();
+    t = new Tuple();
     try {
       t.setHdr((short) 3,Rtypes, Rsizes);
     }
     catch (Exception e) {
-      System.err.println("*** error in Quadruple.setHdr() ***");
+      System.err.println("*** error in Tuple.setHdr() ***");
       status = FAIL;
       e.printStackTrace();
     }
@@ -321,20 +323,20 @@ class JoinsDriver implements GlobalConst {
     //RID             rid;
     f = null;
     try {
-      f = new QuadrupleHeapFile("reserves.in");
+      f = new Heapfile("reserves.in");
     }
     catch (Exception e) {
-      System.err.println("*** error in QuadrupleHeapFile constructor ***");
+      System.err.println("*** error in Heapfile constructor ***");
       status = FAIL;
       e.printStackTrace();
     }
     
-    t = new Quadruple(size);
+    t = new Tuple(size);
     try {
       t.setHdr((short) 3, Rtypes, Rsizes);
     }
     catch (Exception e) {
-      System.err.println("*** error in Quadruple.setHdr() ***");
+      System.err.println("*** error in Tuple.setHdr() ***");
       status = FAIL;
       e.printStackTrace();
     }
@@ -347,16 +349,16 @@ class JoinsDriver implements GlobalConst {
 
       }
       catch (Exception e) {
-	System.err.println("*** error in Quadruple.setStrFld() ***");
+	System.err.println("*** error in Tuple.setStrFld() ***");
 	status = FAIL;
 	e.printStackTrace();
       }      
       
       try {
-	rid = f.insertQuadruple(t.returnTupleByteArray());
+	rid = f.insertRecord(t.returnTupleByteArray());
       }
       catch (Exception e) {
-	System.err.println("*** error in QuadrupleHeapFile.insertRecord() ***");
+	System.err.println("*** error in Heapfile.insertRecord() ***");
 	status = FAIL;
 	e.printStackTrace();
       }      
@@ -546,7 +548,7 @@ class JoinsDriver implements GlobalConst {
  
     Query1_CondExpr(outFilter);
  
-    Quadruple t = new Quadruple();
+    Tuple t = new Tuple();
     
     AttrType [] Stypes = new AttrType[4];
     Stypes[0] = new AttrType (AttrType.attrInteger);
@@ -733,7 +735,7 @@ class JoinsDriver implements GlobalConst {
     outFilter2[2] = new CondExpr();
 
     Query2_CondExpr(outFilter, outFilter2);
-    Quadruple t = new Quadruple();
+    Tuple t = new Tuple();
     t = null;
 
     AttrType [] Stypes = {
@@ -808,7 +810,7 @@ class JoinsDriver implements GlobalConst {
     //*******************create an scan on the heapfile**************
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // create a tuple of appropriate size
-        Quadruple tt = new Quadruple();
+        Tuple tt = new Tuple();
     try {
       tt.setHdr((short) 4, Stypes, Ssizes);
     }
@@ -818,7 +820,7 @@ class JoinsDriver implements GlobalConst {
     }
 
     int sizett = tt.size();
-    tt = new Quadruple(sizett);
+    tt = new Tuple(sizett);
     try {
       tt.setHdr((short) 4, Stypes, Ssizes);
     }
@@ -826,19 +828,19 @@ class JoinsDriver implements GlobalConst {
       status = FAIL;
       e.printStackTrace();
     }
-    QuadrupleHeapFile f = null;
+    Heapfile        f = null;
     try {
-      f = new QuadrupleHeapFile("sailors.in");
+      f = new Heapfile("sailors.in");
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace();
     }
     
-    TScan scan = null;
+    Scan scan = null;
     
     try {
-      scan = new TScan(f);
+      scan = new Scan(f);
     }
     catch (Exception e) {
       status = FAIL;
@@ -859,7 +861,7 @@ class JoinsDriver implements GlobalConst {
     
     RID rid = new RID();
     int key =0;
-    Quadruple temp = null;
+    Tuple temp = null;
     
     try {
       temp = scan.getNext(rid);
@@ -869,7 +871,7 @@ class JoinsDriver implements GlobalConst {
       e.printStackTrace();
     }
     while ( temp != null) {
-      tt.quadrupleCopy(temp);
+      tt.tupleCopy(temp);
       
       try {
 	key = tt.getIntFld(1);
@@ -1014,7 +1016,7 @@ class JoinsDriver implements GlobalConst {
  
     Query3_CondExpr(outFilter);
  
-    Quadruple t = new Quadruple();
+    Tuple t = new Tuple();
     t = null;
  
     AttrType Stypes[] = {
@@ -1170,7 +1172,7 @@ class JoinsDriver implements GlobalConst {
  
     Query3_CondExpr(outFilter);
  
-    Quadruple t = new Quadruple();
+    Tuple t = new Tuple();
     t = null;
  
     AttrType Stypes[] = {
@@ -1335,7 +1337,7 @@ class JoinsDriver implements GlobalConst {
     CondExpr [] outFilter;
     outFilter = Query5_CondExpr();
  
-    Quadruple t = new Quadruple();
+    Tuple t = new Tuple();
     t = null;
  
     AttrType Stypes[] = {
@@ -1442,7 +1444,7 @@ class JoinsDriver implements GlobalConst {
     }
 
     QueryCheck qcheck5 = new QueryCheck(5);
-    //Quadruple t = new Quadruple();
+    //Tuple t = new Tuple();
     t = null;
  
     try {
@@ -1500,7 +1502,7 @@ class JoinsDriver implements GlobalConst {
       outFilter2[2] = new CondExpr();
       
       Query6_CondExpr(outFilter, outFilter2);
-      Quadruple t = new Quadruple();
+      Tuple t = new Tuple();
       t = null;
       
       AttrType [] Stypes = {

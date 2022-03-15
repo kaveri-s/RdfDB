@@ -1,6 +1,6 @@
 package iterator;
 import global.*;
-import quadrupleheap.*;
+import heap.*;
 import diskmgr.*;
 import bufmgr.*;
 import index.*;
@@ -38,7 +38,7 @@ public abstract class Iterator implements Flags {
    *@exception Exception other exceptions
 
    */
-  public abstract Quadruple get_next()
+  public abstract Tuple get_next() 
     throws IOException,
 	   JoinsException ,
 	   IndexException,

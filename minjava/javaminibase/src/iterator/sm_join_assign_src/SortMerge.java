@@ -1,7 +1,8 @@
 package iterator;
 
-import quadrupleheap.*;
+import heap.*;
 import global.*;
+import diskmgr.*;
 import bufmgr.*;
 import index.*;
 import java.io.*;
@@ -28,15 +29,15 @@ public class SortMerge extends Iterator implements GlobalConst
   private  boolean        process_next_block;
   private  short     inner_str_sizes[];
   private  IoBuf    io_buf1,  io_buf2;
-  private Quadruple TempTuple1,  TempTuple2;
-  private Quadruple tuple1,  tuple2;
+  private  Tuple     TempTuple1,  TempTuple2;
+  private  Tuple     tuple1,  tuple2;
   private  boolean       done;
   private  byte    _bufs1[][],_bufs2[][];
   private  int        _n_pages; 
-  private QuadrupleHeapFile temp_file_fd1, temp_file_fd2;
+  private  Heapfile temp_file_fd1, temp_file_fd2;
   private  AttrType   sortFldType;
   private  int        t1_size, t2_size;
-  private Quadruple Jtuple;
+  private  Tuple     Jtuple;
   private  FldSpec   perm_mat[];
   private  int        nOutFlds;
   
@@ -103,7 +104,7 @@ public class SortMerge extends Iterator implements GlobalConst
       in1_len = len_in1;
       in2_len = len_in2;
       
-      Jtuple = new Quadruple();
+      Jtuple = new Tuple();
       AttrType[] Jtypes = new AttrType[n_out_flds];
       short[]    ts_size = null;
       perm_mat = proj_list;
@@ -157,10 +158,10 @@ public class SortMerge extends Iterator implements GlobalConst
       io_buf2 = new IoBuf();
       
       // Allocate memory for the temporary tuples
-      TempTuple1 = new Quadruple();
-      TempTuple2 =  new Quadruple();
-      tuple1 = new Quadruple();
-      tuple2 =  new Quadruple();
+      TempTuple1 = new Tuple();
+      TempTuple2 =  new Tuple();
+      tuple1 = new Tuple();
+      tuple2 =  new Tuple();
       
       
       if (io_buf1  == null || io_buf2  == null ||
@@ -195,12 +196,12 @@ public class SortMerge extends Iterator implements GlobalConst
       temp_file_fd1 = null;
       temp_file_fd2 = null;
       try {
-	temp_file_fd1 = new QuadrupleHeapFile(null);
-	temp_file_fd2 = new QuadrupleHeapFile(null);
+	temp_file_fd1 = new Heapfile(null);
+	temp_file_fd2 = new Heapfile(null);
 	
       }
       catch(Exception e) {
-	throw new SortException (e, "Create quadrupleheap file failed");
+	throw new SortException (e, "Create heap file failed");
       }
       
       sortFldType = _in1[jc_in1-1];
@@ -233,7 +234,7 @@ public class SortMerge extends Iterator implements GlobalConst
    *@exception Exception other exceptions
    */
 
-  public Quadruple get_next()
+  public Tuple get_next() 
     throws IOException,
 	   JoinsException ,
 	   IndexException,
@@ -250,7 +251,7 @@ public class SortMerge extends Iterator implements GlobalConst
     {
       
       int    comp_res;
-      Quadruple _tuple1,_tuple2;
+      Tuple _tuple1,_tuple2;
       if (done) return null;
       
       while (true)
@@ -310,8 +311,8 @@ public class SortMerge extends Iterator implements GlobalConst
 		  continue;
 		}
 	      
-	      TempTuple1.quadrupleCopy(tuple1);
-	      TempTuple2.quadrupleCopy(tuple2);
+	      TempTuple1.tupleCopy(tuple1);
+	      TempTuple2.tupleCopy(tuple2); 
 	      
 	      io_buf1.init(_bufs1,       1, t1_size, temp_file_fd1);
 	      io_buf2.init(_bufs2,       1, t2_size, temp_file_fd2);

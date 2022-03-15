@@ -11,6 +11,7 @@ import java.lang.*;
 import global.*;
 import diskmgr.*;
 import bufmgr.*;
+import heap.*;
 
 /**  
  * This file contains, among some debug utilities, the interface to our

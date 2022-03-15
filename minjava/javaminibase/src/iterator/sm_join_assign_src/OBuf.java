@@ -1,6 +1,8 @@
 package iterator;
-import quadrupleheap.*;
+import heap.*;
 import global.*;
+import bufmgr.*;
+import diskmgr.*;
 
 import java.io.*;
 
@@ -29,7 +31,7 @@ public class OBuf implements GlobalConst{
    *                      a nasty message. it is false by default.
   */
   public void init(byte[][] bufs, int n_pages, int tSize,
-                   QuadrupleHeapFile temp_fd, boolean buffer )
+		   Heapfile temp_fd, boolean buffer )
     {
       _bufs    = bufs;
       _n_pages = n_pages;
@@ -53,15 +55,15 @@ public class OBuf implements GlobalConst{
    *@exception IOException  some I/O fault
    *@exception Exception other exceptions
    */
-  public Quadruple Put(Quadruple buf)
+  public Tuple  Put(Tuple buf)
     throws IOException,
 	   Exception
     {
       
       byte[] copybuf;
-      copybuf = buf.getQuadrupleByteArray();
+      copybuf = buf.getTupleByteArray();
       System.arraycopy(copybuf,0,_bufs[curr_page],t_wr_to_pg*t_size,t_size); 
-      Quadruple tuple_ptr = new Quadruple(_bufs[curr_page] , t_wr_to_pg * t_size,t_size);
+      Tuple tuple_ptr = new Tuple(_bufs[curr_page] , t_wr_to_pg * t_size,t_size);
       
       t_written++; t_wr_to_pg++; t_wr_to_buf++; dirty = true;
       
@@ -107,7 +109,7 @@ public class OBuf implements GlobalConst{
 		  {
 		    System.arraycopy(_bufs[count],t_size*i,tempbuf,0,t_size);
 		    try {
-		      rid =  _temp_fd.insertQuadruple(tempbuf);
+		      rid =  _temp_fd.insertRecord(tempbuf);
 		    }
 		    catch (Exception e){
 		      throw e;
@@ -118,7 +120,7 @@ public class OBuf implements GlobalConst{
 		  {       
 		    System.arraycopy(_bufs[count],t_size*i,tempbuf,0,t_size);
 		    try {
-		      rid =  _temp_fd.insertQuadruple(tempbuf);
+		      rid =  _temp_fd.insertRecord(tempbuf);
 		    }
 		    catch (Exception e){
 		      throw e;
@@ -143,7 +145,7 @@ public class OBuf implements GlobalConst{
   private  int  t_size;                                // Size of a tuple
   private  long t_written;                        // # of tuples written so far.
   private  int  TEST_temp_fd;                        // fd of a temporary file
-  private QuadrupleHeapFile _temp_fd;
+  private  Heapfile _temp_fd;
   private  boolean buffer_only;
 }
 
