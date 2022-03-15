@@ -22,16 +22,16 @@ public class Label extends Tuple {
         this.name = Convert.getStrValue(offset+8, alabel, length - 8);
     }
 
-    String getLabel() {
+    public String getLabel() {
         return name;
     }
 
-    Label setLabel(String label) {
+    public Label setLabel(String label) {
         this.name=label;
         return this;
     }
 
-    void print() {
+    public void print() {
         System.out.println(ID);
         System.out.println(name);
     }

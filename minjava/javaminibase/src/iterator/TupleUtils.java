@@ -117,7 +117,7 @@ public class TupleUtils
    *This function Compares two Tuple inn all fields 
    * @param t1 the first tuple
    * @param t2 the secocnd tuple
-   * @param type[] the field types
+   * @param types[] the field types
    * @param len the field numbers
    * @return  0        if the two are not equal,
    *          1        if the two are equal,
@@ -130,7 +130,6 @@ public class TupleUtils
     throws IOException,UnknowAttrType,TupleUtilsException
     {
       int i;
-      
       for (i = 1; i <= len; i++)
 	if (CompareTupleWithTuple(types[i-1], t1, i, t2, i) != 0)
 	  return false;
@@ -140,7 +139,7 @@ public class TupleUtils
   /**
    *get the string specified by the field number
    *@param tuple the tuple 
-   *@param fidno the field number
+   *@param fldno the field number
    *@return the content of the field number
    *@exception IOException some I/O fault
    *@exception TupleUtilsException exception from this class

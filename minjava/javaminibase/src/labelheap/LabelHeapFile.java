@@ -619,7 +619,7 @@ public class LabelHeapFile implements GlobalConst {
         unpinPage(currentDataPageId,false /*undirty*/);
         unpinPage(currentDirPageId,false /*undirty*/);
 
-        return  alabel;  //(true?)OK, but the caller need check if atuple==NULL
+        return  alabel;  //(true?)OK, but the caller need check if alabel==NULL
     }
 
 
