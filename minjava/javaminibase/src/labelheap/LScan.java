@@ -212,7 +212,7 @@ public class LScan implements GlobalConst {
 
         /** get first directory page and pin it */
         try {
-            dirpage  = new LHFPage();
+            dirpage  = new HFPage();
             pinPage(dirpageId, dirpage, false);
         }
         catch (Exception e) {
@@ -409,7 +409,7 @@ public class LScan implements GlobalConst {
                 dirpageId = nextDirPageId;
 
                 try {
-                    dirpage  = new LHFPage();
+                    dirpage  = new HFPage();
                     pinPage(dirpageId, (Page)dirpage, false);
                 }
 

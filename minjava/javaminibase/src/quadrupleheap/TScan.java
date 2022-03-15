@@ -226,7 +226,7 @@ public class TScan implements GlobalConst{
 
         /** get first directory page and pin it */
         try {
-            dirpage  = new THFPage();
+            dirpage  = new HFPage();
             pinPage(dirpageId, dirpage, false);
         }
         catch (Exception e) {
@@ -423,7 +423,7 @@ public class TScan implements GlobalConst{
                 dirpageId = nextDirPageId;
 
                 try {
-                    dirpage  = new THFPage();
+                    dirpage  = new HFPage();
                     pinPage(dirpageId, (Page)dirpage, false);
                 }
 
