@@ -12,7 +12,7 @@ public class Quadruple extends Tuple implements GlobalConst {
     private EID subject;
     private PID predicate;
     private EID object;
-    private double value;
+    private float value;
 
     /**
      * Class constructor
@@ -38,7 +38,7 @@ public class Quadruple extends Tuple implements GlobalConst {
         this.predicate.pageNo=new PageId(Convert.getIntValue(offset+12,aquadruple));
         this.object.slotNo=Convert.getIntValue(offset+16,aquadruple);
         this.object.pageNo=new PageId(Convert.getIntValue(offset+20,aquadruple));
-        //add value fld
+        this.value=Convert.getFloValue(offset+24,aquadruple);
     }
 
     /** Constructor(used as quadruple copy)
@@ -49,7 +49,7 @@ public class Quadruple extends Tuple implements GlobalConst {
         subject=fromQuadruple.getSubjecqid();
         predicate=fromQuadruple.getPredicateID();
         object=fromQuadruple.getObjecqid();
-        value=fromQuadruple.getConfidence();
+        value= (float) fromQuadruple.getConfidence();
     }
 
     public EID getSubjecqid(){
@@ -84,7 +84,7 @@ public class Quadruple extends Tuple implements GlobalConst {
     }
 
     public Quadruple setConfidence(double confidence){
-        value=confidence;
+        value = (float)confidence;
         return this;
     }
 
@@ -133,7 +133,7 @@ public class Quadruple extends Tuple implements GlobalConst {
         this.predicate.pageNo=new PageId(Convert.getIntValue(offset+12,aquadruple));
         this.object.slotNo=Convert.getIntValue(offset+16,aquadruple);
         this.object.pageNo=new PageId(Convert.getIntValue(offset+20,aquadruple));
-        //add value fld
+        this.value=Convert.getFloValue(offset+24,aquadruple);
     }
 
     /**
@@ -148,7 +148,7 @@ public class Quadruple extends Tuple implements GlobalConst {
         this.predicate.pageNo=new PageId(Convert.getIntValue(offset+12,aquadruple));
         this.object.slotNo=Convert.getIntValue(offset+16,aquadruple);
         this.object.pageNo=new PageId(Convert.getIntValue(offset+20,aquadruple));
-        //add value fld
+        this.value=Convert.getFloValue(offset+24,aquadruple);
     }
 
 }
