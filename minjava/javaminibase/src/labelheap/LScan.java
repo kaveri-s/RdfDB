@@ -212,7 +212,8 @@ public class LScan implements GlobalConst {
 
         /** get first directory page and pin it */
         try {
-            dirpage  = new LHFPage();
+
+            dirpage  = new HFPage();
             pinPage(dirpageId, dirpage, false);
         }
         catch (Exception e) {
@@ -409,7 +410,8 @@ public class LScan implements GlobalConst {
                 dirpageId = nextDirPageId;
 
                 try {
-                    dirpage  = new LHFPage();
+
+                    dirpage  = new HFPage();
                     pinPage(dirpageId, (Page)dirpage, false);
                 }
 
@@ -508,7 +510,7 @@ public class LScan implements GlobalConst {
 
     /**
      * short cut to access the pinPage function in bufmgr package.
-     * @see bufmgr.pinPage
+
      */
     private void pinPage(PageId pageno, Page page, boolean emptyPage)
             throws HFBufMgrException {
@@ -524,7 +526,7 @@ public class LScan implements GlobalConst {
 
     /**
      * short cut to access the unpinPage function in bufmgr package.
-     * @see bufmgr.unpinPage
+
      */
     private void unpinPage(PageId pageno, boolean dirty)
             throws HFBufMgrException {
