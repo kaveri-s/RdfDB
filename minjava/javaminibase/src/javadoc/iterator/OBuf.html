@@ -128,7 +128,7 @@ a temporary HeapFile.
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../iterator/OBuf.html#init(byte[][], int, int, heap.QuadrupleHeapfile, boolean)">init</A></B>(byte[][]&nbsp;bufs,
+<TD><CODE><B><A HREF="../iterator/OBuf.html#init(byte[][], int, int, heap.Heapfile, boolean)">init</A></B>(byte[][]&nbsp;bufs,
      int&nbsp;n_pages,
      int&nbsp;tSize,
      <A HREF="../heap/Heapfile.html">Heapfile</A>&nbsp;temp_fd,
@@ -140,7 +140,7 @@ a temporary HeapFile.
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../heap/Tuple.html">Tuple</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../iterator/OBuf.html#Put(heap.Quadruple)">Put</A></B>(<A HREF="../heap/Tuple.html">Tuple</A>&nbsp;buf)</CODE>
+<TD><CODE><B><A HREF="../iterator/OBuf.html#Put(heap.Tuple)">Put</A></B>(<A HREF="../heap/Tuple.html">Tuple</A>&nbsp;buf)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Writes a tuple to the output buffer</TD>
@@ -189,7 +189,7 @@ public <B>OBuf</B>()</PRE>
 </TR>
 </TABLE>
 
-<A NAME="init(byte[][], int, int, quadrupleheap.QuadrupleHeapFile, boolean)"><!-- --></A><H3>
+<A NAME="init(byte[][], int, int, heap.Heapfile, boolean)"><!-- --></A><H3>
 init</H3>
 <PRE>
 public void <B>init</B>(byte[][]&nbsp;bufs,
@@ -208,7 +208,7 @@ public void <B>init</B>(byte[][]&nbsp;bufs,
 </DL>
 <HR>
 
-<A NAME="Put(quadrupleheap.Tuple)"><!-- --></A><H3>
+<A NAME="Put(heap.Tuple)"><!-- --></A><H3>
 Put</H3>
 <PRE>
 public <A HREF="../heap/Tuple.html">Tuple</A> <B>Put</B>(<A HREF="../heap/Tuple.html">Tuple</A>&nbsp;buf)

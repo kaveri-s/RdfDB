@@ -106,7 +106,7 @@ Jtuple has the appropriate types.
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../iterator/Projection.html#Join(heap.Quadruple, global.AttrType[], heap.Quadruple, global.AttrType[], heap.Quadruple, iterator.FldSpec[], int)">Join</A></B>(<A HREF="../heap/Tuple.html">Tuple</A>&nbsp;t1,
+<TD><CODE><B><A HREF="../iterator/Projection.html#Join(heap.Tuple, global.AttrType[], heap.Tuple, global.AttrType[], heap.Tuple, iterator.FldSpec[], int)">Join</A></B>(<A HREF="../heap/Tuple.html">Tuple</A>&nbsp;t1,
      <A HREF="../global/AttrType.html">AttrType</A>[]&nbsp;type1,
      <A HREF="../heap/Tuple.html">Tuple</A>&nbsp;t2,
      <A HREF="../global/AttrType.html">AttrType</A>[]&nbsp;type2,
@@ -121,7 +121,7 @@ will be stored in Tuple Jtuple,before calling this mehtod.</TD>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../iterator/Projection.html#Project(heap.Quadruple, global.AttrType[], heap.Quadruple, iterator.FldSpec[], int)">Project</A></B>(<A HREF="../heap/Tuple.html">Tuple</A>&nbsp;t1,
+<TD><CODE><B><A HREF="../iterator/Projection.html#Project(heap.Tuple, global.AttrType[], heap.Tuple, iterator.FldSpec[], int)">Project</A></B>(<A HREF="../heap/Tuple.html">Tuple</A>&nbsp;t1,
         <A HREF="../global/AttrType.html">AttrType</A>[]&nbsp;type1,
         <A HREF="../heap/Tuple.html">Tuple</A>&nbsp;Jtuple,
         <A HREF="../iterator/FldSpec.html">FldSpec</A>[]&nbsp;perm_mat,
@@ -174,7 +174,7 @@ public <B>Projection</B>()</PRE>
 </TR>
 </TABLE>
 
-<A NAME="Join(quadrupleheap.Quadruple, global.AttrType[], quadrupleheap.Quadruple, global.AttrType[], quadrupleheap.Quadruple, iterator.FldSpec[], int)"><!-- --></A><H3>
+<A NAME="Join(heap.Tuple, global.AttrType[], heap.Tuple, global.AttrType[], heap.Tuple, iterator.FldSpec[], int)"><!-- --></A><H3>
 Join</H3>
 <PRE>
 public static void <B>Join</B>(<A HREF="../heap/Tuple.html">Tuple</A>&nbsp;t1,
@@ -196,7 +196,7 @@ we know that this two tuple can join in the common field<DD><DL>
 </DL>
 <HR>
 
-<A NAME="Project(quadrupleheap.Quadruple, global.AttrType[], quadrupleheap.Quadruple, iterator.FldSpec[], int)"><!-- --></A><H3>
+<A NAME="Project(heap.Tuple, global.AttrType[], heap.Tuple, iterator.FldSpec[], int)"><!-- --></A><H3>
 Project</H3>
 <PRE>
 public static void <B>Project</B>(<A HREF="../heap/Tuple.html">Tuple</A>&nbsp;t1,
