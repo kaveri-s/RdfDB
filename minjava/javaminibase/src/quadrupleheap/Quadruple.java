@@ -150,7 +150,6 @@ public class Quadruple extends Tuple implements GlobalConst {
         this.object.slotNo=Convert.getIntValue(offset+16,aquadruple);
         this.object.pageNo=new PageId(Convert.getIntValue(offset+20,aquadruple));
         this.value=Convert.getFloValue(offset+24,aquadruple);
-
     }
 
 }
