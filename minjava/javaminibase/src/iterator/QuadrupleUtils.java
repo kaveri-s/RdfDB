@@ -1,6 +1,7 @@
 package iterator;
 
 import global.*;
+import labelheap.Label;
 import quadrupleheap.*;
 
 import java.io.IOException;
@@ -19,6 +20,9 @@ public class QuadrupleUtils {
                 LID sl1=s1.returnLID();
                 LID sl2=s2.returnLID();
                 if(sl1==sl2) return 0;
+                else{
+
+                }
                 //get label from ID and compare
 
             case 2:                // Compare predicate
@@ -27,12 +31,20 @@ public class QuadrupleUtils {
                 LID pl1=p1.returnLID();
                 LID pl2=p2.returnLID();
                 if(pl1==pl2) return 0;
+                else{
+
+                }
+                //get label from ID and compare
             case 3:                // Compare object
                 EID o1=q1.getObjecqid();
                 EID o2=q2.getObjecqid();
                 LID ol1=o1.returnLID();
                 LID ol2=o2.returnLID();
                 if(ol1==ol2) return 0;
+                else{
+
+                }
+                //get label from ID and compare
             case 4:                // Compare confidence
                 double c1= q1.getConfidence();
                 double c2= q2.getConfidence();
