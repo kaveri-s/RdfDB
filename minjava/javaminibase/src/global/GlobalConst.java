@@ -5,6 +5,9 @@ public interface GlobalConst {
   public static final int MINIBASE_MAXARRSIZE = 50;
   public static final int NUMBUF = 50;
 
+  /** Size of quadruple. */
+  public static final int MINIBASE_QUADRUPLESIZE = 32;        // in bytes
+
   /** Size of page. */
   public static final int MINIBASE_PAGESIZE = 1024;           // in bytes
 
@@ -30,4 +33,13 @@ public interface GlobalConst {
   public static final int MAX_NAME = 50;
 
   public static final int INVALID_PAGE = -1;
+
+  public static final int INVALID_SLOT =  -1;
+  public static final int EMPTY_SLOT = -1;
+
+  /**
+   * FileTypes in HeapFiles
+   */
+  public static final int TEMP = 0;
+  public static final int ORDINARY = 1;
 }
