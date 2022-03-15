@@ -7,9 +7,10 @@
 package catalog;
 
 import java.io.*;
-
+import bufmgr.*;
 import global.*;
-import quadrupleheap.*;
+import heap.*;
+import diskmgr.*;
 import btree.*;
 
 public class Utility implements Catalogglobal{
@@ -21,7 +22,7 @@ public class Utility implements Catalogglobal{
  void deleteRecUT(String relation, attrNode item){};
 
  // DELETES INDEX ENRIES FOR RECORDS
- void deleteRecIndexesUT(String relation, RID rid, Quadruple tuple){};
+ void deleteRecIndexesUT(String relation, RID rid, Tuple tuple){};
 
  // WRAPS INSERT UTILITY  IN TX
  public static void insertRecordUT(String relation, int attrCnt, attrNode [] attrList)
@@ -92,12 +93,12 @@ public static void insertRecUT(String relation, int attrCnt, attrNode [] attrLis
  // DELETE FOLLOWING ON RETURN 
  AttrDesc  [] attrRecs = null;
  IndexDesc [] indexRecs = null;
- Quadruple tuple = null;
+ Tuple     tuple = null;
  String    indexName = null;
  BTreeFile btree = null;
  AttrType  [] typeArray = null;
  short []    sizeArray = null;
- QuadrupleHeapFile heap = null;
+ Heapfile  heap = null;
 
  // GET RELATION
 
@@ -159,7 +160,7 @@ ExtendedSystemDefs.MINIBASE_RELCAT.getInfo(relation, relRec);
    
 // CREATE TUPLE  
 
-  tuple = new Quadruple(Quadruple.max_size);
+  tuple = new Tuple(Tuple.max_size);
 
   count = ExtendedSystemDefs.MINIBASE_ATTRCAT.getTupleStructure(relation,
         count, typeArray,sizeArray);
@@ -197,11 +198,11 @@ ExtendedSystemDefs.MINIBASE_RELCAT.getInfo(relation, relRec);
 
 // GET DATAFILE
  
- heap = new QuadrupleHeapFile(relation);
+ heap = new Heapfile(relation);
 
 
 // INSERT INTO DATAFILE
-	heap.insertQuadruple(tuple.getQuadrupleByteArray());
+	heap.insertRecord(tuple.getTupleByteArray());
 
 // NOW INSERT INTO EACH INDEX FOR RELATION
 
@@ -274,8 +275,8 @@ ExtendedSystemDefs.MINIBASE_RELCAT.getInfo(relation, relRec);
  void loadRecordsUT(String relation, String fileName){};
 
  // LOADS INDEXES
- void loadIndexesUT(Quadruple tuple, int attrCnt, int indexCnt,
-                    AttrDesc [] attrs, IndexDesc [] indexes, void [] iFiles, RID rid ){};
+ void loadIndexesUT(Tuple tuple, int attrCnt, int indexCnt,
+     AttrDesc [] attrs, IndexDesc [] indexes, void [] iFiles, RID rid ){};
 
 //-------------------------------
 // TYPECHECK INTS

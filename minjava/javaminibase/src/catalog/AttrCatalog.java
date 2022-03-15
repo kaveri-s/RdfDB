@@ -8,10 +8,12 @@ package catalog;
 
 import java.io.*;
 import global.*;
-import quadrupleheap.*;
+import heap.*;
+import bufmgr.*;
+import diskmgr.*;
 
 
-public class AttrCatalog extends QuadrupleHeapFile
+public class AttrCatalog extends Heapfile
 	implements GlobalConst, Catalogglobal
 {
   //OPEN ATTRIBUTE CATALOG
@@ -26,7 +28,7 @@ public class AttrCatalog extends QuadrupleHeapFile
       
       int sizeOfInt = 4;
       int sizeOfFloat = 4;
-      tuple = new Quadruple(Quadruple.max_size);
+      tuple = new Tuple(Tuple.max_size);
       attrs = new AttrType[9];
       
       attrs[0] = new AttrType(AttrType.attrString);
@@ -76,7 +78,7 @@ public class AttrCatalog extends QuadrupleHeapFile
     {
       int recSize;
       RID rid = null;
-      TScan pscan = null;
+      Scan pscan = null; 
       
       
       if ((relation == null)||(attrName == null))
@@ -85,7 +87,7 @@ public class AttrCatalog extends QuadrupleHeapFile
       // OPEN SCAN
       
       try {
-	pscan = new TScan(this);
+	pscan = new Scan(this);
       }
       catch (Exception e1) {
 	throw new AttrCatalogException(e1, "scan failed");
@@ -129,7 +131,7 @@ public class AttrCatalog extends QuadrupleHeapFile
       int status;
       int recSize;
       RID rid = null;
-      TScan pscan = null;
+      Scan pscan = null;
       int count = 0;
       
       if (relation == null)
@@ -143,7 +145,7 @@ public class AttrCatalog extends QuadrupleHeapFile
 	throw new Catalogioerror(null, "");
       }
       catch (Cataloghferror e1) {
-	System.err.println ("Catalog QuadrupleHeapFile Error!"+e1);
+	System.err.println ("Catalog Heapfile Error!"+e1);
 	throw new Cataloghferror(null, "");
       }
       catch (Catalogmissparam e2) {
@@ -168,7 +170,7 @@ public class AttrCatalog extends QuadrupleHeapFile
       // OPEN SCAN
       
       try {
-	pscan = new TScan(this);
+	pscan = new Scan(this);
       }
       catch (Exception e1) {
 	throw new AttrCatalogException(e1, "scan failed");
@@ -235,7 +237,7 @@ public class AttrCatalog extends QuadrupleHeapFile
 	throw new Catalogioerror(null, "");
       }
       catch (Cataloghferror e1) {
-	System.err.println ("Catalog QuadrupleHeapFile Error!"+e1);
+	System.err.println ("Catalog Heapfile Error!"+e1);
 	throw new Cataloghferror(null, "");
       }
       catch (Catalogmissparam e2) {
@@ -310,7 +312,7 @@ public class AttrCatalog extends QuadrupleHeapFile
       }
       
       try {
-	insertQuadruple(tuple.getQuadrupleByteArray());
+	insertRecord(tuple.getTupleByteArray());
       }
       catch (Exception e2) {
 	throw new AttrCatalogException(e2, "insertRecord failed");
@@ -329,7 +331,7 @@ public class AttrCatalog extends QuadrupleHeapFile
     {
       int recSize;
       RID rid = null;
-      TScan pscan = null;
+      Scan pscan = null;
       AttrDesc record = null;
       
       
@@ -338,7 +340,7 @@ public class AttrCatalog extends QuadrupleHeapFile
       
       // OPEN SCAN
       try {
-	pscan = new TScan(this);
+	pscan = new Scan(this);
       }
       catch (Exception e1) {
 	throw new AttrCatalogException(e1, "scan failed");
@@ -362,7 +364,7 @@ public class AttrCatalog extends QuadrupleHeapFile
 	     && record.attrName.equalsIgnoreCase(attrName)==true )
 	  {
 	    try {
-	      deleteQuadruple(rid);
+	      deleteRecord(rid);
 	    }
 	    catch (Exception e3) {
 	      throw new AttrCatalogException(e3, "deleteRecord failed");
@@ -376,10 +378,10 @@ public class AttrCatalog extends QuadrupleHeapFile
   //--------------------------------------------------
   // MAKE_TUPLE
   //--------------------------------------------------
-  // Quadruple must have been initialized properly in the
+  // Tuple must have been initialized properly in the 
   // constructor
   // Converts AttrDesc to tuple. 
-  public void make_tuple(Quadruple tuple, AttrDesc record)
+  public void make_tuple(Tuple tuple, AttrDesc record)
     throws IOException, 
 	   AttrCatalogException
     {
@@ -417,7 +419,7 @@ public class AttrCatalog extends QuadrupleHeapFile
   // READ_TUPLE
   //--------------------------------------------------
   
-  public void read_tuple(Quadruple tuple, AttrDesc record)
+  public void read_tuple(Tuple tuple, AttrDesc record)
     throws IOException, 
 	   AttrCatalogException
     {
@@ -471,7 +473,7 @@ public class AttrCatalog extends QuadrupleHeapFile
 		       IndexType accessType){};
   
   
-  Quadruple tuple;
+  Tuple tuple;
   short [] str_sizes;
   AttrType [] attrs;
   short max;

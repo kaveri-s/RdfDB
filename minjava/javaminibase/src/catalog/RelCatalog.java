@@ -9,10 +9,10 @@ package catalog;
 import java.io.*;
 import bufmgr.*;
 import global.*;
-import quadrupleheap.*;
+import heap.*;
 import diskmgr.*;
-
-public class RelCatalog extends QuadrupleHeapFile
+import index.*;
+public class RelCatalog extends Heapfile
   implements  GlobalConst, Catalogglobal
 {
   // Helps runStats
@@ -27,7 +27,7 @@ public class RelCatalog extends QuadrupleHeapFile
     {
         super(filename);
       
-      tuple = new Quadruple(Quadruple.max_size);
+      tuple = new Tuple(Tuple.max_size);
       
       attrs = new AttrType[5];
       attrs[0] = new AttrType(AttrType.attrString);
@@ -60,16 +60,16 @@ public class RelCatalog extends QuadrupleHeapFile
     {
       int recSize;
       RID rid = null;
-      TScan pscan = null;
+      Scan pscan = null;
       
       if (relation == null)
 	throw new Catalogmissparam(null, "MISSING_PARAM");
       
       try {
-	pscan = new TScan(this);
+	pscan = new Scan(this);
       }
       catch (Exception e1) {
-	System.err.println ("TScan"+e1);
+	System.err.println ("Scan"+e1);
 	throw new RelCatalogException(e1, "scan failed");
       }
       
@@ -101,7 +101,7 @@ public class RelCatalog extends QuadrupleHeapFile
 	   Catalogioerror,
 	   Cataloghferror
     {
-      QuadrupleHeapFile rel;
+      Heapfile rel;
       RelDesc rd = null;
       AttrDesc ad = null;
       int tupleWidth = 0;
@@ -122,7 +122,7 @@ public class RelCatalog extends QuadrupleHeapFile
 	throw new Catalogioerror(null, "");
       }
       catch (Cataloghferror e1) {
-	System.err.println ("Catalog QuadrupleHeapFile Error!"+e1);
+	System.err.println ("Catalog Heapfile Error!"+e1);
 	throw new Cataloghferror(null, "");
       }
       catch (Catalogmissparam e2) {
@@ -206,12 +206,12 @@ public class RelCatalog extends QuadrupleHeapFile
       // NOW CREATE HEAPFILE
       
       try {
-	rel = new QuadrupleHeapFile(relation);
+	rel = new Heapfile(relation);
 	if (rel == null)
 	  throw new Catalognomem(null, "NO Memory!");
       }
       catch (Exception e2) {
-	System.err.println ("QuadrupleHeapFile"+e2);
+	System.err.println ("Heapfile"+e2);
 	throw new RelCatalogException(e2, "create heapfile failed");
       }
       
@@ -247,7 +247,7 @@ public class RelCatalog extends QuadrupleHeapFile
 	throw new Catalogioerror(null, "");
       }
       catch (Cataloghferror e1) {
-	System.err.println ("Catalog QuadrupleHeapFile Error!"+e1);
+	System.err.println ("Catalog Heapfile Error!"+e1);
 	throw new Cataloghferror(null, "");
       }
       catch (Catalogmissparam e2) {
@@ -299,7 +299,7 @@ public class RelCatalog extends QuadrupleHeapFile
       }
       
       try {
-	insertQuadruple(tuple.getQuadrupleByteArray());
+	insertRecord(tuple.getTupleByteArray());
       }
       catch (Exception e2) {
 	System.err.println ("insertRecord"+e2);
@@ -315,7 +315,7 @@ public class RelCatalog extends QuadrupleHeapFile
 	   Catalogattrnotfound
     {
       RID rid = null;
-      TScan pscan = null;
+      Scan pscan = null;
       int recSize;
       RelDesc record = null;
       
@@ -323,10 +323,10 @@ public class RelCatalog extends QuadrupleHeapFile
 	throw new Catalogmissparam(null, "MISSING_PARAM");
       
       try {
-	pscan = new TScan(this);
+	pscan = new Scan(this);
       }
       catch (Exception e1) {
-	System.err.println ("TScan"+e1);
+	System.err.println ("Scan"+e1);
 	throw new RelCatalogException(e1, "scan failed");
       }
       
@@ -345,7 +345,7 @@ public class RelCatalog extends QuadrupleHeapFile
 	
 	if (record.relName.equalsIgnoreCase(relation)==true) {
 	  try {
-	    deleteQuadruple(rid);
+	    deleteRecord(rid);
 	  }
 	  catch (Exception e3) {
 	    System.err.println ("deleteRecord"+e3);
@@ -357,7 +357,7 @@ public class RelCatalog extends QuadrupleHeapFile
     };
   
   // Converts AttrDesc to tuple.
-  public void make_tuple(Quadruple tuple, RelDesc record)
+  public void make_tuple(Tuple tuple, RelDesc record)
     throws IOException, 
 	   RelCatalogException
     {
@@ -375,7 +375,7 @@ public class RelCatalog extends QuadrupleHeapFile
       
     };
   
-  public void read_tuple(Quadruple tuple, RelDesc record)
+  public void read_tuple(Tuple tuple, RelDesc record)
     throws IOException, 
 	   RelCatalogException
     {
@@ -424,7 +424,7 @@ public class RelCatalog extends QuadrupleHeapFile
   //                    int indexCnt, int attrsize){};
   
   
-  Quadruple tuple;
+  Tuple tuple;
   short [] str_sizes;
   AttrType [] attrs;
   
