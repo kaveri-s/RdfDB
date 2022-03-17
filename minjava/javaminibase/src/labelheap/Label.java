@@ -26,12 +26,12 @@ public class Label extends Tuple {
         return name;
     }
 
-    Label setLabel(String label) {
+    public Label setLabel(String label) {
         this.name=label;
         return this;
     }
 
-    void print() {
+    public void print() {
         System.out.println(ID);
         System.out.println(name);
     }

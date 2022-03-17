@@ -6,6 +6,7 @@ import java.io.*;
 import java.lang.*;
 import global.*;
 import heap.Tuple;
+import labelheap.Label;
 
 public class Quadruple extends Tuple implements GlobalConst {
 
@@ -89,22 +90,16 @@ public class Quadruple extends Tuple implements GlobalConst {
     }
 
     public byte[] getQuadrupleByteArray()throws IOException{
-
         return getTupleByteArray();
     }
-    public void print(){
-        System.out.print(subject.pageNo);
-        System.out.print(subject.slotNo);
-        System.out.print(", ");
-        System.out.print(predicate.pageNo);
-        System.out.print(predicate.slotNo);
-        System.out.print(", ");
-        System.out.print(object.pageNo);
-        System.out.print(object.slotNo);
-        System.out.print(", ");
-        System.out.print(value);
-    }
 
+    public void print() throws Exception {
+        double confidence = this.getConfidence();
+        Label subject = SystemDefs.JavabaseDB.getEntityHandle().getLabel(this.getSubjecqid().returnLID());
+        Label object = SystemDefs.JavabaseDB.getEntityHandle().getLabel(this.getObjecqid().returnLID());
+        Label predicate = SystemDefs.JavabaseDB.getPredicateHandle().getLabel(this.getPredicateID().returnLID());
+        System.out.println(subject.getLabel() +" "+ predicate.getLabel() + " " +object.getLabel()+ " " +confidence);
+    }
     @Override
     public short size(){
         return MINIBASE_QUADRUPLESIZE;
