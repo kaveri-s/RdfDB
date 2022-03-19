@@ -4,8 +4,6 @@ import bufmgr.*;
 import diskmgr.*;
 import catalog.*;
 
-import static java.lang.System.exit;
-
 public class SystemDefs {
     public static BufMgr JavabaseBM;
     //public static DB	JavabaseDB;
@@ -199,9 +197,6 @@ public class SystemDefs {
             case 6:
                 sort_order = new QuadrupleOrder(QuadrupleOrder.Confidence);
                 break;
-            default:
-                System.err.println("RuntimeError. Sort order out of range (1-6). Welp, shouldn't be here");
-                exit(1);
         }
         return sort_order;
     }
