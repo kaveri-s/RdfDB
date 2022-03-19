@@ -168,6 +168,40 @@ public class SystemDefs {
         }
     }
 
+    public static QuadrupleOrder getSortOrder(int orderType)
+    {
+        QuadrupleOrder sort_order = null;
+
+        switch(orderType)
+        {
+            case 1:
+                sort_order = new QuadrupleOrder(QuadrupleOrder.SubjectPredicateObjectConfidence);
+                break;
+
+            case 2:
+                sort_order = new QuadrupleOrder(QuadrupleOrder.PredicateSubjectObjectConfidence);
+                break;
+
+            case 3:
+                sort_order = new QuadrupleOrder(QuadrupleOrder.SubjectConfidence);
+                break;
+
+            case 4:
+                sort_order = new QuadrupleOrder(QuadrupleOrder.PredicateConfidence);
+                break;
+
+            case 5:
+                sort_order = new QuadrupleOrder(QuadrupleOrder.ObjectConfidence);
+                break;
+
+            case 6:
+                sort_order = new QuadrupleOrder(QuadrupleOrder.Confidence);
+                break;
+        }
+        return sort_order;
+    }
+
+
     public static void close()
     {
         try
