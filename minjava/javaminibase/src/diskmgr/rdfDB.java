@@ -331,7 +331,8 @@ public class rdfDB extends DB implements GlobalConst {
         }
     }
 
-    public void sortAndInsertQuadruples(boolean dbexists, int indexoption, QuadrupleOrder order) {
+    public void sortAndInsertQuadruples(boolean dbexists, int indexOption) {
+        QuadrupleOrder order = getSortOrder(indexOption);
         Quadruple aquad = null;
         try {
             if (dbexists) {
@@ -340,8 +341,7 @@ public class rdfDB extends DB implements GlobalConst {
                 QID qid = new QID();
 
                 while ((aquad = tScanner.getNext(qid)) != null) {
-//                    aquad.print();
-                    insertTempQuadruple(aquad.getQuadrupleByteArray());
+insertTempQuadruple(aquad.getQuadrupleByteArray());
                     deleteQuadruple(aquad.getQuadrupleByteArray());
                 }
             }
@@ -350,7 +350,6 @@ public class rdfDB extends DB implements GlobalConst {
             QuadrupleSort qSort = new QuadrupleSort(tScanner, order, 200);
 
             while ((aquad = qSort.getNext()) != null) {
-//                aquad.print();
                 insertQuadruple(aquad.getQuadrupleByteArray());
             }
             tempQuadHeapFile.deleteFile();
@@ -546,6 +545,26 @@ public class rdfDB extends DB implements GlobalConst {
             Runtime.getRuntime().exit(1);
         }
         return isDeleteSuccessful;
+    }
+
+    private static QuadrupleOrder getSortOrder(int indexOption)
+    {
+        switch(indexOption)
+        {
+            case 1:
+                return new QuadrupleOrder(QuadrupleOrder.SubjectConfidence);
+            case 2:
+                return new QuadrupleOrder(QuadrupleOrder.PredicateConfidence);
+            case 3:
+                return new QuadrupleOrder(QuadrupleOrder.ObjectConfidence);
+            case 4:
+                return new QuadrupleOrder(QuadrupleOrder.Confidence);
+            case 5:
+                return new QuadrupleOrder(QuadrupleOrder.Subject);
+            default:
+                System.err.println("RuntimeError. Sort order out of range (1-5). Welp, shouldn't be here");
+        }
+        return null;
     }
 
     private String getKeyFromQuadPtr(byte[] quadruplePtr) {
