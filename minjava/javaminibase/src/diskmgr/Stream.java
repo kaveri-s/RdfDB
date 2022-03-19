@@ -5,7 +5,6 @@ package diskmgr;
 
 import global.*;
 
-import iterator.Sort;
 import labelheap.Label;
 import labelheap.LabelHeapFile;
 import quadrupleheap.*;
@@ -44,13 +43,12 @@ public class Stream implements GlobalConst {
     public static EID entitySubjectId = new EID();
     public static PID entityPredicateId = new PID();
 
-    // todo Iterator.Sort
-    public Sort tSort = null;
+    public QuadrupleSort qSort = null;
 
     Stream(){ }
 
     public Stream(rdfDB rdfDatabase, int orderType, String subjectFilter, String predicateFilter, String objectFilter,
-                  double confidenceFilter) throws Exception {
+                  double confidenceFilter, int num_of_buf) throws Exception {
 
         this.orderType = orderType;
         this.subjectFilter = subjectFilter;
@@ -73,7 +71,7 @@ public class Stream implements GlobalConst {
         {
             object_null = true;
         }
-        if(confidenceFilter == 0.00)
+        if(confidenceFilter == -99.0)
         {
             confidence_null = true;
         }
@@ -118,8 +116,7 @@ public class Stream implements GlobalConst {
             QuadrupleOrder sort_order = getSortOrder(orderType);
             try
             {
-                // To do use Iterator.Sort() constructor here
-                tSort = new Sort();
+                qSort = new QuadrupleSort(tScan, sort_order, num_of_buf);
             }
             catch (Exception e)
             {
@@ -139,9 +136,9 @@ public class Stream implements GlobalConst {
             {
                 Result_HF.deleteFile();
             }
-            if(tSort !=null)
+            if(qSort !=null)
             {
-                tSort.close(); //Close the stream iterator
+                qSort.close(); //Close the stream iterator
             }
         }
         catch(Exception e)
@@ -165,8 +162,7 @@ public class Stream implements GlobalConst {
             }
             else
             {
-                // Replace with Iterator.Sort for Quadruple
-                while((quadruple = (Quadruple) tSort.get_next()) != null)
+                while((quadruple = (Quadruple) qSort.get_next()) != null)
                 {
                     if(!scanEntireHeapFile)
                     {

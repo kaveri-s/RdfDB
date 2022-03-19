@@ -299,10 +299,10 @@ public class rdfDB extends DB implements GlobalConst {
         return isDeleteSuccessful;
     }
 
-    public Stream openStream(int orderType, String subjectFilter, String predicateFilter, String objectFilter, double confidenceFilter) {
+    public Stream openStream(int orderType, String subjectFilter, String predicateFilter, String objectFilter, double confidenceFilter, int num_of_buf) {
         Stream streamObj = null;
         try {
-            streamObj = new Stream(this, orderType, subjectFilter, predicateFilter, objectFilter, confidenceFilter);
+            streamObj = new Stream(this, orderType, subjectFilter, predicateFilter, objectFilter, confidenceFilter, num_of_buf);
         } catch (Exception e) {
             System.err.println("Error while opening the stream. " + e);
             e.printStackTrace();
