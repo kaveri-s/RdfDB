@@ -555,6 +555,7 @@ public class rdfDB extends DB implements GlobalConst {
                 tempQuadHeapFile = new QuadrupleHeapFile(rdfDBname + "/tempQuadHeapFile");
             QID qid = tempQuadHeapFile.insertQuadruple(quad);
             Quadruple tempquad = tempQuadHeapFile.getQuadruple(qid);
+            System.out.print("Inserted Quadruple: ");
             tempquad.print();
         } catch (Exception e) {
             e.printStackTrace();
@@ -613,7 +614,6 @@ public class rdfDB extends DB implements GlobalConst {
         } catch (Exception e) {
             System.err.println("Error while inserting the label. " + e);
             e.printStackTrace();
-            Runtime.getRuntime().exit(1);
         }
 
         return lid;

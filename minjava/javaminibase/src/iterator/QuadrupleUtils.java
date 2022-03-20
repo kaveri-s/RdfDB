@@ -208,8 +208,7 @@ public class QuadrupleUtils
   public static void SetValue(
     Quadruple value, 
     Quadruple aquad, 
-    int fld_no)
-  {
+    int fld_no) throws IOException {
     switch (fld_no)
     {
       case 1:                // set subject

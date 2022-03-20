@@ -7,6 +7,7 @@ import java.lang.*;
 import global.*;
 import heap.Tuple;
 import labelheap.Label;
+import labelheap.LabelHeapFile;
 
 public class Quadruple extends Tuple implements GlobalConst {
 
@@ -33,7 +34,7 @@ public class Quadruple extends Tuple implements GlobalConst {
 
     public Quadruple (byte[] aquadruple, int offset) throws IOException {
         super(aquadruple, offset, MINIBASE_QUADRUPLESIZE);
-        subject= new EID();
+        subject=new EID();
         predicate=new PID();
         object=new EID();
         this.subject.slotNo=Convert.getIntValue(offset,aquadruple);
@@ -72,23 +73,30 @@ public class Quadruple extends Tuple implements GlobalConst {
         return value;
     }
 
-    public Quadruple setSubjecqid(EID subjecqid){
+    public Quadruple setSubjecqid(EID subjecqid) throws IOException {
         subject=subjecqid;
+        Convert.setIntValue(subject.slotNo, 0, returnTupleByteArray());
+        Convert.setIntValue(subject.pageNo.pid, 4, returnTupleByteArray());
         return this;
     }
 
-    public Quadruple setPredicateid(PID predicateID){
+    public Quadruple setPredicateid(PID predicateID) throws IOException {
         predicate=predicateID;
+        Convert.setIntValue(predicate.slotNo, 8, returnTupleByteArray());
+        Convert.setIntValue(predicate.pageNo.pid, 12, returnTupleByteArray());
         return this;
     }
 
-    public Quadruple setObjecqid(EID objecqid){
+    public Quadruple setObjecqid(EID objecqid) throws IOException {
         object=objecqid;
+        Convert.setIntValue(object.slotNo, 16, returnTupleByteArray());
+        Convert.setIntValue(object.pageNo.pid, 20, returnTupleByteArray());
         return this;
     }
 
-    public Quadruple setConfidence(double confidence){
+    public Quadruple setConfidence(double confidence) throws IOException {
         value = (float)confidence;
+        Convert.setFloValue((float)confidence, 24, returnTupleByteArray());
         return this;
     }
 
@@ -98,12 +106,11 @@ public class Quadruple extends Tuple implements GlobalConst {
 
     public void print() throws Exception {
         double confidence = this.getConfidence();
-        Label subject = SystemDefs.JavabaseDB.getEntityHandle().getLabel(this.getSubjecqid().returnLID());
-        Label object = SystemDefs.JavabaseDB.getEntityHandle().getLabel(this.getObjecqid().returnLID());
-        Label predicate = SystemDefs.JavabaseDB.getPredicateHandle().getLabel(this.getPredicateID().returnLID());
-        subject.getLabel();
-        predicate.getLabel();
-        object.getLabel();
+        LabelHeapFile entityhandle = SystemDefs.JavabaseDB.getEntityHandle();
+        LabelHeapFile predicatehandle = SystemDefs.JavabaseDB.getPredicateHandle();
+        Label subject = entityhandle.getLabel(this.getSubjecqid().returnLID());
+        Label object = entityhandle.getLabel(this.getObjecqid().returnLID());
+        Label predicate = predicatehandle.getLabel(this.getPredicateID().returnLID());
         System.out.println(subject.getLabel() +" "+ predicate.getLabel() + " " +object.getLabel()+ " " +confidence);
     }
     @Override
