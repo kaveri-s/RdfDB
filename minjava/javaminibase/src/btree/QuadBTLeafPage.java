@@ -10,7 +10,8 @@ import java.io.*;
 import java.lang.*;
 import global.*;
 import diskmgr.*;
-import heap.*;
+
+import static heap.HFPage.DPFIXED;
 
 /**
  * A QuadBTLeafPage is a leaf page on a label B+ tree.  It holds abstract 

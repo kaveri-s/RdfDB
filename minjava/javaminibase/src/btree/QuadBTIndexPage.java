@@ -13,6 +13,8 @@ import diskmgr.*;
 import heap.*;
 import quadrupleheap.*;
 
+import static heap.HFPage.DPFIXED;
+
 /**
  * A QuadBTIndexPage is an index page on a label B+ tree.  It holds abstract 
  * {key, PageId} pairs; it doesn't know anything about the keys 
@@ -184,7 +186,7 @@ public class QuadBTIndexPage extends QuadBTSortedPage{
   /**  Iterators. 
    * One of the two functions: getFirst and getNext
    * which  provide an iterator interface to the records on a BTIndexPage.
-   *@param rid It will be modified and the first rid in the index page
+   *@param qid It will be modified and the first rid in the index page
    * will be passed out by itself. Input and Output parameter. 
    *@return return the first KeyDataEntry in the index page.
    *null if NO MORE RECORD
@@ -220,7 +222,7 @@ public class QuadBTIndexPage extends QuadBTSortedPage{
   /**Iterators.  
    * One of the two functions: get_first and get_next which  provide an
    * iterator interface to the records on a BTIndexPage.
-   *@param rid It will be modified and next rid will be passed out by itself.
+   *@param qid It will be modified and next rid will be passed out by itself.
    *         Input and Output parameter.
    *@return return the next KeyDataEntry in the index page. 
    *null if no more record

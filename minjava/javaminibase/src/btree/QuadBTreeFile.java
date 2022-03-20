@@ -217,7 +217,7 @@ public class QuadBTreeFile extends QuadIndexFile
 	  headerPageId= headerPage.getPageId();
 	  add_file_entry(filename, headerPageId);
 	  headerPage.set_magic0(MAGIC0);
-	  headerPage.set_rooqid(new PageId(INVALID_PAGE));
+	  headerPage.set_rootId(new PageId(INVALID_PAGE));
 	  headerPage.set_keyType((short)keytype);    
 	  headerPage.set_maxKeySize(keysize);
 	  headerPage.set_deleteFashion( delete_fashion );
@@ -324,7 +324,7 @@ public class QuadBTreeFile extends QuadIndexFile
       header= new QuadBTreeHeaderPage( pinPage(headerPageId));
       
       old_data = headerPage.get_rootId();
-      header.set_rooqid( newRoot);
+      header.set_rootId( newRoot);
       
       // clock in dirty bit to bm so our dtor needn't have to worry about it
       unpinPage(headerPageId, true /* = DIRTY */ );

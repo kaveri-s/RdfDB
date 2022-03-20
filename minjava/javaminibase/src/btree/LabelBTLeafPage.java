@@ -12,6 +12,8 @@ import global.*;
 import diskmgr.*;
 import heap.*;
 
+import static heap.HFPage.DPFIXED;
+
 /**
  * A LabelBTLeafPage is a leaf page on a label B+ tree.  It holds abstract 
  * <key, LID> pairs; it doesn't know anything about the keys 
