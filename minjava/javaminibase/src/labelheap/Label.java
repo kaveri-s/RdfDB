@@ -22,7 +22,7 @@ public class Label extends Tuple {
         this.name = Convert.getStrValue(offset+8, alabel, length - 8);
     }
 
-    String getLabel() {
+    public String getLabel() {
         return name;
     }
 

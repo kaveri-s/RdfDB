@@ -67,7 +67,6 @@ public class LID{
       return false;
   }
 
-  // CHANGE#XXXX_NINAD - TODO - Paraphrase
   /** Returns the corresponding EID
    * @return EID
    */
@@ -78,7 +77,6 @@ public class LID{
 
   }
   
-  // CHANGE#XXXX_NINAD - TODO - Paraphrase
   /** Returns the corresponding PID
    * @return PID
    */

@@ -6,6 +6,7 @@ import global.*;
 import java.io.*;
 import java.lang.*;
 import quadrupleheap.*;
+import labelheap.*;
 
 /**
  *some useful method when processing Quadruple 
@@ -21,327 +22,329 @@ public class QuadrupleUtils
    *    1        if the quadruple is greater,
    *   -1        if the quadruple is smaller,
    *
-   *@param    fldType   the type of the field being compared.
    *@param    q1        one quadruple.
    *@param    q2        another quadruple.
-   *@param    q1_fld_no the field numbers in the quadruples to be compared.
-   *@param    q2_fld_no the field numbers in the quadruples to be compared. 
-   *@exception UnknowAttrType don't know the attribute type
-   *@exception IOException some I/O fault
-   *@exception QuadrupleUtilsException exception from this class
+   *@param    quadrupleOrder order and field to compare quadruple by.
    *@return   0        if the two are equal,
    *          1        if the quadruple is greater,
    *         -1        if the quadruple is smaller,                              
-   */
-  public static int CompareQuadrupleWithQuadruple(AttrType fldType,
-					  Quadruple  q1, int q1_fld_no,
-					  Quadruple  q2, int q2_fld_no)
-    throws IOException,
-	   UnknowAttrType,
-	   QuadrupleUtilsException
-    {
-      int   q1_i,  q2_i;
-      float q1_r,  q2_r;
-      String q1_s, q2_s;
-      
-      switch (fldType.attrType) 
-	{
-	case AttrType.attrInteger:                // Compare two integers.
-	  try {
-	    q1_i = q1.getIntFld(q1_fld_no);
-	    q2_i = q2.getIntFld(q2_fld_no);
-	  }catch (FieldNumberOutOfBoundException e){
-	    throw new QuadrupleUtilsException(e, "FieldNumberOutOfBoundException is caught by QuadrupleUtils.java");
-	  }
-	  if (q1_i == q2_i) return  0;
-	  if (q1_i <  q2_i) return -1;
-	  if (q1_i >  q2_i) return  1;
-	  
-	case AttrType.attrReal:                // Compare two floats
-	  try {
-	    q1_r = q1.getFloFld(q1_fld_no);
-	    q2_r = q2.getFloFld(q2_fld_no);
-	  }catch (FieldNumberOutOfBoundException e){
-	    throw new QuadrupleUtilsException(e, "FieldNumberOutOfBoundException is caught by QuadrupleUtils.java");
-	  }
-	  if (q1_r == q2_r) return  0;
-	  if (q1_r <  q2_r) return -1;
-	  if (q1_r >  q2_r) return  1;
-	  
-	case AttrType.attrString:                // Compare two strings
-	  try {
-	    q1_s = q1.getStrFld(q1_fld_no);
-	    q2_s = q2.getStrFld(q2_fld_no);
-	  }catch (FieldNumberOutOfBoundException e){
-	    throw new QuadrupleUtilsException(e, "FieldNumberOutOfBoundException is caught by QuadrupleUtils.java");
-	  }
-	  
-	  // Now handle the special case that is posed by the max_values for strings...
-	  if(q1_s.compareTo( q2_s)>0)return 1;
-	  if (q1_s.compareTo( q2_s)<0)return -1;
-	  return 0;
-	default:
-	  
-	  throw new UnknowAttrType(null, "Don't know how to handle attrSymbol, attrNull");
-	  
-	}
-    }
-  
-  
-  
-  /**
-   * This function  compares  quadruple1 with another quadruple2 whose
-   * field number is same as the quadruple1
    *
-   *@param    fldType   the type of the field being compared.
-   *@param    q1        one quadruple
-   *@param    value     another quadruple.
-   *@param    q1_fld_no the field numbers in the quadruples to be compared.  
+   * @throws InvalidSlotNumberException
+   * @throws InvalidTupleSizeException
+   * @throws HFException
+   * @throws HFDiskMgrException
+   * @throws HFBufMgrException
+   * @throws Exception
+   */
+  public static int CompareQuadrupleWithQuadruple(
+    Quadruple q1,
+    Quadruple q2, 
+    QuadrupleOrder quadrupleOrder)
+    throws QuadrupleUtilsException
+    {
+      int lRet = 0;
+      LabelHeapFile labelHeapFile = SystemDefs.JavabaseDB.getEntityHandle();
+      switch (quadrupleOrder._sortBy)
+      {
+        case QuadrupleOrder.SubjectPredicateObjectConfidence:
+        lRet = comapareSubject(q1, q2, labelHeapFile);
+        if (lRet == 0)
+        {
+          lRet = comaparePredicate(q1, q2, labelHeapFile);
+          if (lRet == 0)
+          {
+            lRet = comapareObject(q1, q2, labelHeapFile);
+            if (lRet == 0)
+            {
+              lRet = comapareConfidence(q1, q2);
+            }
+          }
+        }
+        break;
+
+        case QuadrupleOrder.PredicateSubjectObjectConfidence:
+        lRet = comaparePredicate(q1, q2, labelHeapFile);
+        if (lRet == 0)
+        {
+          lRet = comapareSubject(q1, q2, labelHeapFile);
+          if (lRet == 0)
+          {
+            lRet = comapareObject(q1, q2, labelHeapFile);
+            if (lRet == 0)
+            {
+              lRet = comapareConfidence(q1, q2);
+            }
+          }
+        }
+        break;
+
+        case QuadrupleOrder.SubjectConfidence:
+        lRet = comapareSubject(q1, q2, labelHeapFile);
+        if (lRet == 0)
+        {
+          lRet = comapareConfidence(q1, q2);
+        }
+        break;
+
+        case QuadrupleOrder.PredicateConfidence:
+        lRet = comaparePredicate(q1, q2, labelHeapFile);
+        if (lRet == 0)
+        {
+          lRet = comapareConfidence(q1, q2);
+        }
+        break;
+
+        case QuadrupleOrder.ObjectConfidence:
+        lRet = comapareObject(q1, q2, labelHeapFile);
+        if (lRet == 0)
+        {
+          lRet = comapareConfidence(q1, q2);
+        }
+        break;
+
+        case QuadrupleOrder.Confidence:
+        lRet = comapareConfidence(q1, q2);
+        break;
+
+        case QuadrupleOrder.Subject:
+        lRet = comapareSubject(q1, q2, labelHeapFile);
+        break;
+
+        default:
+        lRet = 0;
+        break;
+      }
+      return lRet;
+    }
+    
+  /**
+   * This function compares a quadruple with another quadruple in respective field, and
+   *  returns:
+   *
+   *    0        if the two are equal,
+   *    1        if the quadruple is greater,
+   *   -1        if the quadruple is smaller,
+   *
+   *@param    q1        one quadruple.
+   *@param    q2        another quadruple.
+   *@param    quadruple_fld_no the field numbers in the quadruples to be compared.
    *@return   0        if the two are equal,
    *          1        if the quadruple is greater,
-   *         -1        if the quadruple is smaller,  
-   *@exception UnknowAttrType don't know the attribute type   
-   *@exception IOException some I/O fault
-   *@exception QuadrupleUtilsException exception from this class   
-   */            
-  public static int CompareQuadrupleWithValue(AttrType fldType,
-					  Quadruple  q1, int q1_fld_no,
-					  Quadruple  value)
-    throws IOException,
-	   UnknowAttrType,
-	   QuadrupleUtilsException
+   *         -1        if the quadruple is smaller,                              
+   *
+   * @throws InvalidSlotNumberException
+   * @throws InvalidTupleSizeException
+   * @throws HFException
+   * @throws HFDiskMgrException
+   * @throws HFBufMgrException
+   * @throws Exception
+   */
+  public static int CompareQuadrupleWithQuadruple(
+    Quadruple q1,
+    Quadruple q2, 
+    int quadruple_fld_no)
+    throws QuadrupleUtilsException
     {
-      return CompareQuadrupleWithQuadruple(fldType, q1, q1_fld_no, value, q1_fld_no);
+      LabelHeapFile labelHeapFile = SystemDefs.JavabaseDB.getEntityHandle();
+      switch (quadruple_fld_no)
+      {
+        case 1:                // Compare subject
+        return comapareSubject(q1, q2, labelHeapFile);
+        
+        case 2:                // Compare predicate
+        return comaparePredicate(q1, q2, labelHeapFile);
+        
+        case 3:                // Compare object
+        return comapareObject(q1, q2, labelHeapFile);
+        
+        case 4:                // Compare confidence
+        return comapareConfidence(q1, q2);
+      }
+      return 0;
     }
-  
+    
   /**
-   *This function Compares two Quadruple inn all fields 
-   * @param q1 the first quadruple
-   * @param q2 the secocnd quadruple
-   * @param type[] the field types
-   * @param len the field numbers
-   * @return  0        if the two are not equal,
-   *          1        if the two are equal,
-   *@exception UnknowAttrType don't know the attribute type
-   *@exception IOException some I/O fault
-   *@exception QuadrupleUtilsException exception from this class
+   * This function  compares  quadruple1 with another quadruple2
+   *
+   *@param    q1        one quadruple.
+   *@param    q2        another quadruple.
+   *@param    quadruple_fld_no the field numbers in the quadruples to be compared.
+   *@return   true      if the two are equal,
+   *          false     if the two are not equal.
+   *
+   * @throws InvalidSlotNumberException
+   * @throws InvalidTupleSizeException
+   * @throws HFException
+   * @throws HFDiskMgrException
+   * @throws HFBufMgrException
+   * @throws Exception
    */            
-  
-  public static boolean Equal(Quadruple q1, Quadruple q2, AttrType types[], int len)
-    throws IOException,UnknowAttrType,QuadrupleUtilsException
+  public static boolean Equal(
+    Quadruple q1, 
+    Quadruple q2)
+    throws QuadrupleUtilsException
     {
       int i;
-      
-      for (i = 1; i <= len; i++)
-	if (CompareQuadrupleWithQuadruple(types[i-1], q1, i, q2, i) != 0)
-	  return false;
+      for (i = 1; i <= 4; i++)
+      {
+        if (CompareQuadrupleWithQuadruple(q1, q2, i) != 0)
+        {
+          return false;
+        }
+      }
       return true;
     }
   
   /**
-   *get the string specified by the field number
-   *@param quadruple the quadruple 
-   *@param fidno the field number
-   *@return the content of the field number
-   *@exception IOException some I/O fault
-   *@exception QuadrupleUtilsException exception from this class
-   */
-  public static String Value(Quadruple  quadruple, int fldno)
-    throws IOException,
-	   QuadrupleUtilsException
+   *This function Compares two Quadruple inn all fields 
+   * @param value the first quadruple
+   * @param aquad the secocnd quadruple
+   * @param fld_no the field number
+   * @return  void
+   * 
+   */            
+  
+  public static void SetValue(
+    Quadruple value, 
+    Quadruple aquad, 
+    int fld_no)
+  {
+    switch (fld_no)
     {
-      String temp;
-      try{
-	temp = quadruple.getStrFld(fldno);
-      }catch (FieldNumberOutOfBoundException e){
-	throw new QuadrupleUtilsException(e, "FieldNumberOutOfBoundException is caught by QuadrupleUtils.java");
-      }
-      return temp;
-    }
-  
- 
-  /**
-   *set up a quadruple in specified field from a quadruple
-   *@param value the quadruple to be set 
-   *@param quadruple the given quadruple
-   *@param fld_no the field number
-   *@param fldType the quadruple attr type
-   *@exception UnknowAttrType don't know the attribute type
-   *@exception IOException some I/O fault
-   *@exception QuadrupleUtilsException exception from this class
-   */  
-  public static void SetValue(Quadruple value, Quadruple  quadruple, int fld_no, AttrType fldType)
-    throws IOException,
-	   UnknowAttrType,
-	   QuadrupleUtilsException
-    {
-      
-      switch (fldType.attrType)
-	{
-	case AttrType.attrInteger:
-	  try {
-	    value.setIntFld(fld_no, quadruple.getIntFld(fld_no));
-	  }catch (FieldNumberOutOfBoundException e){
-	    throw new QuadrupleUtilsException(e, "FieldNumberOutOfBoundException is caught by QuadrupleUtils.java");
-	  }
-	  break;
-	case AttrType.attrReal:
-	  try {
-	    value.setFloFld(fld_no, quadruple.getFloFld(fld_no));
-	  }catch (FieldNumberOutOfBoundException e){
-	    throw new QuadrupleUtilsException(e, "FieldNumberOutOfBoundException is caught by QuadrupleUtils.java");
-	  }
-	  break;
-	case AttrType.attrString:
-	  try {
-	    value.setStrFld(fld_no, quadruple.getStrFld(fld_no));
-	  }catch (FieldNumberOutOfBoundException e){
-	    throw new QuadrupleUtilsException(e, "FieldNumberOutOfBoundException is caught by QuadrupleUtils.java");
-	  }
-	  break;
-	default:
-	  throw new UnknowAttrType(null, "Don't know how to handle attrSymbol, attrNull");
-	  
-	}
-      
-      return;
-    }
-  
-  
-  /**
-   *set up the Jquadruple's attrtype, string size,field number for using join
-   *@param Jquadruple  reference to an actual quadruple  - no memory has been malloced
-   *@param res_attrs  attributes type of result quadruple
-   *@param in1  array of the attributes of the quadruple (ok)
-   *@param len_in1  num of attributes of in1
-   *@param in2  array of the attributes of the quadruple (ok)
-   *@param len_in2  num of attributes of in2
-   *@param q1_str_sizes shows the length of the string fields in S
-   *@param q2_str_sizes shows the length of the string fields in R
-   *@param proj_list shows what input fields go where in the output quadruple
-   *@param nOutFlds number of outer relation fileds
-   *@exception IOException some I/O fault
-   *@exception QuadrupleUtilsException exception from this class
-   */
-  public static short[] setup_op_quadruple(Quadruple Jquadruple, AttrType[] res_attrs,
-				       AttrType in1[], int len_in1, AttrType in2[], 
-				       int len_in2, short q1_str_sizes[], 
-				       short q2_str_sizes[], 
-				       FldSpec proj_list[], int nOutFlds)
-    throws IOException,
-	   QuadrupleUtilsException
-    {
-      short [] sizesQ1 = new short [len_in1];
-      short [] sizesQ2 = new short [len_in2];
-      int i, count = 0;
-      
-      for (i = 0; i < len_in1; i++)
-        if (in1[i].attrType == AttrType.attrString)
-	  sizesQ1[i] = q1_str_sizes[count++];
-      
-      for (count = 0, i = 0; i < len_in2; i++)
-	if (in2[i].attrType == AttrType.attrString)
-	  sizesQ2[i] = q2_str_sizes[count++];
-      
-      int n_strs = 0; 
-      for (i = 0; i < nOutFlds; i++)
-	{
-	  if (proj_list[i].relation.key == RelSpec.outer)
-	    res_attrs[i] = new AttrType(in1[proj_list[i].offset-1].attrType);
-	  else if (proj_list[i].relation.key == RelSpec.innerRel)
-	    res_attrs[i] = new AttrType(in2[proj_list[i].offset-1].attrType);
-	}
-      
-      // Now construct the res_str_sizes array.
-      for (i = 0; i < nOutFlds; i++)
-	{
-	  if (proj_list[i].relation.key == RelSpec.outer && in1[proj_list[i].offset-1].attrType == AttrType.attrString)
-            n_strs++;
-	  else if (proj_list[i].relation.key == RelSpec.innerRel && in2[proj_list[i].offset-1].attrType == AttrType.attrString)
-            n_strs++;
-	}
-      
-      short[] res_str_sizes = new short [n_strs];
-      count         = 0;
-      for (i = 0; i < nOutFlds; i++)
-	{
-	  if (proj_list[i].relation.key == RelSpec.outer && in1[proj_list[i].offset-1].attrType ==AttrType.attrString)
-            res_str_sizes[count++] = sizesQ1[proj_list[i].offset-1];
-	  else if (proj_list[i].relation.key == RelSpec.innerRel && in2[proj_list[i].offset-1].attrType ==AttrType.attrString)
-            res_str_sizes[count++] = sizesQ2[proj_list[i].offset-1];
-	}
-      try {
-	Jquadruple.setHdr((short)nOutFlds, res_attrs, res_str_sizes);
-      }catch (Exception e){
-	throw new QuadrupleUtilsException(e,"setHdr() failed");
-      }
-      return res_str_sizes;
-    }
-  
- 
-   /**
-   *set up the Jquadruple's attrtype, string size,field number for using project
-   *@param Jquadruple  reference to an actual quadruple  - no memory has been malloced
-   *@param res_attrs  attributes type of result quadruple
-   *@param in1  array of the attributes of the quadruple (ok)
-   *@param len_in1  num of attributes of in1
-   *@param q1_str_sizes shows the length of the string fields in S
-   *@param proj_list shows what input fields go where in the output quadruple
-   *@param nOutFlds number of outer relation fileds
-   *@exception IOException some I/O fault
-   *@exception QuadrupleUtilsException exception from this class
-   *@exception InvalidRelation invalid relation 
-   */
+      case 1:                // set subject
+      value.setSubjecqid(aquad.getSubjecqid());
+      break;
 
-  public static short[] setup_op_quadruple(Quadruple Jquadruple, AttrType res_attrs[],
-				       AttrType in1[], int len_in1,
-				       short q1_str_sizes[], 
-				       FldSpec proj_list[], int nOutFlds)
-    throws IOException,
-	   QuadrupleUtilsException, 
-	   InvalidRelation
-    {
-      short [] sizesQ1 = new short [len_in1];
-      int i, count = 0;
-      
-      for (i = 0; i < len_in1; i++)
-        if (in1[i].attrType == AttrType.attrString)
-	  sizesQ1[i] = q1_str_sizes[count++];
-      
-      int n_strs = 0; 
-      for (i = 0; i < nOutFlds; i++)
-	{
-	  if (proj_list[i].relation.key == RelSpec.outer) 
-            res_attrs[i] = new AttrType(in1[proj_list[i].offset-1].attrType);
-	  
-	  else throw new InvalidRelation("Invalid relation -innerRel");
-	}
-      
-      // Now construct the res_str_sizes array.
-      for (i = 0; i < nOutFlds; i++)
-	{
-	  if (proj_list[i].relation.key == RelSpec.outer
-	      && in1[proj_list[i].offset-1].attrType == AttrType.attrString)
-	    n_strs++;
-	}
-      
-      short[] res_str_sizes = new short [n_strs];
-      count         = 0;
-      for (i = 0; i < nOutFlds; i++) {
-	if (proj_list[i].relation.key ==RelSpec.outer
-	    && in1[proj_list[i].offset-1].attrType ==AttrType.attrString)
-	  res_str_sizes[count++] = sizesQ1[proj_list[i].offset-1];
-      }
-     
-      try {
-	Jquadruple.setHdr((short)nOutFlds, res_attrs, res_str_sizes);
-      }catch (Exception e){
-	throw new QuadrupleUtilsException(e,"setHdr() failed");
-      } 
-      return res_str_sizes;
+      case 2:                // set predicate
+      value.setPredicateid(aquad.getPredicateID());
+      break;
+
+      case 3:                // set object
+      value.setObjecqid(aquad.getObjecqid());
+      break;
+
+      case 4:                // set confidence
+      value.setConfidence(aquad.getConfidence());
+      break;
     }
+  }
+
+  /**
+   * This function Compares two Quadruple inn all fields 
+   * @param value the first quadruple
+   * @param aquad the secocnd quadruple
+   * @return  void
+   * 
+   */            
+  
+  public static void SetValue(
+    Quadruple value, 
+    Quadruple aquad)
+  {
+    value.quadrupleCopy(aquad);
+  }
+
+  private static int comapareSubject(
+    Quadruple q1,
+    Quadruple q2, 
+    LabelHeapFile labelHeapFile)
+    throws QuadrupleUtilsException
+  {
+    try {
+      EID s1 = q1.getSubjecqid();
+      EID s2 = q2.getSubjecqid();
+      if(s1 == s2)
+      {
+        return 0;
+      }
+      LID sl1 = s1.returnLID();
+      LID sl2 = s2.returnLID();
+      if(sl1 == sl2)
+      {
+        return 0;
+      }
+      //get label from ID and compare
+      Label sll1 = labelHeapFile.getLabel(sl1);
+      Label sll2 = labelHeapFile.getLabel(sl2);
+      return LabelUtils.CompareLabelWithLabel(sll1, sll2);
+    } catch (Exception e) {
+      throw new QuadrupleUtilsException(e, "QuadrupleUtils.java: getLabel error");
+    }
+  }
+
+  private static int comaparePredicate(
+    Quadruple q1,
+    Quadruple q2, 
+    LabelHeapFile labelHeapFile)
+    throws QuadrupleUtilsException
+  {
+    try {
+      PID p1 = q1.getPredicateID();
+      PID p2 = q2.getPredicateID();
+      if(p1 == p2)
+      {
+        return 0;
+      }
+      LID pl1 = p1.returnLID();
+      LID pl2 = p2.returnLID();
+      if(pl1 == pl2)
+      {
+        return 0;
+      }
+      //get label from ID and compare
+      Label pll1 = labelHeapFile.getLabel(pl1);
+      Label pll2 = labelHeapFile.getLabel(pl2);
+      return LabelUtils.CompareLabelWithLabel(pll1, pll2);
+    } catch (Exception e) {
+	    throw new QuadrupleUtilsException(e, "QuadrupleUtils.java: getLabel error");
+    }
+  }
+
+  private static int comapareObject(
+    Quadruple q1,
+    Quadruple q2, 
+    LabelHeapFile labelHeapFile)
+    throws QuadrupleUtilsException
+  {
+    try {
+      EID o1 = q1.getObjecqid();
+      EID o2 = q2.getObjecqid();
+      if(o1 == o2)
+      {
+        return 0;
+      }
+      LID ol1 = o1.returnLID();
+      LID ol2 = o2.returnLID();
+      if (ol1 == ol2)
+      {
+        return 0;
+      }
+      //get label from ID and compare
+      Label oll1 = labelHeapFile.getLabel(ol1);
+      Label oll2 = labelHeapFile.getLabel(ol2);
+      return LabelUtils.CompareLabelWithLabel(oll1, oll2);
+    } catch (Exception e) {
+	    throw new QuadrupleUtilsException(e, "QuadrupleUtils.java: getLabel error");
+    }
+  }
+
+  private static int comapareConfidence(
+    Quadruple q1,
+    Quadruple q2)
+  {
+    double c1 = q1.getConfidence();
+    double c2 = q2.getConfidence();
+    if (c1 > c2)
+    {
+      return 1;
+    }
+    else if (c1 < c2)
+    {
+      return -1;
+    }
+    return 0;
+  }
+
+
 }
-
-
-
 

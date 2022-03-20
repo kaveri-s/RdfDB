@@ -67,7 +67,6 @@ public class EID{
       return false;
   }
 
-  // CHANGE#XXXX_NINAD - TODO - Paraphrase
   /** Returns corresponding LID
    * @return LID
    */
