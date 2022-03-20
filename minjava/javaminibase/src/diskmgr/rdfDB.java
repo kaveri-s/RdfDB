@@ -95,6 +95,13 @@ public class rdfDB extends DB implements GlobalConst {
 
     }
     public QuadBTreeFile getQuadBTree() {
+        try{
+            quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT");
+        }catch(Exception e){
+            System.err.println(e);
+            e.printStackTrace();
+            Runtime.getRuntime().exit(1);
+        }
         return quadrupleBTree;
     }
 
@@ -111,6 +118,13 @@ public class rdfDB extends DB implements GlobalConst {
     }
 
     public QuadBTreeFile getQuadBTreeIndex() {
+        try{
+            quadBTreeIndex = new QuadBTreeFile(rdfDBname + "/quadBTreeIndex");
+        }catch(Exception e){
+            System.err.println(e);
+            e.printStackTrace();
+            Runtime.getRuntime().exit(1);
+        }
         return quadBTreeIndex;
     }
 
@@ -152,12 +166,14 @@ public class rdfDB extends DB implements GlobalConst {
         KeyDataEntry entry = null;
 
         try {
+            quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT");
             QuadBTFileScan scan = quadrupleBTree.new_scan(null, null);
             entry = scan.get_next();
 
             //scan the quadBTTree and insert the new distinct values to the distinctSubjectBT
             while (entry != null) ;
             {
+                distinctSubjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctSubjBT");
                 String label = ((StringKey) (entry.key)).getKey();
                 String[] temp;
                 String delimiter = ":";
@@ -183,6 +199,8 @@ public class rdfDB extends DB implements GlobalConst {
             }
             ;
             distinctSubjectBTScan.DestroyBTreeFileScan();
+            distinctSubjectsBTree.close();
+            quadrupleBTree.close();
 
         } catch (Exception e) {
             System.err.println("Error while fetching the quadruples count. " + e);
@@ -197,6 +215,8 @@ public class rdfDB extends DB implements GlobalConst {
         KeyDataEntry entry = null;
 
         try {
+            quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT");
+            distinctObjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctObjBT");
             QuadBTFileScan scan = quadrupleBTree.new_scan(null, null);
             entry = scan.get_next();
 
@@ -220,15 +240,15 @@ public class rdfDB extends DB implements GlobalConst {
                 entry = scan.get_next();
             }
             scan.DestroyBTreeFileScan();
-            LabelBTFileScan distinctObjectBTScan = distinctSubjectsBTree.new_scan(null, null);
+            LabelBTFileScan distinctObjectBTScan = distinctObjectsBTree.new_scan(null, null);
             entry = distinctObjectBTScan.get_next();
             while (entry != null) {
                 objectsCount++;
                 entry = distinctObjectBTScan.get_next();
             }
-            ;
             distinctObjectBTScan.DestroyBTreeFileScan();
-
+            distinctObjectsBTree.close();
+            quadrupleBTree.close();
         } catch (Exception e) {
             System.err.println("Error while fetching the quadruples count. " + e);
             e.printStackTrace();
@@ -238,27 +258,68 @@ public class rdfDB extends DB implements GlobalConst {
     }
 
     public EID insertEntity(String entityLabel) {
-        LID lid = insertLabel(entityLabel, entityBTree, entityLabelHeapFile);
+        LID lid = null;
+        try {
+            entityBTree = new LabelBTreeFile(rdfDBname + "/entityBT");
+            lid = insertLabel(entityLabel, entityBTree, entityLabelHeapFile);
+            entityBTree.close();
+
+        }catch (Exception e) {
+            System.err.println("" + e);
+            e.printStackTrace();
+            Runtime.getRuntime().exit(1);
+        }
         return lid.returnEID();
     }
 
     public boolean deleteEntity(String entityLabel) {
-        return deleteLabel(entityLabel, entityBTree, entityLabelHeapFile);
+        boolean result = false;
+        try {
+            entityBTree = new LabelBTreeFile(rdfDBname + "/entityBT");
+            result = deleteLabel(entityLabel, entityBTree, entityLabelHeapFile);
+            entityBTree.close();
+        }catch (Exception e) {
+            System.err.println("" + e);
+            e.printStackTrace();
+            Runtime.getRuntime().exit(1);
+        }
+        return result;
     }
 
     public PID insertPredicate(String predicateLabel) {
-        LID lid = insertLabel(predicateLabel, predicateBTree, predicateLabelHeapFile);
+        LID lid = null;
+        try {
+            predicateBTree = new LabelBTreeFile(rdfDBname + "/predicateBT");
+            lid = insertLabel(predicateLabel, predicateBTree, predicateLabelHeapFile);
+            predicateBTree.close();
+
+        }catch (Exception e) {
+            System.err.println("" + e);
+            e.printStackTrace();
+            Runtime.getRuntime().exit(1);
+        }
         return lid.returnPID();
     }
 
     public boolean deletePredicate(String predicateLabel) {
-        return deleteLabel(predicateLabel, predicateBTree, predicateLabelHeapFile);
+        boolean result = false;
+        try {
+            predicateBTree = new LabelBTreeFile(rdfDBname + "/predicateBT");
+            result = deleteLabel(predicateLabel, predicateBTree, predicateLabelHeapFile);
+            predicateBTree.close();
+        }catch (Exception e) {
+            System.err.println("" + e);
+            e.printStackTrace();
+            Runtime.getRuntime().exit(1);
+        }
+        return result;
     }
 
     public QID insertQuadruple(byte[] quadruplePtr) {
         QID qid = null;
 
         try {
+            quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT");
             String key = getKeyFromQuadPtr(quadruplePtr);
             double confidence = Convert.getFloValue(24, quadruplePtr);
             KeyClass low_key = new StringKey(key);
@@ -284,6 +345,7 @@ public class rdfDB extends DB implements GlobalConst {
             qid = quadrupleHeapFile.insertQuadruple(quadruplePtr);
             quadrupleBTree.insert(low_key, qid);
             scan.DestroyBTreeFileScan();
+            quadrupleBTree.close();
 
         } catch (Exception e) {
             System.err.println("Error while inserting the quadruples. " + e);
@@ -297,6 +359,7 @@ public class rdfDB extends DB implements GlobalConst {
         boolean isDeleteSuccessful = false;
 
         try {
+            quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT");
             String key = getKeyFromQuadPtr(quadruplePtr);
             double confidence = Convert.getFloValue(24, quadruplePtr);
             KeyClass low_key = new StringKey(key);
@@ -312,7 +375,7 @@ public class rdfDB extends DB implements GlobalConst {
 
             }
             scan.DestroyBTreeFileScan();
-
+            quadrupleBTree.close();
         } catch (Exception e) {
             System.err.println("Error while deleting the quadruples. " + e);
             e.printStackTrace();
@@ -462,19 +525,20 @@ public class rdfDB extends DB implements GlobalConst {
 
     private void removeExistingIndices() {
         if (quadBTreeIndex != null) {
+
             try {
-                {
-                    QuadBTFileScan scan = quadBTreeIndex.new_scan(null, null);
-                    QID qid = null;
-                    KeyDataEntry entry = null;
-                    while ((entry = scan.get_next()) != null) {
-                        qid = ((QuadLeafData) entry.data).getData();
-                        quadBTreeIndex.Delete(entry.key, qid);
-                    }
-                    scan.DestroyBTreeFileScan();
-                    quadBTreeIndex.close();
-                    quadBTreeIndex.destroyFile();
+                quadBTreeIndex = new QuadBTreeFile(rdfDBname + "/quadBTreeIndex");
+                QuadBTFileScan scan = quadBTreeIndex.new_scan(null, null);
+                QID qid = null;
+                KeyDataEntry entry = null;
+                while ((entry = scan.get_next()) != null) {
+                    qid = ((QuadLeafData) entry.data).getData();
+                    quadBTreeIndex.Delete(entry.key, qid);
                 }
+                scan.DestroyBTreeFileScan();
+                quadBTreeIndex.close();
+                quadBTreeIndex.destroyFile();
+
             } catch (Exception e) {
                 System.err.println("Deleting indexes failed " + e);
                 e.printStackTrace();
@@ -505,10 +569,15 @@ public class rdfDB extends DB implements GlobalConst {
             entityBTree = new LabelBTreeFile(rdfDBname + "/entityBT", AttrType.attrString, 255, 1);
             entityBTree.close();
             predicateBTree = new LabelBTreeFile(rdfDBname + "/predicateBT", AttrType.attrString, 255, 1);
+            predicateBTree.close();
             quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT", AttrType.attrString, 255, 1);
+            quadrupleBTree.close();
             distinctSubjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctSubjBT", AttrType.attrString, 255, 1);
+            distinctSubjectsBTree.close();
             distinctObjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctObjBT", AttrType.attrString, 255, 1);
+            distinctObjectsBTree.close();
             quadBTreeIndex = new QuadBTreeFile(rdfDBname + "/quadBTreeIndex", AttrType.attrString, 255, 1);
+            quadBTreeIndex.close();
 
         } catch (Exception e) {
             System.err.println("" + e);
