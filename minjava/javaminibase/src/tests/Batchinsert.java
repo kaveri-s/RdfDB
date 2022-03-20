@@ -56,7 +56,7 @@ public class Batchinsert {
         return dbexists;
     }
 
-    public static void processBatchInsert(String datafile, int indexoption, String dbname) throws InvalidPageNumberException, IOException, FileIOException, DiskMgrException {
+    public static void processBatchInsert(File datafile, int indexoption, String dbname) throws InvalidPageNumberException, IOException, FileIOException, DiskMgrException {
 
         boolean dbexists = createOrOpenDb(dbname, indexoption);
 
@@ -92,7 +92,7 @@ public class Batchinsert {
 
         checkArgs(args);
 
-        String datafile = args[0];
+        File datafile = new File(args[0]);
         int indexoption = Integer.parseInt(args[1]);
         String dbname = new String("/tmp/"+args[2]+"."+indexoption);
 
