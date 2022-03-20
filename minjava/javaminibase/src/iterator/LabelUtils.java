@@ -32,8 +32,31 @@ public class LabelUtils
     Label l1,
     Label l2)
     {
-      String l1_s = l1.getLabel();
-      String l2_s = l2.getLabel();
+      String l1_s;
+      if (l1 != null)
+      {
+        l1_s = l1.getLabel();
+      }
+      else
+      {
+        char[] c = new char[1];
+        c[0] = Character.MIN_VALUE;
+        l1_s = new String(c);
+      }
+      String l2_s;
+      if (l2 != null)
+      {
+        l2_s = l2.getLabel();
+      }
+      else
+      {
+        char[] c = new char[1];
+        c[0] = Character.MIN_VALUE;
+        l2_s = new String(c);
+      }
+
+//      String l1_s = l1.getLabel();
+//      String l2_s = l2.getLabel();
       // Now handle the special case that is posed by the max_values for strings...
       if (l1_s.compareTo(l2_s) > 0)
       {

@@ -48,9 +48,10 @@ public class Quadruple extends Tuple implements GlobalConst {
 
     /** Constructor(used as quadruple copy)
      * @param fromQuadruple   a byte array which contains the quadruple
+     * @throws IOException
      */
-    public Quadruple(Quadruple fromQuadruple){
-        super(fromQuadruple);
+    public Quadruple(Quadruple fromQuadruple) throws IOException{
+        super(fromQuadruple.getQuadrupleByteArray(), 0, MINIBASE_QUADRUPLESIZE);
         subject=fromQuadruple.getSubjecqid();
         predicate=fromQuadruple.getPredicateID();
         object=fromQuadruple.getObjecqid();

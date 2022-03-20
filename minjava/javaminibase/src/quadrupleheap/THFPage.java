@@ -481,7 +481,6 @@ public class THFPage extends Page implements GlobalConst{
 
         // length of record being returned
         recLen = getSlotLength (slotNo);
-        System.out.println("Record Length:" + recLen);
         slotCnt = Convert.getShortValue (SLOT_CNT, data);
         if (( slotNo >=0) && (slotNo < slotCnt) && (recLen >0)
                 && (pageNo.pid == curPage.pid))
