@@ -48,13 +48,15 @@ public class Batchinsert {
         File dbfile = new File(dbname); //Check if database already exists
         boolean dbexists = dbfile.exists();
         if(!dbexists) {
-            sysdefs = new SystemDefs(dbname, 1000, 1000, "Clock", indexoption);
+            sysdefs = new SystemDefs(dbname, 10000, 1000, "Clock", indexoption);
+        } else {
+            sysdefs = new SystemDefs(dbname, 10000, 1000, "Clock", indexoption);
         }
         SystemDefs.JavabaseDB.openDB(dbname, 1000);
         return dbexists;
     }
 
-    public static void processBatchInsert(String datafile, int indexoption, String dbname) throws InvalidPageNumberException, IOException, FileIOException, DiskMgrException {
+    public static void processBatchInsert(File datafile, int indexoption, String dbname) throws InvalidPageNumberException, IOException, FileIOException, DiskMgrException {
 
         boolean dbexists = createOrOpenDb(dbname, indexoption);
 
@@ -74,6 +76,7 @@ public class Batchinsert {
                 }
                 catch (Exception e) {
                     System.err.println("Insert Quadruple into Temporary Heapfile failed.");
+                    e.printStackTrace();
                 }
             }
             catch (Exception e) {
@@ -90,7 +93,7 @@ public class Batchinsert {
 
         checkArgs(args);
 
-        String datafile = args[0];
+        File datafile = new File(args[0]);
         int indexoption = Integer.parseInt(args[1]);
         String dbname = new String("/tmp/"+args[2]+"."+indexoption);
 

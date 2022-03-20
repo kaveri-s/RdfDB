@@ -127,6 +127,8 @@ public class TScan implements GlobalConst{
         QID     nxtqid = new QID();
         boolean bst;
 
+        bst = peekNext(nxtqid);
+
         if (nxtqid.equals(qid)==true)
             return true;
 
@@ -354,7 +356,6 @@ public class TScan implements GlobalConst{
         if (datapage == null) {
             if (datapageId.pid == INVALID_PAGE) {
                 // heapfile is empty to begin with
-
                 try{
                     unpinPage(dirpageId, false);
                     dirpage = null;

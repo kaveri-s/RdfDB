@@ -481,6 +481,7 @@ public class THFPage extends Page implements GlobalConst{
 
         // length of record being returned
         recLen = getSlotLength (slotNo);
+        System.out.println("Record Length:" + recLen);
         slotCnt = Convert.getShortValue (SLOT_CNT, data);
         if (( slotNo >=0) && (slotNo < slotCnt) && (recLen >0)
                 && (pageNo.pid == curPage.pid))
@@ -488,7 +489,7 @@ public class THFPage extends Page implements GlobalConst{
             offset = getSlotOffset (slotNo);
             record = new byte[recLen];
             System.arraycopy(data, offset, record, 0, recLen);
-            Quadruple quadruple = new Quadruple(record, recLen);
+            Quadruple quadruple = new Quadruple(record, 0);
             return quadruple;
         }
 
@@ -530,7 +531,7 @@ public class THFPage extends Page implements GlobalConst{
         {
 
             offset = getSlotOffset (slotNo);
-            Quadruple quadruple = new Quadruple(data, recLen);
+            Quadruple quadruple = new Quadruple(data, offset);
             return quadruple;
         }
 

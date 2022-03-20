@@ -323,6 +323,8 @@ public class QuadrupleHeapFile implements GlobalConst {
 			HFDiskMgrException,
 			IOException
 	{
+		int dpinfoLen = 0;
+		int recLen = quadruplePtr.length;
 		boolean found;
 		RID currentDataPageRid = new RID();
 		Page pageinbuffer = new Page();
@@ -348,7 +350,7 @@ public class QuadrupleHeapFile implements GlobalConst {
 				atuple = currentDirPage.getRecord(currentDataPageRid);
 				dpinfo = new DataPageInfo(atuple);
 
-				if(MINIBASE_QUADRUPLESIZE <= dpinfo.availspace)
+				if(recLen <= dpinfo.availspace)
 				{
 					found = true;
 					break;
@@ -412,7 +414,7 @@ public class QuadrupleHeapFile implements GlobalConst {
 		if ((dpinfo.pageId).pid == INVALID_PAGE) // check error!
 			throw new HFException(null, "invalid PageId");
 
-		if (!(currentDataPage.available_space() >= MINIBASE_QUADRUPLESIZE))
+		if (!(currentDataPage.available_space() >= recLen))
 			throw new SpaceNotAvailableException(null, "no available space");
 
 		if (currentDataPage == null)

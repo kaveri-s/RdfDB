@@ -71,13 +71,22 @@ sortmerge: SMJoin
 	$(JAVA) tests.SM_JoinTest
 
 # DB Phase 2 testing
-batchinsert: Batchinsert.java
-	$(JAVA) tests.Batchinsert
+Batchinsert:Batchinsert.java
+	$(JAVAC) Batchinsert.java
 
-queryprogram: QueryProgram.java
-	$(JAVA) tests.QueryProgram.java
+Report:Report.java
+	$(JAVAC) Report.java
 
-report: Report.java
-	$(JAVA) tests.Report.java
+QueryProgram:QueryProgram.java
+	$(JAVAC) QueryProgram.java
+
+batchinsert: Batchinsert
+	$(JAVA) tests.Batchinsert /Users/kaveri-s/ASU/DBMSI/test_data.txt 1 db_test
+
+#queryprogram: QueryProgram
+#	$(JAVA) tests.QueryProgram
+#
+#report: Report
+#	$(JAVA) tests.Report
 
 
