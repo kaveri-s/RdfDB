@@ -48,7 +48,7 @@ public class Batchinsert {
         File dbfile = new File(dbname); //Check if database already exists
         boolean dbexists = dbfile.exists();
         if(!dbexists) {
-            sysdefs = new SystemDefs(dbname, 0, 1000, "Clock", indexoption);
+            sysdefs = new SystemDefs(dbname, 10000, 1000, "Clock", indexoption);
         } else {
             sysdefs = new SystemDefs(dbname, 10000, 1000, "Clock", indexoption);
         }
@@ -76,6 +76,7 @@ public class Batchinsert {
                 }
                 catch (Exception e) {
                     System.err.println("Insert Quadruple into Temporary Heapfile failed.");
+                    e.printStackTrace();
                 }
             }
             catch (Exception e) {

@@ -17,6 +17,7 @@ public class Label extends Tuple {
 
     public Label (byte[] alabel, int offset, int length) throws IOException {
         super(alabel, offset, length);
+        this.ID = new LID();
         this.ID.slotNo=Convert.getIntValue(offset,alabel);
         this.ID.pageNo=new PageId(Convert.getIntValue(offset+4,alabel));
         this.name = Convert.getStrValue(offset+8, alabel, length - 8);

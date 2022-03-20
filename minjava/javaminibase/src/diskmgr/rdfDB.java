@@ -400,7 +400,7 @@ public class rdfDB extends DB implements GlobalConst {
         return streamObj;
     }
 
-    public void insertNewQuadruple(String data[]) {
+    public void insertNewQuadruple(String data[]) throws Exception {
         EID sid = insertEntity(data[0]);
         PID pid = insertPredicate(data[1]);
         EID oid = insertEntity(data[2]);
@@ -434,17 +434,12 @@ public class rdfDB extends DB implements GlobalConst {
                 }
             }
             TScan tScanner = new TScan(tempQuadHeapFile);
-            QID qid = new QID();
 
-            while ((aquad = tScanner.getNext(qid)) != null) {
-                System.out.println(aquad.size());
+            QuadrupleSort qSort = new QuadrupleSort(tScanner, order, 200);
+
+            while ((aquad = qSort.get_next()) != null) {
+                insertQuadruple(aquad.getQuadrupleByteArray());
             }
-
-//            QuadrupleSort qSort = new QuadrupleSort(tScanner, order, 200);
-//
-//            while ((aquad = qSort.get_next()) != null) {
-//                insertQuadruple(aquad.getQuadrupleByteArray());
-//            }
             tempQuadHeapFile.deleteFile();
             tempQuadHeapFile = null;
             tScanner.closescan();
@@ -559,7 +554,8 @@ public class rdfDB extends DB implements GlobalConst {
             if (tempQuadHeapFile == null)
                 tempQuadHeapFile = new QuadrupleHeapFile(rdfDBname + "/tempQuadHeapFile");
             QID qid = tempQuadHeapFile.insertQuadruple(quad);
-//            System.out.println("Successfully inserted Quadruple at " + qid.pageNo + ", " + qid.slotNo);
+            Quadruple tempquad = tempQuadHeapFile.getQuadruple(qid);
+            tempquad.print();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -610,7 +606,6 @@ public class rdfDB extends DB implements GlobalConst {
                 scan.DestroyBTreeFileScan();
                 return lid;
             }
-
             scan.DestroyBTreeFileScan();
             lid = targetLabelHeapfile.insertLabel(label.getBytes());
             targetLabelBT.insert(new StringKey(label), lid);

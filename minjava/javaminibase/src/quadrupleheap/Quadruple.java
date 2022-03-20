@@ -33,6 +33,9 @@ public class Quadruple extends Tuple implements GlobalConst {
 
     public Quadruple (byte[] aquadruple, int offset) throws IOException {
         super(aquadruple, offset, MINIBASE_QUADRUPLESIZE);
+        subject= new EID();
+        predicate=new PID();
+        object=new EID();
         this.subject.slotNo=Convert.getIntValue(offset,aquadruple);
         this.subject.pageNo=new PageId(Convert.getIntValue(offset+4,aquadruple));
         this.predicate.slotNo=Convert.getIntValue(offset+8,aquadruple);
@@ -98,6 +101,9 @@ public class Quadruple extends Tuple implements GlobalConst {
         Label subject = SystemDefs.JavabaseDB.getEntityHandle().getLabel(this.getSubjecqid().returnLID());
         Label object = SystemDefs.JavabaseDB.getEntityHandle().getLabel(this.getObjecqid().returnLID());
         Label predicate = SystemDefs.JavabaseDB.getPredicateHandle().getLabel(this.getPredicateID().returnLID());
+        subject.getLabel();
+        predicate.getLabel();
+        object.getLabel();
         System.out.println(subject.getLabel() +" "+ predicate.getLabel() + " " +object.getLabel()+ " " +confidence);
     }
     @Override
