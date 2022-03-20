@@ -48,7 +48,9 @@ public class Batchinsert {
         File dbfile = new File(dbname); //Check if database already exists
         boolean dbexists = dbfile.exists();
         if(!dbexists) {
-            sysdefs = new SystemDefs(dbname, 1000, 1000, "Clock", indexoption);
+            sysdefs = new SystemDefs(dbname, 0, 1000, "Clock", indexoption);
+        } else {
+            sysdefs = new SystemDefs(dbname, 10000, 1000, "Clock", indexoption);
         }
         SystemDefs.JavabaseDB.openDB(dbname, 1000);
         return dbexists;

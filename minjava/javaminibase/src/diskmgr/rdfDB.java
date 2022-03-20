@@ -503,10 +503,11 @@ public class rdfDB extends DB implements GlobalConst {
             predicateLabelHeapFile = new LabelHeapFile(rdfDBname + "/predicateHF");
 
             entityBTree = new LabelBTreeFile(rdfDBname + "/entityBT", AttrType.attrString, 255, 1);
+            entityBTree.close();
             predicateBTree = new LabelBTreeFile(rdfDBname + "/predicateBT", AttrType.attrString, 255, 1);
             quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT", AttrType.attrString, 255, 1);
-            distinctSubjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctSubjBT");
-            distinctObjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctObjBT");
+            distinctSubjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctSubjBT", AttrType.attrString, 255, 1);
+            distinctObjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctObjBT", AttrType.attrString, 255, 1);
             quadBTreeIndex = new QuadBTreeFile(rdfDBname + "/quadBTreeIndex", AttrType.attrString, 255, 1);
 
         } catch (Exception e) {

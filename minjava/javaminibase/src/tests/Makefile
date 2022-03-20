@@ -81,12 +81,12 @@ QueryProgram:QueryProgram.java
 	$(JAVAC) QueryProgram.java
 
 batchinsert: Batchinsert
-	$(JAVA) tests.Batchinsert
+	$(JAVA) tests.Batchinsert /Users/kaveri-s/ASU/DBMSI/test_data.txt 1 db_test
 
-queryprogram: QueryProgram
-	$(JAVA) tests.QueryProgram
-
-report: Report
-	$(JAVA) tests.Report
+#queryprogram: QueryProgram
+#	$(JAVA) tests.QueryProgram
+#
+#report: Report
+#	$(JAVA) tests.Report
 
 
