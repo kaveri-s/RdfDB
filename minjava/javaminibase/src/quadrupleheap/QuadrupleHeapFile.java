@@ -678,13 +678,7 @@ public class QuadrupleHeapFile implements GlobalConst {
 	 * @exception IOException I/O errors
 	 */
 	public void deleteFile()
-			throws InvalidSlotNumberException,
-			FileAlreadyDeletedException,
-			InvalidTupleSizeException,
-			HFBufMgrException,
-			HFDiskMgrException,
-			IOException
-	{
+			throws Exception {
 		if(_file_deleted )
 			throw new FileAlreadyDeletedException(null, "file already deleted");
 		// Mark the deleted flag (even if it doesn't get all the way done).
@@ -696,20 +690,20 @@ public class QuadrupleHeapFile implements GlobalConst {
 		PageId nextDirPageId = new PageId();
 		nextDirPageId.pid = 0;
 		Page pageinbuffer = new Page();
-		THFPage currentDirPage =  new THFPage();
-		Quadruple aquad;
+		HFPage currentDirPage =  new HFPage();
+		Tuple atuple;
 
 		pinPage(currentDirPageId, currentDirPage, false);
 
-		QID qid = new QID();
+		RID rid = new RID();
 		while(currentDirPageId.pid != INVALID_PAGE)
 		{
-			for(qid = currentDirPage.firstRecord(); //TO-Modify
-				qid != null;
-				qid = currentDirPage.nextRecord(qid)) //TO-Modify
+			for(rid = currentDirPage.firstRecord(); //TO-Modify
+				rid != null;
+				rid = currentDirPage.nextRecord(rid)) //TO-Modify
 			{
-				aquad = currentDirPage.getRecord(qid); //TO-Modify
-				DataPageInfo dpinfo = new DataPageInfo( aquad); //Change class
+				atuple = currentDirPage.getRecord(rid); //TO-Modify
+				DataPageInfo dpinfo = new DataPageInfo(atuple); //Change class
 				freePage(dpinfo.pageId);
 			}
 			// ASSERTIONS:

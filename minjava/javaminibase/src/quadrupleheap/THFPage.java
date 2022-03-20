@@ -468,9 +468,7 @@ public class THFPage extends Page implements GlobalConst{
      * @see    Quadruple
      */
     public Quadruple getRecord ( QID qid )
-            throws IOException,
-            InvalidSlotNumberException
-    {
+            throws Exception {
         short recLen;
         short offset;
         byte []record;
@@ -481,6 +479,7 @@ public class THFPage extends Page implements GlobalConst{
 
         // length of record being returned
         recLen = getSlotLength (slotNo);
+        System.out.println(recLen);
         slotCnt = Convert.getShortValue (SLOT_CNT, data);
         if (( slotNo >=0) && (slotNo < slotCnt) && (recLen >0)
                 && (pageNo.pid == curPage.pid))
@@ -489,6 +488,7 @@ public class THFPage extends Page implements GlobalConst{
             record = new byte[recLen];
             System.arraycopy(data, offset, record, 0, recLen);
             Quadruple quadruple = new Quadruple(record, 0);
+//            quadruple.print();
             return quadruple;
         }
 
