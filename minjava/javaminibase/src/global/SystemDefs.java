@@ -204,6 +204,8 @@ public class SystemDefs {
 
     public static void close()
     {
+        JavabaseDB.closeRdfDBFiles();
+
         try
         {
             JavabaseBM.flushAllPages();
@@ -221,7 +223,7 @@ public class SystemDefs {
         }
         catch(Exception e)
         {
-            System.out.println ("Closing RDFDB: ***************");
+            System.out.println ("Closing DB: ***************");
             System.err.println (""+e);
             e.printStackTrace();
             Runtime.getRuntime().exit(1);

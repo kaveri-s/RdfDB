@@ -684,7 +684,7 @@ public class rdfDB extends DB implements GlobalConst {
     }
 
 
-    public void closeDB() {
+    public void closeRdfDBFiles() {
 
         try {
             if (entityBTree != null) entityBTree.close();
@@ -699,7 +699,7 @@ public class rdfDB extends DB implements GlobalConst {
 
             if (quadBTreeIndex != null) quadBTreeIndex.close();
 
-            super.closeDB();
+//            super.closeDB();
         } catch (Exception e) {
             System.err.println("" + e);
             e.printStackTrace();
