@@ -5,6 +5,7 @@ package diskmgr;
 
 import global.*;
 
+import iterator.QuadrupleSort;
 import labelheap.Label;
 import labelheap.LabelHeapFile;
 import quadrupleheap.*;

@@ -2,6 +2,7 @@ package diskmgr;
 
 import btree.*;
 import global.*;
+import iterator.QuadrupleSort;
 import labelheap.Label;
 import labelheap.LabelHeapFile;
 import quadrupleheap.Quadruple;
@@ -371,7 +372,7 @@ public class rdfDB extends DB implements GlobalConst {
 
             QuadrupleSort qSort = new QuadrupleSort(tScanner, order, 200);
 
-            while ((aquad = qSort.getNext()) != null) {
+            while ((aquad = qSort.get_next()) != null) {
                 insertQuadruple(aquad.getQuadrupleByteArray());
             }
             tempQuadHeapFile.deleteFile();
