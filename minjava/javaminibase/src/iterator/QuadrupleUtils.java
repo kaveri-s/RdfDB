@@ -43,17 +43,18 @@ public class QuadrupleUtils
     throws QuadrupleUtilsException
     {
       int lRet = 0;
-      LabelHeapFile labelHeapFile = SystemDefs.JavabaseDB.getEntityHandle();
+      LabelHeapFile labelHeapFileForEntity = SystemDefs.JavabaseDB.getEntityHandle();
+      LabelHeapFile labelHeapFileForPredicate = SystemDefs.JavabaseDB.getPredicateHandle();
       switch (quadrupleOrder._sortBy)
       {
         case QuadrupleOrder.SubjectPredicateObjectConfidence:
-        lRet = comapareSubject(q1, q2, labelHeapFile);
+        lRet = comapareSubject(q1, q2, labelHeapFileForEntity);
         if (lRet == 0)
         {
-          lRet = comaparePredicate(q1, q2, labelHeapFile);
+          lRet = comaparePredicate(q1, q2, labelHeapFileForPredicate);
           if (lRet == 0)
           {
-            lRet = comapareObject(q1, q2, labelHeapFile);
+            lRet = comapareObject(q1, q2, labelHeapFileForEntity);
             if (lRet == 0)
             {
               lRet = comapareConfidence(q1, q2);
@@ -63,13 +64,13 @@ public class QuadrupleUtils
         break;
 
         case QuadrupleOrder.PredicateSubjectObjectConfidence:
-        lRet = comaparePredicate(q1, q2, labelHeapFile);
+        lRet = comaparePredicate(q1, q2, labelHeapFileForPredicate);
         if (lRet == 0)
         {
-          lRet = comapareSubject(q1, q2, labelHeapFile);
+          lRet = comapareSubject(q1, q2, labelHeapFileForEntity);
           if (lRet == 0)
           {
-            lRet = comapareObject(q1, q2, labelHeapFile);
+            lRet = comapareObject(q1, q2, labelHeapFileForEntity);
             if (lRet == 0)
             {
               lRet = comapareConfidence(q1, q2);
@@ -79,7 +80,7 @@ public class QuadrupleUtils
         break;
 
         case QuadrupleOrder.SubjectConfidence:
-        lRet = comapareSubject(q1, q2, labelHeapFile);
+        lRet = comapareSubject(q1, q2, labelHeapFileForEntity);
         if (lRet == 0)
         {
           lRet = comapareConfidence(q1, q2);
@@ -87,7 +88,7 @@ public class QuadrupleUtils
         break;
 
         case QuadrupleOrder.PredicateConfidence:
-        lRet = comaparePredicate(q1, q2, labelHeapFile);
+        lRet = comaparePredicate(q1, q2, labelHeapFileForPredicate);
         if (lRet == 0)
         {
           lRet = comapareConfidence(q1, q2);
@@ -95,7 +96,7 @@ public class QuadrupleUtils
         break;
 
         case QuadrupleOrder.ObjectConfidence:
-        lRet = comapareObject(q1, q2, labelHeapFile);
+        lRet = comapareObject(q1, q2, labelHeapFileForEntity);
         if (lRet == 0)
         {
           lRet = comapareConfidence(q1, q2);
@@ -107,7 +108,7 @@ public class QuadrupleUtils
         break;
 
         case QuadrupleOrder.Subject:
-        lRet = comapareSubject(q1, q2, labelHeapFile);
+        lRet = comapareSubject(q1, q2, labelHeapFileForEntity);
         break;
 
         default:
