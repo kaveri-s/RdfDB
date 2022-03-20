@@ -206,17 +206,6 @@ public class SystemDefs {
     {
         try
         {
-            JavabaseDB.closeDB();
-        }
-        catch(Exception e)
-        {
-            System.out.println ("Closing RDFDB: ***************");
-            System.err.println (""+e);
-            e.printStackTrace();
-            Runtime.getRuntime().exit(1);
-        }
-        try
-        {
             JavabaseBM.flushAllPages();
         }
         catch(Exception e)
@@ -225,7 +214,17 @@ public class SystemDefs {
             System.err.println (""+e);
             e.printStackTrace();
             Runtime.getRuntime().exit(1);
-
+        }
+        try
+        {
+            JavabaseDB.closeDB();
+        }
+        catch(Exception e)
+        {
+            System.out.println ("Closing RDFDB: ***************");
+            System.err.println (""+e);
+            e.printStackTrace();
+            Runtime.getRuntime().exit(1);
         }
     }
 }
