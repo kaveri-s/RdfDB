@@ -5,11 +5,12 @@ package diskmgr;
 
 import global.*;
 
-import iterator.Sort;
 import labelheap.Label;
 import labelheap.LabelHeapFile;
 import quadrupleheap.*;
 import btree.*;
+
+import static java.lang.System.exit;
 
 public class Stream implements GlobalConst {
     rdfDB rdfDatabase;
@@ -19,9 +20,9 @@ public class Stream implements GlobalConst {
     String predicateFilter;
     String objectFilter;
     double confidenceFilter;
-    
-    public static int sortoption = 1;
-    
+
+    public static int sortOption = 1;
+
     public TScan tScan = null;
 
 
@@ -31,7 +32,7 @@ public class Stream implements GlobalConst {
     static boolean confidence_null = false;
 
 
-    boolean scan_entire_heapfile = false;
+    boolean scanEntireHeapFile = false;
     public boolean scan_on_BT = false;
     public Quadruple scan_on_BT_quadruple = null;
 
@@ -42,29 +43,20 @@ public class Stream implements GlobalConst {
     public static EID entitySubjectId = new EID();
     public static PID entityPredicateId = new PID();
 
-    // todo Iterator.Sort
-    public Sort tSort = null;
-
-    // todo Resolve SORT_TRIPLE_NUM_PAGES
-    private static final short[] SORT_TRIPLE_NUM_PAGES;
-
+    public QuadrupleSort qSort = null;
 
     Stream(){ }
 
-
-
-
     public Stream(rdfDB rdfDatabase, int orderType, String subjectFilter, String predicateFilter, String objectFilter,
-           double confidenceFilter) throws Exception {
+                  double confidenceFilter, int num_of_buf) throws Exception {
 
-        this.rdfDatabase = rdfDatabase;
         this.orderType = orderType;
         this.subjectFilter = subjectFilter;
         this.predicateFilter = predicateFilter;
         this.objectFilter = objectFilter;
         this.confidenceFilter = confidenceFilter;
 
-        sortoption = orderType;
+        sortOption = orderType;
         this.rdfDatabase = rdfDatabase;
 
         if(subjectFilter.compareToIgnoreCase("null") == 0)
@@ -79,11 +71,11 @@ public class Stream implements GlobalConst {
         {
             object_null = true;
         }
-        if(confidenceFilter == 0.00)
+        if(confidenceFilter == -99.0)
         {
             confidence_null = true;
         }
-        dbName = rdfDatabase.getRdfDBname();
+        dbName = rdfDatabase.getRdfDBName();
         String indexOption = dbName.substring(dbName.lastIndexOf('_') + 1);
 
         if(!subject_null && !predicate_null && !object_null && !confidence_null)
@@ -115,17 +107,16 @@ public class Stream implements GlobalConst {
             }
             else
             {
-                scan_entire_heapfile = true;
+                scanEntireHeapFile = true;
                 ScanEntireHeapFile(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
             }
 
             //Sort the results
             tScan = new TScan(Result_HF);
-            QuadrupleOrder sort_order = get_sort_order();
+            QuadrupleOrder sort_order = getSortOrder(orderType);
             try
             {
-                // To do use Iterator.Sort() constructor here
-                tSort = new Sort();
+                qSort = new QuadrupleSort(tScan, sort_order, num_of_buf);
             }
             catch (Exception e)
             {
@@ -145,9 +136,9 @@ public class Stream implements GlobalConst {
             {
                 Result_HF.deleteFile();
             }
-            if(tSort !=null)
+            if(qSort !=null)
             {
-                tSort.close(); //Close the stream iterator
+                qSort.close(); //Close the stream iterator
             }
         }
         catch(Exception e)
@@ -159,7 +150,7 @@ public class Stream implements GlobalConst {
     public Quadruple getNext(QID qid) {
         try
         {
-            Quadruple quadruple = null;
+            Quadruple quadruple;
             if(scan_on_BT)
             {
                 if(scan_on_BT_quadruple!=null)
@@ -171,10 +162,9 @@ public class Stream implements GlobalConst {
             }
             else
             {
-                // Replace with Iterator.Sort for Quadruple
-                while((quadruple = (Quadruple) tSort.get_next()) != null)
+                while((quadruple = (Quadruple) qSort.get_next()) != null)
                 {
-                    if(scan_entire_heapfile == false)
+                    if(!scanEntireHeapFile)
                     {
                         return quadruple;
                     }
@@ -217,7 +207,7 @@ public class Stream implements GlobalConst {
         return null;
     }
 
-    public QuadrupleOrder get_sort_order()
+    public static QuadrupleOrder getSortOrder(int orderType)
     {
         QuadrupleOrder sort_order = null;
 
@@ -246,36 +236,11 @@ public class Stream implements GlobalConst {
             case 6:
                 sort_order = new QuadrupleOrder(QuadrupleOrder.Confidence);
                 break;
+            default:
+                System.err.println("RuntimeError. Sort order out of range (1-6). Welp, shouldn't be here");
+                exit(1);
         }
         return sort_order;
-    }
-
-    /**
-     *
-     * Initialize a stream of quadruples, where the subject label matches subjectFilter, predicate label matches
-     * predicateFilter, object label matches objectFilter, and confidence is greater than or equal to the
-     * confidenceFilter. If any of the filters are null strings or 0, then that filter is not considered
-     * (e.g., if subjectFilter is null, then all subject labels are OK). If orderType is
-     *  1, then results are first ordered in subject label, then predicate label, then object label, and then confidence,
-     *  2, then results are first ordered in predicate label, then subject label, then object label, and then confidence,
-     *  3, then results are first ordered in subject label, then confidence,
-     *  4, then results are first ordered in predicate label, then confidence,
-     *  5, then results are first ordered in object label, then confidence, and
-     *  6, then results are ordered in confidence.
-     * @param orderType
-     * @param subjectFilter
-     * @param predicateFilter
-     * @param objectFilter
-     * @param confidenceFilter
-     * @return
-     */
-
-    Stream openStream(int orderType, String subjectFilter, String predicateFilter, String objectFilter,
-                      double confidenceFilter)
-    {
-        Stream s = new Stream();
-
-        return s;
     }
 
     public static LID GetEID(String filter) throws GetFileEntryException, PinPageException, ConstructPageException
@@ -284,7 +249,7 @@ public class Stream implements GlobalConst {
         LabelBTreeFile entityBTree = new LabelBTreeFile(dbName+"/entityBT");
         KeyClass low_key = new StringKey(filter);
         KeyClass high_key = new StringKey(filter);
-        KeyDataEntry entry = null;
+        KeyDataEntry entry;
         try
         {
             //Start Scanning BTree to check if subject is present
@@ -297,7 +262,7 @@ public class Stream implements GlobalConst {
             }
             else
             {
-                System.out.println("No Quadruplefound with given criteria");
+                System.out.println("No Quadruple found with given criteria");
             }
             entityBTree.close();
         }
@@ -311,15 +276,15 @@ public class Stream implements GlobalConst {
 
     public static LID GetPredicate(String predicateFilter)
     {
-        LID predicateid = null;
+        LID predicateId = null;
         ///Get the entity key from the Predicate BTREE file
-        LabelBTreeFile Predicate_BTree = null;
+        LabelBTreeFile Predicate_BTree;
         try
         {
             Predicate_BTree = new LabelBTreeFile(dbName+"/predicateBT");
             KeyClass low_key = new StringKey(predicateFilter);
             KeyClass high_key = new StringKey(predicateFilter);
-            KeyDataEntry entry = null;
+            KeyDataEntry entry;
 
             //Start Scanning Btree to check if subject is present
             LabelBTFileScan scan1 = Predicate_BTree.new_scan(low_key,high_key);
@@ -327,7 +292,7 @@ public class Stream implements GlobalConst {
             if(entry!=null)
             {
                 //return already existing EID ( convert lid to EID)
-                predicateid =  ((LabelLeafData)entry.data).getData();
+                predicateId =  ((LabelLeafData)entry.data).getData();
             }
             else
             {
@@ -341,7 +306,7 @@ public class Stream implements GlobalConst {
             System.err.println("Predicate not present");
 
         }
-        return predicateid;
+        return predicateId;
     }
 
 
@@ -354,7 +319,7 @@ public class Stream implements GlobalConst {
         }
         else
         {
-            System.out.println("No Quadruplefound");
+            System.out.println("No Quadruple found");
             return false;
         }
 
@@ -365,7 +330,7 @@ public class Stream implements GlobalConst {
         }
         else
         {
-            System.out.println("No Quadruplefound");
+            System.out.println("No Quadruple found");
             return false;
         }
 
@@ -375,7 +340,7 @@ public class Stream implements GlobalConst {
         }
         else
         {
-            //System.out.println("No Quadruplefound");
+            System.out.println("No Quadruple found");
             return false;
         }
 
@@ -385,14 +350,11 @@ public class Stream implements GlobalConst {
                 + entityObjectId.slotNo + ":" + entityObjectId.pageNo.pid;
         KeyClass low_key = new StringKey(key);
         KeyClass high_key = new StringKey(key);
-        KeyDataEntry entry = null;
-        Label subject = null, object = null, predicate = null;
+        KeyDataEntry entry;
 
         //Start Scanning BTree to check if  predicate already present
         QuadrupleHeapFile quadrupleHeapFile = SystemDefs.JavabaseDB.getQuadrupleHandle();
         QuadBTreeFile quadBTreeFile = SystemDefs.JavabaseDB.getQuadBTree();
-        LabelHeapFile Entity_HF = SystemDefs.JavabaseDB.getEntityHandle();
-        LabelHeapFile Predicate_HF = SystemDefs.JavabaseDB.getPredicateHandle();
 
         QuadBTFileScan scan = quadBTreeFile.new_scan(low_key,high_key);
         entry = scan.get_next();
@@ -418,11 +380,11 @@ public class Stream implements GlobalConst {
     private void ScanBTConfidenceIndex(String subjectFilter,String predicateFilter, String objectFilter, double confidenceFilter)
             throws Exception
     {
-        boolean result = true;
-        KeyDataEntry entry1 = null;
-        QID quadrupleId = null;
-        Label subject = null, object = null, predicate = null;
-        Quadruple record = null;
+        boolean result;
+        KeyDataEntry entry1;
+        QID quadrupleId;
+        Label subject, object, predicate;
+        Quadruple record;
 
         QuadBTreeFile quadBTreeFile = SystemDefs.JavabaseDB.getQuadBTree();
         QuadrupleHeapFile quadrupleHeapFile = SystemDefs.JavabaseDB.getQuadrupleHandle();
@@ -464,7 +426,7 @@ public class Stream implements GlobalConst {
 
             if(result)
             {
-                //System.out.println("Subject::" + subject.getLabel()+ "\tPredicate::"+predicate.getLabel() + "\tObject::"+object.getLabel() );
+                System.out.println("Subject::" + subject.getLabel()+ "\tPredicate::"+predicate.getLabel() + "\tObject::"+object.getLabel() );
                 Result_HF.insertQuadruple(record.returnTupleByteArray());
             }
         }
@@ -486,15 +448,15 @@ public class Stream implements GlobalConst {
             Result_HF = new QuadrupleHeapFile(Long.toString(date.getTime()));
 
             KeyClass low_key = new StringKey(subjectFilter+":"+confidenceFilter);
-            KeyDataEntry entry = null;
-            double orig_confidence = 0;
-            Quadruple record = null;
-            Label subject = null, object = null, predicate = null;
-            boolean result = true;
+            KeyDataEntry entry;
+            double orig_confidence;
+            Quadruple record;
+            Label subject, object, predicate;
+            boolean result;
 
             QuadBTFileScan scan = quadBTreeFile.new_scan(low_key,null);
 
-            QID qId= null;
+            QID qId;
             while((entry = scan.get_next())!= null)
             {
                 qId= ((QuadLeafData)entry.data).getData();
@@ -524,12 +486,12 @@ public class Stream implements GlobalConst {
                 }
                 if(subjectFilter.compareTo(subject.getLabel()) != 0)
                 {
-                    //System.out.println("Found next subject hence stopping");
+                    System.out.println("Found next subject hence stopping");
                     break;
                 }
                 else if(result)
                 {
-                    //System.out.println("Subject::" + subject.getLabel()+ "\tPredicate::"+predicate.getLabel() + "\tObject::"+object.getLabel() );
+                    System.out.println("Subject::" + subject.getLabel()+ "\tPredicate::"+predicate.getLabel() + "\tObject::"+object.getLabel() );
                     Result_HF.insertQuadruple(record.returnTupleByteArray());
                 }
             }
@@ -559,16 +521,14 @@ public class Stream implements GlobalConst {
             Result_HF = new QuadrupleHeapFile(Long.toString(date.getTime()));
 
             KeyClass low_key = new StringKey(objectFilter+":"+confidenceFilter);
-            KeyDataEntry entry = null;
+            KeyDataEntry entry;
 
             QuadBTFileScan scan = quadBTreeFile.new_scan(low_key,null);
-            QID qId= null;
-            EID subjid = null, objid = null;
-            PID predid = null;
-            Label subject = null,object = null, predicate = null;
-            Quadruple record = null;
-            double orig_confidence = 0;
-            boolean result = true;
+            QID qId;
+            Label subject, object, predicate;
+            Quadruple record;
+            double orig_confidence;
+            boolean result;
             while((entry = scan.get_next())!= null)
             {
                 qId=  ((QuadLeafData)entry.data).getData();
@@ -600,12 +560,12 @@ public class Stream implements GlobalConst {
                 }
                 if(objectFilter.compareTo(object.getLabel()) != 0)
                 {
-                    //System.out.println("Found next object hence stopping");
+                    System.out.println("Found next object hence stopping");
                     break;
                 }
                 else if(result)
                 {
-                    //System.out.println("Inserting "+object.getLabel()+confidenceFilter);
+                    System.out.println("Inserting "+object.getLabel()+confidenceFilter);
                     Result_HF.insertQuadruple(record.returnTupleByteArray());
                 }
             }
@@ -635,19 +595,17 @@ public class Stream implements GlobalConst {
 
             KeyClass low_key = new StringKey(predicateFilter+":"+confidenceFilter);
             QuadBTFileScan scan = quadBTreeFile.new_scan(low_key,null);
-            KeyDataEntry entry = null;
-            QID qId= null;
-            EID subjid = null, objid = null;
-            PID predid = null;
-            Label subject = null,object = null, predicate = null;
-            Quadruple record = null;
-            double orig_confidence = 0;
-            boolean result = true;
+            KeyDataEntry entry;
+            QID qId;
+            Label subject, object, predicate;
+            Quadruple record;
+            double orig_confidence;
+            boolean result;
 
             while((entry = scan.get_next())!= null)
             {
                 qId=  ((QuadLeafData)entry.data).getData();
-                //System.out.println("Quadruplefound : " + ((StringKey)(entry.key)).getKey() + "tid" + tid);
+                System.out.println("Quadruple found : " + ((StringKey)(entry.key)).getKey() + "qId" + qId);
                 record = quadrupleHeapFile.getQuadruple(qId);
                 orig_confidence = record.getConfidence();
 
@@ -675,12 +633,12 @@ public class Stream implements GlobalConst {
                 }
                 if(predicateFilter.compareTo(predicate.getLabel()) != 0)
                 {
-                    //System.out.println("Found next predicate hence stopping");
+                    System.out.println("Found next predicate hence stopping");
                     break;
                 }
                 else if(result)
                 {
-                    //System.out.println("Inserting "+object.getLabel()+confidenceFilter);
+                    System.out.println("Inserting "+object.getLabel()+confidenceFilter);
                     Result_HF.insertQuadruple(record.returnTupleByteArray());
                 }
             }
@@ -706,22 +664,22 @@ public class Stream implements GlobalConst {
         java.util.Date date= new java.util.Date();
         Result_HF = new QuadrupleHeapFile(Long.toString(date.getTime()));
 
-        QID qId = null;
+        QID qId;
         KeyClass low_key = new StringKey(subjectFilter);
         KeyClass high_key = new StringKey(subjectFilter);
-        KeyDataEntry entryconf = null;
-        Quadruple record = null;
-        Label subject = null, object = null, predicate = null;
-        //Start Scanning Bble.tree to check if subject is present
+        KeyDataEntry entryConf;
+        Quadruple record;
+        Label subject, object, predicate;
+        //Start Scanning Btree to check if subject is present
         QuadBTFileScan scan = quadBTreeFile.new_scan(low_key,high_key);
-        entryconf = scan.get_next();
+        entryConf = scan.get_next();
 
         try
         {
-            while(entryconf!=null)
+            while(entryConf!=null)
             {
                 boolean result = true;
-                qId =  ((QuadLeafData)entryconf.data).getData();
+                qId =  ((QuadLeafData)entryConf.data).getData();
                 record = quadrupleHeapFile.getQuadruple(qId);
 
                 subject = Entity_HF.getLabel(record.getSubjecqid().returnLID());
@@ -736,17 +694,17 @@ public class Stream implements GlobalConst {
                 {
                     result = result & (predicate.getLabel().compareTo(predicateFilter)==0);
                 }
-                //System.out.println(subject.getLabel()+" "+predicate.getLabel()+" "+object.getLabel()+" "+record.getConfidence());
-                if(confidenceFilter <= record.getConfidence())
+                System.out.println(subject.getLabel()+" "+predicate.getLabel()+" "+object.getLabel()+" "+record.getConfidence());
+                if(!confidence_null)
                 {
-                    result = true & result;
+                    result = result & (record.getConfidence() >= confidenceFilter);
                 }
                 if(result)
                 {
-                    //System.out.println("Subject found");
+                    System.out.println("Subject found");
                     Result_HF.insertQuadruple(record.returnTupleByteArray());
                 }
-                entryconf = scan.get_next();
+                entryConf = scan.get_next();
             }
         }
         catch(Exception ex)
