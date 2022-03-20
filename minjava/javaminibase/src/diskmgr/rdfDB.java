@@ -343,6 +343,9 @@ public class rdfDB extends DB implements GlobalConst {
             }
 
             qid = quadrupleHeapFile.insertQuadruple(quadruplePtr);
+            Quadruple quadtest = quadrupleHeapFile.getQuadruple(qid);
+            System.out.println("Inserting quadruple");
+            quadtest.print();
             quadrupleBTree.insert(low_key, qid);
             scan.DestroyBTreeFileScan();
             quadrupleBTree.close();
@@ -422,7 +425,6 @@ public class rdfDB extends DB implements GlobalConst {
         Quadruple aquad = null;
         try {
             if (dbexists) {
-
                 TScan tScanner = new TScan(getQuadrupleHandle());
                 QID qid = new QID();
 
@@ -432,12 +434,17 @@ public class rdfDB extends DB implements GlobalConst {
                 }
             }
             TScan tScanner = new TScan(tempQuadHeapFile);
+            QID qid = new QID();
 
-            QuadrupleSort qSort = new QuadrupleSort(tScanner, order, 200);
-
-            while ((aquad = qSort.get_next()) != null) {
-                insertQuadruple(aquad.getQuadrupleByteArray());
+            while ((aquad = tScanner.getNext(qid)) != null) {
+                System.out.println(aquad.size());
             }
+
+//            QuadrupleSort qSort = new QuadrupleSort(tScanner, order, 200);
+//
+//            while ((aquad = qSort.get_next()) != null) {
+//                insertQuadruple(aquad.getQuadrupleByteArray());
+//            }
             tempQuadHeapFile.deleteFile();
             tempQuadHeapFile = null;
             tScanner.closescan();
