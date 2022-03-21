@@ -168,13 +168,12 @@ public class rdfDB extends DB implements GlobalConst {
 
         try {
             quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT");
+            distinctSubjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctSubjBT");
             QuadBTFileScan scan = quadrupleBTree.new_scan(null, null);
             entry = scan.get_next();
 
             //scan the quadBTTree and insert the new distinct values to the distinctSubjectBT
-            while (entry != null)
-            {
-                distinctSubjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctSubjBT");
+            while (entry != null) {
                 String label = ((StringKey) (entry.key)).getKey();
                 String[] temp;
                 String delimiter = ":";
@@ -198,7 +197,6 @@ public class rdfDB extends DB implements GlobalConst {
                 subjectsCount++;
                 entry = distinctSubjectBTScan.get_next();
             }
-            ;
             distinctSubjectBTScan.DestroyBTreeFileScan();
             distinctSubjectsBTree.close();
             quadrupleBTree.close();
@@ -222,8 +220,7 @@ public class rdfDB extends DB implements GlobalConst {
             entry = scan.get_next();
 
             //scan the quadBTTree and insert the new distinct values to the distinctSubjectBT
-            while (entry != null) ;
-            {
+            while (entry != null) {
                 String label = ((StringKey) (entry.key)).getKey();
                 String[] temp;
                 String delimiter = ":";
