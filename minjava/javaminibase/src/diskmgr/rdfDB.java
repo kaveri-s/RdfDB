@@ -436,11 +436,19 @@ public class rdfDB extends DB implements GlobalConst {
             QuadrupleSort qSort = new QuadrupleSort(tScanner, order, 200);
 
             while ((aquad = qSort.get_next()) != null) {
-                aquad.print();
                 insertQuadruple(aquad.getQuadrupleByteArray());
             }
             tempQuadHeapFile.deleteFile();
             tempQuadHeapFile = null;
+            tScanner.closescan();
+
+
+            tScanner = new TScan(quadrupleHeapFile);
+            QID qid = new QID();
+            System.out.println("After sorting");
+            while ((aquad = tScanner.getNext(qid)) != null) {
+                aquad.print();
+            }
             tScanner.closescan();
         } catch (Exception e) {
             System.err.println("sort and insert Quadruple failed.");
@@ -554,8 +562,6 @@ public class rdfDB extends DB implements GlobalConst {
                 tempQuadHeapFile = new QuadrupleHeapFile(rdfDBname + "/tempQuadHeapFile");
             QID qid = tempQuadHeapFile.insertQuadruple(quad);
             Quadruple tempquad = tempQuadHeapFile.getQuadruple(qid);
-            System.out.print("Inserted Quadruple: ");
-            tempquad.print();
         } catch (Exception e) {
             e.printStackTrace();
         }

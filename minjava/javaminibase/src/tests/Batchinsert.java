@@ -70,6 +70,10 @@ public class Batchinsert {
                     throw new Exception();
                 }
 
+                if (tokens[0] instanceof String && tokens[1] instanceof String && tokens[2] instanceof String) {
+                    Double.parseDouble(tokens[3]);
+                }
+
                 try
                 {
                     SystemDefs.JavabaseDB.insertNewQuadruple(tokens);

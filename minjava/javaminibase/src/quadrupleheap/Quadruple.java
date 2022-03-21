@@ -112,7 +112,6 @@ public class Quadruple extends Tuple implements GlobalConst {
         Label subject = entityhandle.getLabel(this.getSubjecqid().returnLID());
         Label object = entityhandle.getLabel(this.getObjecqid().returnLID());
         Label predicate = predicatehandle.getLabel(this.getPredicateID().returnLID());
-        System.out.println(subject == null);
         System.out.println(subject.getLabel() +" "+ predicate.getLabel() + " " +object.getLabel()+ " " +confidence);
     }
     @Override
