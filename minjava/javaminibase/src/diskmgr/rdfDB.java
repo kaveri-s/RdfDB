@@ -442,14 +442,6 @@ public class rdfDB extends DB implements GlobalConst {
             tempQuadHeapFile = null;
             tScanner.closescan();
 
-
-            tScanner = new TScan(quadrupleHeapFile);
-            QID qid = new QID();
-            System.out.println("After sorting");
-            while ((aquad = tScanner.getNext(qid)) != null) {
-                aquad.print();
-            }
-            tScanner.closescan();
         } catch (Exception e) {
             System.err.println("sort and insert Quadruple failed.");
             e.printStackTrace();

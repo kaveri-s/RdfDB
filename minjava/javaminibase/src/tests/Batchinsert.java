@@ -48,11 +48,11 @@ public class Batchinsert {
         File dbfile = new File(dbname); //Check if database already exists
         boolean dbexists = dbfile.exists();
         if(!dbexists) {
-            sysdefs = new SystemDefs(dbname, 10000, 1000, "Clock", indexoption);
+            sysdefs = new SystemDefs(dbname, 100000, 1000, "Clock", indexoption);
         } else {
-            sysdefs = new SystemDefs(dbname, 10000, 1000, "Clock", indexoption);
+            sysdefs = new SystemDefs(dbname, 100000, 1000, "Clock", indexoption);
         }
-        SystemDefs.JavabaseDB.openDB(dbname, 1000);
+        SystemDefs.JavabaseDB.openDB(dbname, 10000);
         return dbexists;
     }
 
@@ -67,10 +67,15 @@ public class Batchinsert {
             try {
                 String[] tokens = scanner.nextLine().replaceAll(":", "").split("\\s+");
                 if(tokens.length < 4) {
+                    System.err.print(String.join(" ", tokens) + ": ");
                     throw new Exception();
                 }
 
                 if (tokens[0] instanceof String && tokens[1] instanceof String && tokens[2] instanceof String) {
+                    if (tokens[0].length() <=0 || tokens[1].length() <=0 || tokens[2].length() <= 0) {
+                        System.err.print(String.join(" ", tokens) + ": ");
+                        throw new Exception();
+                    }
                     Double.parseDouble(tokens[3]);
                 }
 
