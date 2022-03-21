@@ -60,15 +60,15 @@ public class Stream implements GlobalConst {
         sortOption = orderType;
         this.rdfDatabase = rdfDatabase;
 
-        if(subjectFilter.compareToIgnoreCase("null") == 0)
+        if(subjectFilter.compareToIgnoreCase("*") == 0)
         {
             subject_null = true;
         }
-        if(predicateFilter.compareToIgnoreCase("null") == 0)
+        if(predicateFilter.compareToIgnoreCase("*") == 0)
         {
             predicate_null = true;
         }
-        if(objectFilter.compareToIgnoreCase("null") == 0)
+        if(objectFilter.compareToIgnoreCase("*") == 0)
         {
             object_null = true;
         }
