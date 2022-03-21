@@ -9,6 +9,8 @@ import quadrupleheap.Quadruple;
 import quadrupleheap.QuadrupleHeapFile;
 import quadrupleheap.TScan;
 
+import java.util.HashMap;
+
 public class rdfDB extends DB implements GlobalConst {
     private QuadrupleHeapFile quadrupleHeapFile;
     private LabelHeapFile entityLabelHeapFile;
@@ -165,44 +167,24 @@ public class rdfDB extends DB implements GlobalConst {
     public int getSubjectCnt() {
         subjectsCount = 0;
         KeyDataEntry entry = null;
-
+        HashMap<String, Integer> map = new HashMap<>();
         try {
-            quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT");
-            distinctSubjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctSubjBT");
-            QuadBTFileScan scan = quadrupleBTree.new_scan(null, null);
-            entry = scan.get_next();
 
-            //scan the quadBTTree and insert the new distinct values to the distinctSubjectBT
-            while (entry != null) {
-                String label = ((StringKey) (entry.key)).getKey();
-                String[] temp;
-                String delimiter = ":";
-                temp = label.split(delimiter);
-                String subject = temp[0] + temp[1];
-                KeyClass low_key = new StringKey(subject);
-                KeyClass high_key = new StringKey(subject);
-                LabelBTFileScan distinctSubjectScan = distinctSubjectsBTree.new_scan(low_key, high_key);
-                KeyDataEntry dup_entry = distinctSubjectScan.get_next();
-                if (dup_entry == null) {
-                    //subject not present in btree, hence insert
-                    distinctSubjectsBTree.insert(low_key, new LID(new PageId(Integer.parseInt(temp[1])), Integer.parseInt(temp[0])));
+            TScan tScanner = new TScan(getQuadrupleHandle());
+            QID qid = new QID();
+            Quadruple aquad;
+            while ((aquad = tScanner.getNext(qid)) != null) {
+                int pageSlot = aquad.getSubjecqid().slotNo;
+                int pid = aquad.getSubjecqid().pageNo.pid;
+                String key = String.valueOf(pageSlot) + String.valueOf(pid);
+                if(!map.containsKey(key)){
+                    subjectsCount++;
+                    map.put(key, 1);
                 }
-                distinctSubjectScan.DestroyBTreeFileScan();
-                entry = scan.get_next();
             }
-            scan.DestroyBTreeFileScan();
-            LabelBTFileScan distinctSubjectBTScan = distinctSubjectsBTree.new_scan(null, null);
-            entry = distinctSubjectBTScan.get_next();
-            while (entry != null) {
-                subjectsCount++;
-                entry = distinctSubjectBTScan.get_next();
-            }
-            distinctSubjectBTScan.DestroyBTreeFileScan();
-            distinctSubjectsBTree.close();
-            quadrupleBTree.close();
 
         } catch (Exception e) {
-            System.err.println("Error while fetching the quadruples count. " + e);
+            System.out.println("Error while fetching the quadruples count. " + e);
             e.printStackTrace();
             Runtime.getRuntime().exit(1);
         }
@@ -212,40 +194,20 @@ public class rdfDB extends DB implements GlobalConst {
     public int getObjectCnt() {
         objectsCount = 0;
         KeyDataEntry entry = null;
-
+        HashMap<String, Integer> map = new HashMap<>();
         try {
-            quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT");
-            distinctObjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctObjBT");
-            QuadBTFileScan scan = quadrupleBTree.new_scan(null, null);
-            entry = scan.get_next();
-
-            //scan the quadBTTree and insert the new distinct values to the distinctSubjectBT
-            while (entry != null) {
-                String label = ((StringKey) (entry.key)).getKey();
-                String[] temp;
-                String delimiter = ":";
-                temp = label.split(delimiter);
-                String object = temp[4] + temp[5];
-                KeyClass low_key = new StringKey(object);
-                KeyClass high_key = new StringKey(object);
-                LabelBTFileScan distinctObjectScan = distinctObjectsBTree.new_scan(low_key, high_key);
-                KeyDataEntry dup_entry = distinctObjectScan.get_next();
-                if (dup_entry == null) {
-                    //subject not present in btree, hence insert
-                    distinctObjectsBTree.insert(low_key, new LID(new PageId(Integer.parseInt(temp[1])), Integer.parseInt(temp[0])));
+            TScan tScanner = new TScan(getQuadrupleHandle());
+            QID qid = new QID();
+            Quadruple aquad;
+            while ((aquad = tScanner.getNext(qid)) != null) {
+                int pageSlot = aquad.getObjecqid().slotNo;
+                int pid = aquad.getObjecqid().pageNo.pid;
+                String key = String.valueOf(pageSlot) + String.valueOf(pid);
+                if(!map.containsKey(key)){
+                    objectsCount++;
+                    map.put(key, 1);
                 }
-                distinctObjectScan.DestroyBTreeFileScan();
-                entry = scan.get_next();
             }
-            scan.DestroyBTreeFileScan();
-            LabelBTFileScan distinctObjectBTScan = distinctObjectsBTree.new_scan(null, null);
-            entry = distinctObjectBTScan.get_next();
-            while (entry != null) {
-                objectsCount++;
-                entry = distinctObjectBTScan.get_next();
-            }
-            distinctObjectBTScan.DestroyBTreeFileScan();
-            distinctObjectsBTree.close();
             quadrupleBTree.close();
         } catch (Exception e) {
             System.err.println("Error while fetching the quadruples count. " + e);
