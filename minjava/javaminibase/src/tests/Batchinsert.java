@@ -52,7 +52,7 @@ public class Batchinsert {
         } else {
             sysdefs = new SystemDefs(dbname, 0, 1000, "Clock", indexoption);
         }
-        SystemDefs.JavabaseDB.openDB(dbname, 10000);
+        SystemDefs.JavabaseDB.openDB(dbname, 10000000);
         return dbexists;
     }
 
