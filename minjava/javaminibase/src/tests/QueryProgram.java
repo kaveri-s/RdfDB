@@ -27,7 +27,7 @@ public class QueryProgram {
     public static void checkArgs(String[] args){
 
         if(args.length<8){
-            System.err.println("Usage:query DATABASENAME INDEXOPTION SUBJECTFILTER PREDICATEFILTER OBJECTFILTER CONFIDENCEFILTER NUMBUF***");
+            System.err.println("Usage:query DATABASENAME INDEXOPTION SORTORDER SUBJECTFILTER PREDICATEFILTER OBJECTFILTER CONFIDENCEFILTER NUMBUF***");
             exit(0);
         }
         try{

@@ -1,0 +1,6 @@
+#!/bin/sh
+export DATAFILE=$1
+export INDEXOPTION=$2
+export DBNAME=$3
+cd src/tests
+make batchinsert

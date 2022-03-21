@@ -47,7 +47,7 @@ test:
 	cd tests; make bmtest dbtest; whoami; make hftest bttest indextest jointest sorttest sortmerge
 
 reports:
-	cd tests; make report # batchinsert queryprogram report;
+	cd tests; make batchinsert # batchinsert queryprogram report;
 
 clean:
 	\rm -f $(CLASSPATH)/*.class *~ \#* core $(JARFILES) TRACE

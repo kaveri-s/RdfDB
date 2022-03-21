@@ -81,12 +81,12 @@ QueryProgram:QueryProgram.java
 	$(JAVAC) QueryProgram.java
 
 batchinsert: Batchinsert
-	$(JAVA) tests.Batchinsert ../test_data.txt 1 db_test
+	$(JAVA) tests.Batchinsert $(DATAFILE) $(INDEXOPTION) $(DBNAME)
 
 queryprogram: QueryProgram
-	$(JAVA) tests.QueryProgram db_test 1 1 ":dexxter" "*" "*" "*" 500000
+	$(JAVA) tests.QueryProgram $(DBNAME) $(INDEXOPTION) $(SORTORDER) $(SUBJECT) $(PREDICATE) $(OBJECT) $(CONFIDENCE) $(NUMBUFRDF)
 
 report: Report
-	$(JAVA) tests.Report db_test 1
+	$(JAVA) tests.Report $(DBNAME) $(INDEXOPTION)
 
 
