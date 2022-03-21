@@ -153,11 +153,16 @@ public class Quadruple extends Tuple implements GlobalConst {
     public void quadrupleSet(byte[] aquadruple, int offset)throws IOException {
         this.subject.slotNo=Convert.getIntValue(offset,aquadruple);
         this.subject.pageNo=new PageId(Convert.getIntValue(offset+4,aquadruple));
+        setSubjecqid(this.subject);
         this.predicate.slotNo=Convert.getIntValue(offset+8,aquadruple);
         this.predicate.pageNo=new PageId(Convert.getIntValue(offset+12,aquadruple));
+        setPredicateid(this.predicate);
         this.object.slotNo=Convert.getIntValue(offset+16,aquadruple);
         this.object.pageNo=new PageId(Convert.getIntValue(offset+20,aquadruple));
+        setObjecqid(this.object);
         this.value=Convert.getFloValue(offset+24,aquadruple);
+        setConfidence(this.value);
+
     }
 
 }
