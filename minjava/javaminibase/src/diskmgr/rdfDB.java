@@ -172,7 +172,7 @@ public class rdfDB extends DB implements GlobalConst {
             entry = scan.get_next();
 
             //scan the quadBTTree and insert the new distinct values to the distinctSubjectBT
-            while (entry != null) ;
+            while (entry != null)
             {
                 distinctSubjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctSubjBT");
                 String label = ((StringKey) (entry.key)).getKey();

@@ -77,7 +77,7 @@ public class Stream implements GlobalConst {
             confidence_null = true;
         }
         dbName = rdfDatabase.getRdfDBName();
-        String indexOption = dbName.substring(dbName.lastIndexOf('_') + 1);
+        String indexOption = dbName.substring(dbName.lastIndexOf('.') + 1);
 
         if(!subject_null && !predicate_null && !object_null && !confidence_null)
         {

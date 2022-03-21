@@ -68,6 +68,8 @@ public class QueryProgram {
     public static void main(String[] args)
             throws Exception
     {
+
+        System.out.println(String.join(" ", args));
         checkArgs(args);
         int init_read=PCounter.rCounter;
         int init_write=PCounter.wCounter;
@@ -75,12 +77,12 @@ public class QueryProgram {
         indexoption = Integer.parseInt(args[1]);
         dbname = new String("/tmp/"+args[0]+"."+indexoption);
         order= Integer.parseInt(args[2]);
-        Subject = new String(args[3]);
-        Predicate = new String(args[4]);
-        Object = new String(args[5]);
-        Confidence = new String(args[6]);
+        Subject = new String(args[3]).replaceAll(":", "");
+        Predicate = new String(args[4]).replaceAll(":", "");
+        Object = new String(args[5]).replaceAll(":", "");
+        Confidence = new String(args[6]).replaceAll(":", "");
         num_of_buf = Integer.parseInt(args[7]);
-        if(Confidence.compareToIgnoreCase("null") != 0)
+        if(Confidence.compareToIgnoreCase("*") != 0)
         {
             confidence = Double.parseDouble(Confidence);
         }
@@ -90,7 +92,7 @@ public class QueryProgram {
         {
             //Database present. Opening existing database
             System.out.println("Database already present. Opening it");
-            sysdef = new SystemDefs(dbname,0,num_of_buf,"Clock",indexoption);
+            sysdef = new SystemDefs(dbname,10000,num_of_buf,"Clock",indexoption);
 
         }
         else
