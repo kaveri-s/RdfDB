@@ -83,8 +83,8 @@ public class Report
             System.out.println(" Predicate File Name		: " + dbname + "/predicateHF");
             System.out.println(" Predicate File Record Count	: " + plhf.getLabelCnt());
             System.out.println("\n --------- Page Read and Write  ---------");
-            System.out.println(" Total Page Reads               : " + String.valueOf(PCounter.rCounter) );
-            System.out.println(" Total Page Writes              : " + String.valueOf(PCounter.wCounter) );
+            System.out.println(" Total Page Reads               : " + String.valueOf(PCounter.rCounter-iread) );
+            System.out.println(" Total Page Writes              : " + String.valueOf(PCounter.wCounter-iwrite) );
             System.out.println(" ------------------------------");
             System.out.println("****************************************************************\n\n\n");
         }
