@@ -50,7 +50,7 @@ public class Batchinsert {
         if(!dbexists) {
             sysdefs = new SystemDefs(dbname, 100000, 1000, "Clock", indexoption);
         } else {
-            sysdefs = new SystemDefs(dbname, 100000, 1000, "Clock", indexoption);
+            sysdefs = new SystemDefs(dbname, 0, 1000, "Clock", indexoption);
         }
         SystemDefs.JavabaseDB.openDB(dbname, 10000);
         return dbexists;

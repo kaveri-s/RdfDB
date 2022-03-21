@@ -146,7 +146,7 @@ public class SystemDefs {
         if ((MINIBASE_RESTART_FLAG)||(num_pgs == 0)){//open an existing database
             try {
                 System.out.println("***Opening existing database***");
-                JavabaseDB.openDB(JavabaseDBName,index); //open exisiting rdf database
+                JavabaseDB.openDB(JavabaseDBName); //open exisiting rdf database
             }
             catch (Exception e) {
                 System.err.println (""+e);

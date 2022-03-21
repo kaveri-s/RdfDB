@@ -46,7 +46,7 @@ public class Report
         if(dbfile.exists())
         {
             //Database present. Opening existing database
-            sysdef = new SystemDefs(dbname, 1000, NUMBUF, "Clock", indexoption);
+            sysdef = new SystemDefs(dbname, 0, NUMBUF, "Clock", indexoption);
             System.out.println("*** Opening existing database ***");
         }
         else
