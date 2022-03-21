@@ -40,6 +40,7 @@ public class rdfDB extends DB implements GlobalConst {
         quadruplesCount = 0;
         entitiesCount = 0;
         pCounter = new PCounter();
+        pCounter.initialize();
     }
 
     public void openDB(String dbName) {
@@ -561,8 +562,6 @@ public class rdfDB extends DB implements GlobalConst {
     }
 
     private void initializeRdfDB() {
-
-        pCounter.initialize();
         try {
             quadrupleHeapFile = new QuadrupleHeapFile(rdfDBname + "/quadrupleHF");
             entityLabelHeapFile = new LabelHeapFile(rdfDBname + "/entityHF");

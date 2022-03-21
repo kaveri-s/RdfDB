@@ -208,7 +208,7 @@ public class SystemDefs {
 
         try
         {
-            JavabaseBM.flushAllPages();
+            //JavabaseBM.flushAllPages();
         }
         catch(Exception e)
         {
