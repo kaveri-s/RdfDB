@@ -81,7 +81,7 @@ QueryProgram:QueryProgram.java
 	$(JAVAC) QueryProgram.java
 
 batchinsert: Batchinsert
-	$(JAVA) tests.Batchinsert /Users/kaveri-s/ASU/DBMSI/test_data.txt 1 db_test
+	$(JAVA) tests.Batchinsert ../test_data.txt 1 db_test
 
 queryprogram: QueryProgram
 	$(JAVA) tests.QueryProgram db_test 1 1 ":dexxter" "*" "*" "*" 500000
