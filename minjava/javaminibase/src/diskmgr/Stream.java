@@ -79,50 +79,42 @@ public class Stream implements GlobalConst {
         dbName = rdfDatabase.getRdfDBName();
         String indexOption = dbName.substring(dbName.lastIndexOf('.') + 1);
 
-        if(!subject_null && !predicate_null && !object_null && !confidence_null)
+        if(Integer.parseInt(indexOption) == 1 && !confidence_null)
         {
-            ScanBTReeIndex(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
-            scan_on_BT = true;
+            ScanBTConfidenceIndex(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
+        }
+        else if(Integer.parseInt(indexOption) == 2 && !subject_null && !confidence_null)
+        {
+            streamBySubjectConfidence(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
+        }
+        else if(Integer.parseInt(indexOption) == 3 && !object_null && !confidence_null)
+        {
+            streamByObjectConfidence(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
+        }
+        else if(Integer.parseInt(indexOption) == 4 && !predicate_null && !confidence_null)
+        {
+            streamByPredicateConfidence(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
+        }
+        else if(Integer.parseInt(indexOption) == 5 && !subject_null)
+        {
+            ScanBTSubjectIndex(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
         }
         else
         {
-            if(Integer.parseInt(indexOption) == 1 && !confidence_null)
-            {
-                ScanBTConfidenceIndex(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
-            }
-            else if(Integer.parseInt(indexOption) == 2 && !subject_null && !confidence_null)
-            {
-                streamBySubjectConfidence(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
-            }
-            else if(Integer.parseInt(indexOption) == 3 && !object_null && !confidence_null)
-            {
-                streamByObjectConfidence(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
-            }
-            else if(Integer.parseInt(indexOption) == 4 && !predicate_null && !confidence_null)
-            {
-                streamByPredicateConfidence(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
-            }
-            else if(Integer.parseInt(indexOption) == 5 && !subject_null)
-            {
-                ScanBTSubjectIndex(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
-            }
-            else
-            {
-                scanEntireHeapFile = true;
-                ScanEntireHeapFile(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
-            }
+            scanEntireHeapFile = true;
+            ScanEntireHeapFile(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
+        }
 
-            //Sort the results
-            tScan = new TScan(Result_HF);
-            QuadrupleOrder sort_order = getSortOrder(orderType);
-            try
-            {
-                qSort = new QuadrupleSort(tScan, sort_order, num_of_buf);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
+        //Sort the results
+        tScan = new TScan(Result_HF);
+        QuadrupleOrder sort_order = getSortOrder(orderType);
+        try
+        {
+            qSort = new QuadrupleSort(tScan, sort_order, num_of_buf);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
     }
 
@@ -204,6 +196,7 @@ public class Stream implements GlobalConst {
         catch(Exception e)
         {
             System.out.println("Error in Stream get next\n"+e);
+            e.printStackTrace();
         }
         return null;
     }

@@ -92,8 +92,6 @@ public class Batchinsert {
             }
 
         }
-
-//        SystemDefs.JavabaseDB.sortAndInsertQuadruples(dbexists, indexoption);
     }
 
     public static void main(String[] args) throws InvalidPageNumberException, IOException, FileIOException, DiskMgrException {

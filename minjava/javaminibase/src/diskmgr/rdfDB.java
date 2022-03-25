@@ -111,13 +111,6 @@ public class rdfDB extends DB implements GlobalConst {
 
     }
     public QuadBTreeFile getQuadBTree() {
-        try{
-            quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT");
-        }catch(Exception e){
-            System.err.println(e);
-            e.printStackTrace();
-            Runtime.getRuntime().exit(1);
-        }
         return quadrupleBTree;
     }
 
@@ -210,7 +203,6 @@ public class rdfDB extends DB implements GlobalConst {
                     map.put(key, 1);
                 }
             }
-            quadrupleBTree.close();
             tScanner.closescan();
         } catch (Exception e) {
             System.err.println("Error while fetching the quadruples count. " + e);
@@ -315,7 +307,7 @@ public class rdfDB extends DB implements GlobalConst {
         boolean isDeleteSuccessful = false;
 
         try {
-            quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT");
+//            quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT");
             String key = getKeyFromQuadPtr(quadruplePtr);
             double confidence = Convert.getFloValue(24, quadruplePtr);
             KeyClass low_key = new StringKey(key);
@@ -331,7 +323,6 @@ public class rdfDB extends DB implements GlobalConst {
                     isDeleteSuccessful = quadrupleBTree.Delete(low_key, quadrupleId) && quadrupleHeapFile.deleteQuadruple(quadrupleId);
 
             }
-            quadrupleBTree.close();
         } catch (Exception e) {
             System.err.println("Error while deleting the quadruples. " + e);
             e.printStackTrace();
@@ -493,15 +484,15 @@ public class rdfDB extends DB implements GlobalConst {
     public void closeRdfDBFiles() {
 
         try {
-            if (entityBTree != null) entityBTree.close();
+            entityBTree.close();
 
-            if (predicateBTree != null) predicateBTree.close();
+            predicateBTree.close();
 
-            if (quadrupleBTree != null) quadrupleBTree.close();
+            quadrupleBTree.close();
 
-            if (distinctSubjectsBTree != null) distinctSubjectsBTree.close();
+            distinctSubjectsBTree.close();
 
-            if (distinctObjectsBTree != null) distinctObjectsBTree.close();
+            distinctObjectsBTree.close();
 
         } catch (Exception e) {
             System.err.println("" + e);

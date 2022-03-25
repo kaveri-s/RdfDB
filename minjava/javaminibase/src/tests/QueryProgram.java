@@ -93,7 +93,6 @@ public class QueryProgram {
             //Database present. Opening existing database
             System.out.println("Database already present. Opening it");
             sysdef = new SystemDefs(dbname,0,1000,"Clock",indexoption);
-//            SystemDefs.JavabaseDB.openDB(dbname);
 
         }
         else
@@ -109,10 +108,7 @@ public class QueryProgram {
         {
             quad.print();
         }
-        if(s!=null)
-        {
-            s.closeStream();
-        }
+        s.closeStream();
         SystemDefs.close();
 
         int fin_read=PCounter.rCounter;
