@@ -1,10 +1,8 @@
-package tests;
+package oldtests;
 
 import java.io.*;
-import java.util.*;
 import java.lang.*;
 import global.*;
-import bufmgr.*;
 import diskmgr.*;
 import chainexception.*;
 

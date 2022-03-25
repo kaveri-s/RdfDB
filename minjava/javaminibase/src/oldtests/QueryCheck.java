@@ -1,6 +1,5 @@
-package tests;
+package oldtests;
 
-import java.io.*;
 import java.lang.*;
 import java.util.*;
 import global.*;

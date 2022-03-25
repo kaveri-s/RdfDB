@@ -1,16 +1,15 @@
-package tests;
+package oldtests;
 
 import java.io.*; 
 import global.*;
-import bufmgr.*;
-import diskmgr.*;
 import heap.*;
 import iterator.*;
 import index.*;
+import btree.*; 
 import java.util.Random;
 
 
-class SORTDriver extends TestDriver 
+class IndexDriver extends TestDriver 
   implements GlobalConst {
 
   private static String   data1[] = {
@@ -49,11 +48,10 @@ class SORTDriver extends TestDriver
   private static int   LARGE = 1000; 
   private static short REC_LEN1 = 32; 
   private static short REC_LEN2 = 160; 
-  private static int   SORTPGNUM = 12; 
 
 
-  public SORTDriver() {
-    super("sorttest");
+  public IndexDriver() {
+    super("indextest");
   }
 
   public boolean runTests ()  {
@@ -128,11 +126,8 @@ class SORTDriver extends TestDriver
     attrType[0] = new AttrType(AttrType.attrString);
     attrType[1] = new AttrType(AttrType.attrString);
     short[] attrSize = new short[2];
-    attrSize[0] = REC_LEN1;
-    attrSize[1] = REC_LEN2;
-    TupleOrder[] order = new TupleOrder[2];
-    order[0] = new TupleOrder(TupleOrder.Ascending);
-    order[1] = new TupleOrder(TupleOrder.Descending);
+    attrSize[0] = REC_LEN2;
+    attrSize[1] = REC_LEN1;
     
     // create a tuple of appropriate size
     Tuple t = new Tuple();
@@ -168,7 +163,7 @@ class SORTDriver extends TestDriver
     
     for (int i=0; i<NUM_RECORDS; i++) {
       try {
-	t.setStrFld(1, data1[i]);
+	t.setStrFld(2, data1[i]);
       }
       catch (Exception e) {
 	status = FAIL;
@@ -184,26 +179,84 @@ class SORTDriver extends TestDriver
       }
     }
 
-    // create an iterator by open a file scan
-    FldSpec[] projlist = new FldSpec[2];
-    RelSpec rel = new RelSpec(RelSpec.outer); 
-    projlist[0] = new FldSpec(rel, 1);
-    projlist[1] = new FldSpec(rel, 2);
-    
-    FileScan fscan = null;
+    // create an scan on the heapfile
+    Scan scan = null;
     
     try {
-      fscan = new FileScan("test1.in", attrType, attrSize, (short) 2, 2, projlist, null);
+      scan = new Scan(f);
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace();
+      Runtime.getRuntime().exit(1);
+    }
+
+    // create the index file
+    BTreeFile btf = null;
+    try {
+      btf = new BTreeFile("BTreeIndex", AttrType.attrString, REC_LEN1, 1/*delete*/); 
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace();
+      Runtime.getRuntime().exit(1);
+    }
+
+    System.out.println("BTreeIndex created successfully.\n"); 
+    
+    rid = new RID();
+    String key = null;
+    Tuple temp = null;
+    
+    try {
+      temp = scan.getNext(rid);
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace();
     }
+    while ( temp != null) {
+      t.tupleCopy(temp);
+      
+      try {
+	key = t.getStrFld(2);
+      }
+      catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+      }
+      
+      try {
+	btf.insert(new StringKey(key), rid); 
+      }
+      catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+      }
 
-    // Sort "test1.in" 
-    Sort sort = null;
+      try {
+	temp = scan.getNext(rid);
+      }
+      catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+      }
+    }
+    
+    // close the file scan
+    scan.closescan();
+    
+    System.out.println("BTreeIndex file created successfully.\n"); 
+    
+    FldSpec[] projlist = new FldSpec[2];
+    RelSpec rel = new RelSpec(RelSpec.outer); 
+    projlist[0] = new FldSpec(rel, 1);
+    projlist[1] = new FldSpec(rel, 2);
+    
+    // start index scan
+    IndexScan iscan = null;
     try {
-      sort = new Sort(attrType, (short) 2, attrSize, fscan, 1, order[0], REC_LEN1, SORTPGNUM);
+      iscan = new IndexScan(new IndexType(IndexType.B_Index), "test1.in", "BTreeIndex", attrType, attrSize, 2, 2, projlist, null, 2, true);
     }
     catch (Exception e) {
       status = FAIL;
@@ -216,7 +269,7 @@ class SORTDriver extends TestDriver
     String outval = null;
     
     try {
-      t = sort.get_next();
+      t = iscan.get_next();
     }
     catch (Exception e) {
       status = FAIL;
@@ -244,13 +297,13 @@ class SORTDriver extends TestDriver
       if (outval.compareTo(data2[count]) != 0) {
 	System.err.println("outval = " + outval + "\tdata2[count] = " + data2[count]);
 	
-	System.err.println("Test1 -- OOPS! test1.out not sorted");
+	System.err.println("Test1 -- OOPS! index scan not in sorted order");
 	status = FAIL;
       }
       count++;
 
       try {
-	t = sort.get_next();
+	t = iscan.get_next();
       }
       catch (Exception e) {
 	status = FAIL;
@@ -262,12 +315,12 @@ class SORTDriver extends TestDriver
 	status = FAIL;
     }
     else if (flag && status) {
-      System.err.println("Test1 -- Sorting OK");
+      System.err.println("Test1 -- Index Scan OK");
     }
 
     // clean up
     try {
-      sort.close();
+      iscan.close();
     }
     catch (Exception e) {
       status = FAIL;
@@ -286,30 +339,31 @@ class SORTDriver extends TestDriver
     
     boolean status = OK;
 
-    AttrType[] attrType = new AttrType[1];
+    AttrType[] attrType = new AttrType[2];
     attrType[0] = new AttrType(AttrType.attrString);
-    short[] attrSize = new short[1];
-    attrSize[0] = REC_LEN1;
-    TupleOrder[] order = new TupleOrder[2];
-    order[0] = new TupleOrder(TupleOrder.Ascending);
-    order[1] = new TupleOrder(TupleOrder.Descending);
+    attrType[1] = new AttrType(AttrType.attrString);
+    short[] attrSize = new short[2];
+    attrSize[0] = REC_LEN2;
+    attrSize[1] = REC_LEN1;
     
     // create a tuple of appropriate size
     Tuple t = new Tuple();
     try {
-      t.setHdr((short) 1, attrType, attrSize);
+      t.setHdr((short) 2, attrType, attrSize);
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace();
     }
+
     int size = t.size();
     
-    // Create unsorted data file "test2.in"
     RID             rid;
     Heapfile        f = null;
+
+    // open existing data file
     try {
-      f = new Heapfile("test2.in");
+      f = new Heapfile("test1.in");
     }
     catch (Exception e) {
       status = FAIL;
@@ -318,73 +372,154 @@ class SORTDriver extends TestDriver
     
     t = new Tuple(size);
     try {
-      t.setHdr((short) 1, attrType, attrSize);
+      t.setHdr((short) 2, attrType, attrSize);
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace();
     }
     
-    for (int i=0; i<NUM_RECORDS; i++) {
-      try {
-	t.setStrFld(1, data1[i]);
-      }
-      catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-      }
-      
-      try {
-	rid = f.insertRecord(t.returnTupleByteArray());
-      }
-      catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-      }
+    // open existing index
+    BTreeFile btf =  null;
+    try {
+      btf = new BTreeFile("BTreeIndex");
     }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace();
+    }
+    
+    System.out.println("BTreeIndex opened successfully.\n"); 
+    
+    rid = new RID();
+    String key = null;
+    Tuple temp = null;
+    
 
-    // create an iterator by open a file scan
-    FldSpec[] projlist = new FldSpec[1];
+    FldSpec[] projlist = new FldSpec[2];
     RelSpec rel = new RelSpec(RelSpec.outer); 
     projlist[0] = new FldSpec(rel, 1);
+    projlist[1] = new FldSpec(rel, 2);
     
-    FileScan fscan = null;
+    // set up an identity selection
+    CondExpr[] expr = new CondExpr[2];
+    expr[0] = new CondExpr();
+    expr[0].op = new AttrOperator(AttrOperator.aopEQ);
+    expr[0].type1 = new AttrType(AttrType.attrSymbol);
+    expr[0].type2 = new AttrType(AttrType.attrString);
+    expr[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 2);
+    expr[0].operand2.string = "dsilva";
+    expr[0].next = null;
+    expr[1] = null;
     
+    // start index scan
+    IndexScan iscan = null;
     try {
-      fscan = new FileScan("test2.in", attrType, attrSize, (short) 1, 1, projlist, null);
+      iscan = new IndexScan(new IndexType(IndexType.B_Index), "test1.in", "BTreeIndex", attrType, attrSize, 2, 2, projlist, expr, 2, false);
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace();
     }
-     
-    // Sort "test2.in"
-    Sort sort = null;
-    try {
-      sort = new Sort(attrType, (short) 1, attrSize, fscan, 1, order[1], REC_LEN1, SORTPGNUM);
-    }
-    catch (Exception e) {
-      status = FAIL;
-      e.printStackTrace();
-    }
-
+    
 
     int count = 0;
     t = null;
     String outval = null;
     
     try {
-      t = sort.get_next();
+      t = iscan.get_next();
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace(); 
+    }
+
+    if (t == null) {
+      System.err.println("Test 2 -- no record retrieved from identity search.");
+      status = FAIL;
+      return status; 
+    }
+
+    try {
+      outval = t.getStrFld(2);
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace();
     }
+    
+    if (outval.compareTo("dsilva") != 0) {
+      System.err.println("Test2 -- error in identity search.");
+      status = FAIL;
+    }
+    
+    try {
+      t = iscan.get_next();
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace(); 
+    }
+    
+    if (t != null) {
+      System.err.println("Test2 -- OOPS! too many records");
+      status = FAIL;
+    }
+    
+    // clean up
+    try {
+      iscan.close();
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace();
+    }
+    
+    // now try a range scan
+    expr = new CondExpr[3]; 
+    expr[0] = new CondExpr();
+    expr[0].op = new AttrOperator(AttrOperator.aopGE);
+    expr[0].type1 = new AttrType(AttrType.attrSymbol);
+    expr[0].type2 = new AttrType(AttrType.attrString);
+    expr[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 2);
+    expr[0].operand2.string = "dsilva";
+    expr[0].next = null;
+    expr[1] = new CondExpr();
+    expr[1].op = new AttrOperator(AttrOperator.aopLE);
+    expr[1].type1 = new AttrType(AttrType.attrSymbol);
+    expr[1].type2 = new AttrType(AttrType.attrString);
+    expr[1].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 2);
+    expr[1].operand2.string = "yuc";
+    expr[1].next = null;
+    expr[2] = null;
+    
+    // start index scan
+    iscan = null;
+    try {
+      iscan = new IndexScan(new IndexType(IndexType.B_Index), "test1.in", "BTreeIndex", attrType, attrSize, 2, 2, projlist, expr, 2, false);
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace();
+    }
+    
+
+    count = 16; // because starting from dsilva
+    t = null;
+    
+    try {
+      t = iscan.get_next();
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace(); 
+    }
 
     boolean flag = true;
-    
+ 
     while (t != null) {
-      if (count >= NUM_RECORDS) {
+      if (count >= (NUM_RECORDS - 3)) {
 	System.err.println("Test2 -- OOPS! too many records");
 	status = FAIL;
 	flag = false; 
@@ -392,38 +527,40 @@ class SORTDriver extends TestDriver
       }
       
       try {
-	outval = t.getStrFld(1);
+	outval = t.getStrFld(2);
       }
       catch (Exception e) {
 	status = FAIL;
 	e.printStackTrace();
       }
-
-      if (outval.compareTo(data2[NUM_RECORDS - count - 1]) != 0) {
-	System.err.println("Test2 -- OOPS! test2.out not sorted");
+      
+      if (outval.compareTo(data2[count]) != 0) {
+	System.err.println("outval = " + outval + "\tdata2[count] = " + data2[count]);
+	
+	System.err.println("Test2 -- OOPS! index scan not in sorted order");
 	status = FAIL;
       }
       count++;
 
       try {
-	t = sort.get_next();
+	t = iscan.get_next();
       }
       catch (Exception e) {
 	status = FAIL;
 	e.printStackTrace();
       }
     }
-    if (count < NUM_RECORDS) {
+    if (count < (NUM_RECORDS-3)) {
 	System.err.println("Test2 -- OOPS! too few records");
 	status = FAIL;
     }
     else if (flag && status) {
-      System.err.println("Test2 -- Sorting OK");
+      System.err.println("Test2 -- Index Scan OK");
     }
-
+    
     // clean up
     try {
-      sort.close();
+      iscan.close();
     }
     catch (Exception e) {
       status = FAIL;
@@ -437,13 +574,13 @@ class SORTDriver extends TestDriver
 
 
   protected boolean test3()
-  {
+  { 
     System.out.println("------------------------ TEST 3 --------------------------");
     
     boolean status = OK;
 
-    Random random1 = new Random((long) 1000);
-    Random random2 = new Random((long) 1000);
+    Random random1 = new Random();
+    Random random2 = new Random();
     
     AttrType[] attrType = new AttrType[4];
     attrType[0] = new AttrType(AttrType.attrString);
@@ -453,9 +590,6 @@ class SORTDriver extends TestDriver
     short[] attrSize = new short[2];
     attrSize[0] = REC_LEN1;
     attrSize[1] = REC_LEN1;
-    TupleOrder[] order = new TupleOrder[2];
-    order[0] = new TupleOrder(TupleOrder.Ascending);
-    order[1] = new TupleOrder(TupleOrder.Descending);
     
     Tuple t = new Tuple();
 
@@ -467,7 +601,6 @@ class SORTDriver extends TestDriver
       status = FAIL;
       e.printStackTrace();
     }
-
     int size = t.size();
 
     // Create unsorted data file "test3.in"
@@ -500,7 +633,7 @@ class SORTDriver extends TestDriver
       fnum = random2.nextFloat();
       try {
 	t.setStrFld(1, data1[i%NUM_RECORDS]);
-	t.setIntFld(3, inum);
+	t.setIntFld(3, inum%1000);
 	t.setFloFld(4, fnum);
       }
       catch (Exception e) {
@@ -517,7 +650,75 @@ class SORTDriver extends TestDriver
       }
     }
 
-    // create an iterator by open a file scan
+    // create an scan on the heapfile
+    Scan scan = null;
+    
+    try {
+      scan = new Scan(f);
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace();
+      Runtime.getRuntime().exit(1);
+    }
+
+    // create the index file on the integer field
+    BTreeFile btf = null;
+    try {
+      btf = new BTreeFile("BTIndex", AttrType.attrInteger, 4, 1/*delete*/); 
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace();
+      Runtime.getRuntime().exit(1);
+    }
+
+    System.out.println("BTreeIndex created successfully.\n"); 
+    
+    rid = new RID();
+    int key = 0;
+    Tuple temp = null;
+    
+    try {
+      temp = scan.getNext(rid);
+    }
+    catch (Exception e) {
+      status = FAIL;
+      e.printStackTrace();
+    }
+    while ( temp != null) {
+      t.tupleCopy(temp);
+      
+      try {
+	key = t.getIntFld(3);
+      }
+      catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+      }
+      
+      try {
+	btf.insert(new IntegerKey(key), rid); 
+      }
+      catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+      }
+
+      try {
+	temp = scan.getNext(rid);
+      }
+      catch (Exception e) {
+	status = FAIL;
+	e.printStackTrace();
+      }
+    }
+    
+    // close the file scan
+    scan.closescan();
+    
+    System.out.println("BTreeIndex file created successfully.\n"); 
+    
     FldSpec[] projlist = new FldSpec[4];
     RelSpec rel = new RelSpec(RelSpec.outer); 
     projlist[0] = new FldSpec(rel, 1);
@@ -525,64 +726,48 @@ class SORTDriver extends TestDriver
     projlist[2] = new FldSpec(rel, 3);
     projlist[3] = new FldSpec(rel, 4);
     
-    FileScan fscan = null;
-    
-    // Sort "test3.in" on the int attribute (field 3) -- Ascending
-    System.out.println(" -- Sorting in ascending order on the int field -- ");
-    
+    // conditions
+    CondExpr[] expr = new CondExpr[3]; 
+    expr[0] = new CondExpr();
+    expr[0].op = new AttrOperator(AttrOperator.aopGE);
+    expr[0].type1 = new AttrType(AttrType.attrSymbol);
+    expr[0].type2 = new AttrType(AttrType.attrInteger);
+    expr[0].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 3);
+    expr[0].operand2.integer = 100;
+    expr[0].next = null;
+    expr[1] = new CondExpr();
+    expr[1].op = new AttrOperator(AttrOperator.aopLE);
+    expr[1].type1 = new AttrType(AttrType.attrSymbol);
+    expr[1].type2 = new AttrType(AttrType.attrInteger);
+    expr[1].operand1.symbol = new FldSpec(new RelSpec(RelSpec.outer), 3);
+    expr[1].operand2.integer = 900;
+    expr[1].next = null;
+    expr[2] = null;
+
+    // start index scan
+    IndexScan iscan = null;
     try {
-      fscan = new FileScan("test3.in", attrType, attrSize, (short) 4, 4, projlist, null);
+      iscan = new IndexScan(new IndexType(IndexType.B_Index), "test3.in", "BTIndex", attrType, attrSize, 4, 4, projlist, expr, 3, false);
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace();
     }
-
-
-    Sort sort = null;
-    try {
-      sort = new Sort(attrType, (short) 4, attrSize, fscan, 3, order[0], 4, SORTPGNUM);
-    }
-    catch (Exception e) {
-      status = FAIL;
-      e.printStackTrace();
-    }
-
     
-    count = 0;
+
     t = null;
     int iout = 0;
-    int ival = 0;
+    int ival = 100; // low key
     
     try {
-      t = sort.get_next();
+      t = iscan.get_next();
     }
     catch (Exception e) {
       status = FAIL;
       e.printStackTrace(); 
     }
 
-    if (t != null) {
-      // get an initial value
-      try {
-	ival = t.getIntFld(3);
-      }
-      catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-      }
-    } 
-
-    boolean flag = true;
-    
     while (t != null) {
-      if (count >= LARGE) {
-	System.err.println("Test3 -- OOPS! too many records");
-	status = FAIL;
-	flag = false; 
-	break;
-      }
-      
       try {
 	iout = t.getIntFld(3);
       }
@@ -594,129 +779,33 @@ class SORTDriver extends TestDriver
       if (iout < ival) {
 	System.err.println("count = " + count + " iout = " + iout + " ival = " + ival);
 	
-	System.err.println("Test3 -- OOPS! test3.out not sorted");
+	System.err.println("Test3 -- OOPS! index scan not in sorted order");
 	status = FAIL;
 	break; 
       }
-      count++;
-      ival = iout;
-      
-      try {
-	t = sort.get_next();
-      }
-      catch (Exception e) {
+      else if (iout > 900) {
+	System.err.println("Test 3 -- OOPS! index scan passed high key");
 	status = FAIL;
-	e.printStackTrace();
-      }
-    }
-    if (count < LARGE) {
-	System.err.println("Test3 -- OOPS! too few records");
-	status = FAIL;
-    }
-    else if (flag && status) {
-      System.err.println("Test3 -- Sorting of int field OK\n");
-    }
-
-    // clean up
-    try {
-      sort.close();
-    }
-    catch (Exception e) {
-      status = FAIL;
-      e.printStackTrace();
-    }
-    
-    // Sort "test3.in" on the int attribute (field 3) -- Ascending
-    System.out.println(" -- Sorting in descending order on the float field -- ");
-    
-    try {
-      fscan = new FileScan("test3.in", attrType, attrSize, (short) 4, 4, projlist, null);
-    }
-    catch (Exception e) {
-      status = FAIL;
-      e.printStackTrace();
-    }
-     
-    try {
-      sort = new Sort(attrType, (short) 4, attrSize, fscan, 4, order[1], 4, SORTPGNUM);
-    }
-    catch (Exception e) {
-      status = FAIL;
-      e.printStackTrace();
-    }
-
-
-    count = 0;
-    t = null;
-    float fout = 0;
-    float fval = 0;
-    
-    try {
-      t = sort.get_next();
-    }
-    catch (Exception e) {
-      status = FAIL;
-      e.printStackTrace(); 
-    }
-
-    if (t != null) {
-      // get an initial value
-      try {
-	fval = t.getFloFld(4);
-      }
-      catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-      }
-    } 
-
-    flag = true;
-    
-    while (t != null) {
-      if (count >= LARGE) {
-	System.err.println("Test3 -- OOPS! too many records");
-	status = FAIL;
-	flag = false; 
 	break;
       }
       
-      try {
-	fout = t.getFloFld(4);
-      }
-      catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-      }
-      
-      if (fout > fval) {
-	System.err.println("count = " + count + " fout = " + fout + " fval = " + fval);
-	
-	System.err.println("Test3 -- OOPS! test3.out not sorted");
-	status = FAIL;
-	break; 
-      }
-      count++;
-      fval = fout;
+      ival = iout;
       
       try {
-	t = sort.get_next();
+	t = iscan.get_next();
       }
       catch (Exception e) {
 	status = FAIL;
 	e.printStackTrace();
       }
     }
-    if (count < LARGE) {
-	System.err.println("Test3 -- OOPS! too few records");
-	status = FAIL;
-    }
-    else if (flag && status) {
-      System.err.println("Test3 -- Sorting of float field OK\n");
+    if (status) {
+      System.err.println("Test3 -- Index scan on int key OK\n");
     }
 
     // clean up
     try {
-      sort.close();
+      iscan.close();
     }
     catch (Exception e) {
       status = FAIL;
@@ -730,198 +819,7 @@ class SORTDriver extends TestDriver
     
   protected boolean test4()
   {
-    System.out.println("------------------------ TEST 4 --------------------------");
-    
-    boolean status = OK;
-
-    AttrType[] attrType = new AttrType[2];
-    attrType[0] = new AttrType(AttrType.attrString);
-    attrType[1] = new AttrType(AttrType.attrString);
-    short[] attrSize = new short[2];
-    attrSize[0] = REC_LEN1;
-    attrSize[1] = REC_LEN2;
-    TupleOrder[] order = new TupleOrder[2];
-    order[0] = new TupleOrder(TupleOrder.Ascending);
-    order[1] = new TupleOrder(TupleOrder.Descending);
-    
-    // create a tuple of appropriate size
-    Tuple t = new Tuple();
-    try {
-      t.setHdr((short) 2, attrType, attrSize);
-    }
-    catch (Exception e) {
-      status = FAIL;
-      e.printStackTrace();
-    }
-    int size = t.size();
-    
-    // Create unsorted data file 
-    RID             rid1, rid2;
-    Heapfile        f1 = null;
-    Heapfile        f2 = null;
-    try {
-      f1 = new Heapfile("test4-1.in");
-      f2 = new Heapfile("test4-2.in");
-    }
-    catch (Exception e) {
-      status = FAIL;
-      e.printStackTrace();
-    }
-    
-    t = new Tuple(size);
-    try {
-      t.setHdr((short) 2, attrType, attrSize);
-    }
-    catch (Exception e) {
-      status = FAIL;
-      e.printStackTrace();
-    }
-    
-    for (int i=0; i<NUM_RECORDS; i++) {
-      try {
-	t.setStrFld(1, data1[i]);
-      }
-      catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-      }
-      
-      try {
-	rid1 = f1.insertRecord(t.returnTupleByteArray());
-	rid2 = f2.insertRecord(t.returnTupleByteArray());
-      }
-      catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-      }
-    }
-    
-    
-    // create an iterator by open a file scan
-    FldSpec[] projlist = new FldSpec[2];
-    RelSpec rel = new RelSpec(RelSpec.outer); 
-    projlist[0] = new FldSpec(rel, 1);
-    projlist[1] = new FldSpec(rel, 2);
-    
-    FileScan fscan1 = null;
-    FileScan fscan2 = null;
-    
-    try {
-      fscan1 = new FileScan("test4-1.in", attrType, attrSize, (short) 2, 2, projlist, null);
-      fscan2 = new FileScan("test4-2.in", attrType, attrSize, (short) 2, 2, projlist, null);
-    }
-    catch (Exception e) {
-      status = FAIL;
-      e.printStackTrace();
-    }
-
-
-    // Sort input files
-    Sort sort1 = null;
-    Sort sort2 = null;
-    try {
-      sort1 = new Sort(attrType, (short) 2, attrSize, fscan1, 1, order[0], REC_LEN1, SORTPGNUM);
-      sort2 = new Sort(attrType, (short) 2, attrSize, fscan2, 1, order[1], REC_LEN1, SORTPGNUM);
-    }
-    catch (Exception e) {
-      status = FAIL;
-      e.printStackTrace();
-    }
-    
-
-    int count = 0;
-    Tuple t1 = null;
-    Tuple t2 = null; 
-    String outval = null;
-    
-    try {
-      t1 = sort1.get_next();
-      t2 = sort2.get_next();
-    }
-    catch (Exception e) {
-      status = FAIL;
-      e.printStackTrace(); 
-    }
-
-    boolean flag = true;
-    
-    while (t1 != null) {
-      if (count >= NUM_RECORDS) {
-	System.err.println("Test4 -- OOPS! too many records");
-	status = FAIL;
-	flag = false; 
-	break;
-      }
-
-      try {
-	outval = t1.getStrFld(1);
-      }
-      catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-      }
-      
-      if (outval.compareTo(data2[count]) != 0) {
-	System.err.println("outval = " + outval + "\tdata2[count] = " + data2[count]);
-	
-	System.err.println("Test4 -- OOPS! test4.out not sorted");
-	status = FAIL;
-      }
-      count++;
-
-      if (t2 == null) {
-	System.err.println("Test4 -- t2 is null prematurely");
-	status = FAIL;
-      }
-      else {
-	try {
-	  outval = t2.getStrFld(1);
-	}
-	catch (Exception e) {
-	  status = FAIL;
-	  e.printStackTrace();
-	}
-	
-	if (outval.compareTo(data2[NUM_RECORDS - count]) != 0) {
-	  System.err.println("outval = " + outval + "\tdata2[count] = " + data2[NUM_RECORDS - count]);
-	  
-	  System.err.println("Test4 -- OOPS! test4.out not sorted");
-	  status = FAIL;
-	}
-      }
-      
-      try {
-	t1 = sort1.get_next();
-	t2 = sort2.get_next();
-      }
-      catch (Exception e) {
-	status = FAIL;
-	e.printStackTrace();
-      }
-    }
-    if (count < NUM_RECORDS) {
-      System.err.println("count = " + count);
-      
-	System.err.println("Test4 -- OOPS! too few records");
-	status = FAIL;
-    }
-    else if (flag && status) {
-      System.err.println("Test4 -- Sorting OK");
-    }
-
-    // clean up
-    try {
-      sort1.close();
-      sort2.close();
-    }
-    catch (Exception e) {
-      status = FAIL;
-      e.printStackTrace();
-    }
-    
-    System.err.println("------------------- TEST 4 completed ---------------------\n");
-    
-    return status;
+    return true;
   }
     
   protected boolean test5()
@@ -936,24 +834,24 @@ class SORTDriver extends TestDriver
     
   protected String testName()
   {
-    return "Sort";
+    return "Index";
   }
 }
 
-public class SortTest
+public class IndexTest
 {
   public static void main(String argv[])
   {
-    boolean sortstatus;
+    boolean indexstatus;
 
-    SORTDriver sortt = new SORTDriver();
+    IndexDriver indext = new IndexDriver();
 
-    sortstatus = sortt.runTests();
-    if (sortstatus != true) {
-      System.out.println("Error ocurred during sorting tests");
+    indexstatus = indext.runTests();
+    if (indexstatus != true) {
+      System.out.println("Error ocurred during index tests");
     }
     else {
-      System.out.println("Sorting tests completed successfully");
+      System.out.println("Index tests completed successfully");
     }
   }
 }

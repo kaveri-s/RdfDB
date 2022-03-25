@@ -1,8 +1,7 @@
-package tests;
+package oldtests;
 //From db_driver.C
 
 import java.io.*;
-import java.util.*;
 import java.lang.*;
 import diskmgr.*;
 import global.*;

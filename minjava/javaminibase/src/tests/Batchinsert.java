@@ -52,13 +52,11 @@ public class Batchinsert {
         } else {
             sysdefs = new SystemDefs(dbname, 0, 700, "Clock", indexoption);
         }
-//        SystemDefs.JavabaseDB.openDB(dbname, 10000000);
         return dbexists;
     }
 
     public static void processBatchInsert(File datafile, int indexoption, String dbname) throws InvalidPageNumberException, IOException, FileIOException, DiskMgrException {
 
-        boolean dbexists = createOrOpenDb(dbname, indexoption);
 
         Scanner scanner = new Scanner(datafile);
 
@@ -84,7 +82,7 @@ public class Batchinsert {
                     SystemDefs.JavabaseDB.insertNewQuadruple(tokens);
                 }
                 catch (Exception e) {
-                    System.err.println("Insert Quadruple into Temporary Heapfile failed.");
+                    System.err.println("Insert Quadruple into Heapfile failed.");
                     e.printStackTrace();
                 }
             }
@@ -109,34 +107,10 @@ public class Batchinsert {
         int iread = PCounter.rCounter;
         int iwrite = PCounter.wCounter;
 
+
+        boolean dbexists = createOrOpenDb(dbname, indexoption);
+
         processBatchInsert(datafile, indexoption, dbname);
-
-        // Following order as implemented for orderType + one index
-        System.out.print(" Create BTree Index on ");
-        switch(indexoption) {
-            case 1:
-                System.out.println(" subject and confidence: ");
-                SystemDefs.JavabaseDB.index_subject_confidence();
-                break;
-            case 2:
-                System.out.println(" predicate and confidence: ");
-                SystemDefs.JavabaseDB.index_predicate_confidence();
-                break;
-            case 3:
-                System.out.println(" 3. object and confidence: ");
-                SystemDefs.JavabaseDB.index_object_confidence();
-                break;
-
-            case 4:
-                System.out.println(" 4. confidence: ");
-                SystemDefs.JavabaseDB.index_confidence();
-                break;
-
-            case 5:
-                System.out.println(" 5. subject: ");
-                SystemDefs.JavabaseDB.index_subject();
-                break;
-        }
 
         SystemDefs.close();
 
