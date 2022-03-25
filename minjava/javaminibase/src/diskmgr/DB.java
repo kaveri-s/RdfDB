@@ -144,6 +144,8 @@ public class DB implements GlobalConst {
     
     // Seek to the correct page
     fp.seek((long)(pageno.pid *MINIBASE_PAGESIZE));
+
+      PCounter.readIncrement();
     
     // Read the appropriate number of bytes.
     byte [] buffer = apage.getpage();  //new byte[MINIBASE_PAGESIZE];
@@ -175,6 +177,8 @@ public class DB implements GlobalConst {
     
     // Seek to the correct page
     fp.seek((long)(pageno.pid *MINIBASE_PAGESIZE));
+
+      PCounter.writeIncrement();
     
     // Write the appropriate number of bytes.
     try{

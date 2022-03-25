@@ -25,7 +25,7 @@ public class rdfDB extends DB implements GlobalConst {
     private LabelBTreeFile distinctSubjectsBTree;
     private LabelBTreeFile distinctObjectsBTree;
 
-    private PCounter pCounter;
+//    private PCounter pCounter;
     private int subjectsCount;
     private int objectsCount;
     private int predicatesCount;
@@ -41,8 +41,8 @@ public class rdfDB extends DB implements GlobalConst {
         predicatesCount = 0;
         quadruplesCount = 0;
         entitiesCount = 0;
-        pCounter = new PCounter();
-        pCounter.initialize();
+//        pCounter = new PCounter();
+//        pCounter.initialize();
     }
 
     public void openDB(String dbName) {
@@ -78,7 +78,6 @@ public class rdfDB extends DB implements GlobalConst {
     public  void read_page(PageId pageno, Page apage){
         try{
             super.read_page(pageno, apage);
-            pCounter.readIncrement();
         }catch(Exception e){
             System.err.println("Error while reading the page from the disk " + e);
             e.printStackTrace();
@@ -89,7 +88,6 @@ public class rdfDB extends DB implements GlobalConst {
     public void write_page(PageId pageno, Page apage){
         try{
             super.write_page(pageno, apage);
-            pCounter.writeIncrement();
         }catch(Exception e){
             System.err.println("Error while writing a page to the disk. " + e);
             e.printStackTrace();
@@ -182,7 +180,7 @@ public class rdfDB extends DB implements GlobalConst {
                     map.put(key, 1);
                 }
             }
-
+            tScanner.closescan();
         } catch (Exception e) {
             System.out.println("Error while fetching the quadruples count. " + e);
             e.printStackTrace();
@@ -209,6 +207,7 @@ public class rdfDB extends DB implements GlobalConst {
                 }
             }
             quadrupleBTree.close();
+            tScanner.closescan();
         } catch (Exception e) {
             System.err.println("Error while fetching the quadruples count. " + e);
             e.printStackTrace();
@@ -299,6 +298,7 @@ public class rdfDB extends DB implements GlobalConst {
                     quadrupleHeapFile.updateQuadruple(quadrupleID, newRecord);
                 }
                 scan.DestroyBTreeFileScan();
+                quadrupleBTree.close();
                 return quadrupleID;
             }
 
@@ -328,13 +328,13 @@ public class rdfDB extends DB implements GlobalConst {
 
             QuadBTFileScan scan = quadrupleBTree.new_scan(low_key, high_key);
             entry = scan.get_next();
+            scan.DestroyBTreeFileScan();
             if (entry != null && key.compareTo(((StringKey) (entry.key)).getKey()) == 0) {
                 QID quadrupleId = ((QuadLeafData) (entry.data)).getData();
                 if (quadrupleId != null)
                     isDeleteSuccessful = quadrupleBTree.Delete(low_key, quadrupleId) && quadrupleHeapFile.deleteQuadruple(quadrupleId);
 
             }
-            scan.DestroyBTreeFileScan();
             quadrupleBTree.close();
         } catch (Exception e) {
             System.err.println("Error while deleting the quadruples. " + e);
@@ -389,6 +389,7 @@ public class rdfDB extends DB implements GlobalConst {
                     insertTempQuadruple(aquad.getQuadrupleByteArray());
                     deleteQuadruple(aquad.getQuadrupleByteArray());
                 }
+                tScanner.closescan();
             }
             TScan tScanner = new TScan(tempQuadHeapFile);
 
@@ -400,6 +401,7 @@ public class rdfDB extends DB implements GlobalConst {
             tempQuadHeapFile.deleteFile();
             tempQuadHeapFile = null;
             tScanner.closescan();
+            qSort.close();
 
         } catch (Exception e) {
             System.err.println("sort and insert Quadruple failed.");

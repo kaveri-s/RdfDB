@@ -21,7 +21,7 @@ public class QueryProgram {
     static int indexoption = 1;
     static int order = 1;//Index option
     public static double confidence = -99.0;
-    public static int num_of_buf = 200;
+    public static int num_of_buf = 1000;
 
 
     public static void checkArgs(String[] args){
@@ -92,8 +92,8 @@ public class QueryProgram {
         {
             //Database present. Opening existing database
             System.out.println("Database already present. Opening it");
-            sysdef = new SystemDefs(dbname,0,num_of_buf,"Clock",indexoption);
-            SystemDefs.JavabaseDB.openDB(dbname);
+            sysdef = new SystemDefs(dbname,0,1000,"Clock",indexoption);
+//            SystemDefs.JavabaseDB.openDB(dbname);
 
         }
         else
@@ -113,11 +113,12 @@ public class QueryProgram {
         {
             s.closeStream();
         }
+        SystemDefs.close();
+
         int fin_read=PCounter.rCounter;
         int fin_write=PCounter.wCounter;
 
         System.out.println("Total Page Writes "+ (fin_write-init_write));
         System.out.println("Total Page Reads "+ (fin_read-init_read));
-        SystemDefs.close();
     }
 }

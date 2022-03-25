@@ -1,6 +1,6 @@
 package iterator;
 
-import java.io.*; 
+import java.io.*;
 import global.*;
 import bufmgr.*;
 import diskmgr.*;
@@ -39,7 +39,7 @@ public class QuadrupleSort extends Iterator implements GlobalConst
   private Quadruple               output_quadruple;
   private QuadrupleSpoofIbuf[]    i_buf;
 
-  /** 
+  /**
    * Class constructor, take information about the quadruples, and set up 
    * the sorting
    * @param am an Heap file scan iterator for accessing the triples
@@ -49,18 +49,18 @@ public class QuadrupleSort extends Iterator implements GlobalConst
    * @exception QuadrupleSortException something went wrong in the lower layer. 
    */
   public QuadrupleSort(
-    TScan am, 
-    QuadrupleOrder quadruple_order, 
-    int n_pages) 
-  throws IOException, 
-  QuadrupleSortException
+          TScan am,
+          QuadrupleOrder quadruple_order,
+          int n_pages)
+          throws IOException,
+          QuadrupleSortException
   {
-	  _am = am;
-	  _quadruple_order = quadruple_order;
-	  _n_pages = n_pages;
+    _am = am;
+    _quadruple_order = quadruple_order;
+    _n_pages = n_pages;
 
-	  // this may need change, bufs ???  need io_bufs.java
-	  // bufs = get_buffer_pages(_n_pages, bufs_pids, bufs);
+    // this may need change, bufs ???  need io_bufs.java
+    // bufs = get_buffer_pages(_n_pages, bufs_pids, bufs);
     bufs_pids = new PageId[_n_pages];
     bufs = new byte[_n_pages][];
 
@@ -76,14 +76,14 @@ public class QuadrupleSort extends Iterator implements GlobalConst
       for (int k=0; k<_n_pages; k++) bufs[k] = new byte[MAX_SPACE];
     }
 
-	  first_time = true;
+    first_time = true;
 
-	  // as a heuristic, we set the number of runs to an arbitrary value
-	  // of ARBIT_RUNS
-	  temp_files = new QuadrupleHeapFile[ARBIT_RUNS];
-	  n_tempfiles = ARBIT_RUNS;
-	  n_quadruples = new int[ARBIT_RUNS]; 
-	  n_runs = ARBIT_RUNS;
+    // as a heuristic, we set the number of runs to an arbitrary value
+    // of ARBIT_RUNS
+    temp_files = new QuadrupleHeapFile[ARBIT_RUNS];
+    n_tempfiles = ARBIT_RUNS;
+    n_quadruples = new int[ARBIT_RUNS];
+    n_runs = ARBIT_RUNS;
 
     try {
       temp_files[0] = new QuadrupleHeapFile(null);
@@ -92,18 +92,18 @@ public class QuadrupleSort extends Iterator implements GlobalConst
       throw new QuadrupleSortException(e, "QuadrupleSort.java: QuadrupleHeapFile error");
     }
 
-	  o_buf = new QuadrupleOBuf();
+    o_buf = new QuadrupleOBuf();
 
-	  o_buf.init(bufs, _n_pages, temp_files[0], false);
-	  //    output_quadruple = null;
+    o_buf.init(bufs, _n_pages, temp_files[0], false);
+    //    output_quadruple = null;
 
-	  max_elems_in_heap = 200;
+    max_elems_in_heap = 200;
 
     Q = new QuadruplepnodeSplayPQ(_quadruple_order);
-	  
-	  op_buf = new Quadruple();
+
+    op_buf = new Quadruple();
   }
-  
+
   /**
    * Returns the next quadruple in sorted order.
    * Note: You need to copy out the content of the quadruple, otherwise it
@@ -116,39 +116,39 @@ public class QuadrupleSort extends Iterator implements GlobalConst
    * @exception LowMemException memory low exception
    * @exception Exception other exceptions
    */
-  public Quadruple get_next() 
-    throws IOException, 
-	   SortException, 
-	   UnknowAttrType,
-	   LowMemException, 
-	   JoinsException,
-	   Exception
+  public Quadruple get_next()
+          throws IOException,
+          SortException,
+          UnknowAttrType,
+          LowMemException,
+          JoinsException,
+          Exception
   {
     if (first_time) {
       // first get_next call to the sort routine
       first_time = false;
-      
+
       // generate runs
       Nruns = generate_runs(max_elems_in_heap);
       //      System.out.println("Generated " + Nruns + " runs");
-      
+
       // setup state to perform merge of runs. 
       // Open input buffers for all the input file
       setup_for_merge(Nruns);
     }
-    
-    if (Q.empty()) {  
+
+    if (Q.empty()) {
       // no more quadruples availble
       return null;
     }
-    
+
     output_quadruple = delete_min();
     if (output_quadruple != null){
       op_buf.quadrupleCopy(output_quadruple);
-      return op_buf; 
+      return op_buf;
     }
-    else 
-      return null; 
+    else
+      return null;
   }
 
   /**
@@ -161,38 +161,45 @@ public class QuadrupleSort extends Iterator implements GlobalConst
   {
     // clean up
     if (!closeFlag) {
-       
+
       try {
         _am.closescan();
       }
       catch (Exception e) {
-	throw new SortException(e, "QuadrupleSort.java: error in closing scan.");
+        throw new SortException(e, "QuadrupleSort.java: error in closing scan.");
       }
 
       if (useBM) {
-	try {
-	  free_buffer_pages(_n_pages, bufs_pids);
-	} 
-	catch (Exception e) {
-	  throw new SortException(e, "QuadrupleSort.java: BUFmgr error");
-	}
-	for (int i=0; i<_n_pages; i++) bufs_pids[i].pid = INVALID_PAGE;
+        try {
+          free_buffer_pages(_n_pages, bufs_pids);
+        }
+        catch (Exception e) {
+          throw new SortException(e, "QuadrupleSort.java: BUFmgr error");
+        }
+        for (int i=0; i<_n_pages; i++) bufs_pids[i].pid = INVALID_PAGE;
       }
-      
+
+      /**
+       * Cleanup heapfiles on exit.
+       */
+      for (int j = 0; j < i_buf.length; j++) {
+        i_buf[j].close();
+      }
+
       for (int i = 0; i<temp_files.length; i++) {
-	if (temp_files[i] != null) {
-	  try {
-	    temp_files[i].deleteFile();
-	  }
-	  catch (Exception e) {
-	    throw new SortException(e, "QuadrupleSort.java: QuadrupleHeapfile error");
-	  }
-	  temp_files[i] = null; 
-	}
+        if (temp_files[i] != null) {
+          try {
+            temp_files[i].deleteFile();
+          }
+          catch (Exception e) {
+            throw new SortException(e, "QuadrupleSort.java: QuadrupleHeapfile error");
+          }
+          temp_files[i] = null;
+        }
       }
       closeFlag = true;
-    } 
-  } 
+    }
+  }
 
   /**
    * Generate sorted runs.
@@ -204,11 +211,11 @@ public class QuadrupleSort extends Iterator implements GlobalConst
    * @exception JoinsException from <code>Iterator.get_next()</code>
    */
   private int generate_runs(int max_elems)
-    throws IOException, 
-    QuadrupleSortException, 
-    QuadrupleUtilsException,
-    JoinsException,
-    Exception
+          throws IOException,
+          QuadrupleSortException,
+          QuadrupleUtilsException,
+          JoinsException,
+          Exception
   {
     Quadruple quadruple;
     Quadruplepnode cur_node;
@@ -217,7 +224,7 @@ public class QuadrupleSort extends Iterator implements GlobalConst
     QuadruplepnodeSplayPQ pcurr_Q = Q1;
     QuadruplepnodeSplayPQ pother_Q = Q2;
     Quadruple lastElem = getDummyQuadruple();
-    
+
     int run_num = 0;  // keeps track of the number of runs
 
     // number of elements in Q
@@ -225,19 +232,19 @@ public class QuadrupleSort extends Iterator implements GlobalConst
     //    int nelems_Q2 = 0;
     int p_elems_curr_Q = 0;
     int p_elems_other_Q = 0;
-    
+
     int comp_res;
-    
+
     // maintain a fixed maximum number of elements in the heap
     while ((p_elems_curr_Q + p_elems_other_Q) < max_elems) {
       try {
         QID qid = new QID();
         quadruple = _am.getNext(qid);  // according to TScan.java
       } catch (Exception e) {
-        e.printStackTrace(); 
+        e.printStackTrace();
         throw new QuadrupleSortException(e, "QuadrupleSort.java: getNext() failed");
-      } 
-      
+      }
+
       if (quadruple == null) {
         break;
       }
@@ -247,17 +254,17 @@ public class QuadrupleSort extends Iterator implements GlobalConst
       pcurr_Q.enq(cur_node);
       p_elems_curr_Q ++;
     }
-    
+
     // now the queue is full, starting writing to file while keep trying
     // to add new quadruple to the queue. The ones that does not fit are put
     // on the other queue temperarily
     while (true) {
       cur_node = pcurr_Q.deq();
-      if (cur_node == null) break; 
+      if (cur_node == null) break;
       p_elems_curr_Q --;
-      
+
       comp_res = QuadrupleUtils.CompareQuadrupleWithQuadruple(cur_node.quadruple, lastElem, _quadruple_order);  // need QuadrupleUtils.java
-      
+
       if ((comp_res < 0 && _quadruple_order._sortingOrder == QuadrupleOrder.Ascending) || (comp_res > 0 && _quadruple_order._sortingOrder == QuadrupleOrder.Descending))
       {
         // doesn't fit in current run, put into the other queue
@@ -279,13 +286,13 @@ public class QuadrupleSort extends Iterator implements GlobalConst
 
         o_buf.Put(cur_node.quadruple);
       }
-      
+
       // check whether the other queue is full
       if (p_elems_other_Q == max_elems) {
         // close current run and start next run
         n_quadruples[run_num] = (int) o_buf.flush();  // need Quadrupleio_bufs.java
         run_num ++;
-        
+
         // check to see whether need to expand the array
         if (run_num == n_tempfiles) {
           QuadrupleHeapFile[] temp1 = new QuadrupleHeapFile[2*n_tempfiles];
@@ -294,7 +301,7 @@ public class QuadrupleSort extends Iterator implements GlobalConst
           }
           temp_files = temp1;
           n_tempfiles *= 2;
-          
+
           int[] temp2 = new int[2*n_runs];
           for(int j=0; j<n_runs; j++) {
             temp2[j] = n_quadruples[j];
@@ -302,7 +309,7 @@ public class QuadrupleSort extends Iterator implements GlobalConst
           n_quadruples = temp2;
           n_runs *=2;
         }
-        
+
         try {
           temp_files[run_num] = new QuadrupleHeapFile(null);
         }
@@ -324,24 +331,24 @@ public class QuadrupleSort extends Iterator implements GlobalConst
         p_elems_curr_Q = p_elems_other_Q;
         p_elems_other_Q = tempelems;
       }
-      
+
       // now check whether the current queue is empty
       else if (p_elems_curr_Q == 0) {
         while ((p_elems_curr_Q + p_elems_other_Q) < max_elems) {
-          try 
+          try
           {
             QID qid = new QID();
             quadruple = _am.getNext(qid);  // according to TScan.java
           } catch (Exception e) {
             throw new QuadrupleSortException(e, "getNext() failed");
-          } 
-          
+          }
+
           if (quadruple == null) {
             break;
           }
           cur_node = new Quadruplepnode();
           cur_node.quadruple = new Quadruple(quadruple); // quadruple copy needed
-          
+
           try {
             pcurr_Q.enq(cur_node);
           }
@@ -351,7 +358,7 @@ public class QuadrupleSort extends Iterator implements GlobalConst
           p_elems_curr_Q ++;
         }
       }
-                  
+
       // Check if we are done
       if (p_elems_curr_Q == 0) {
         // current queue empty despite our attemps to fill in
@@ -365,36 +372,36 @@ public class QuadrupleSort extends Iterator implements GlobalConst
           // close current run and start next run
           n_quadruples[run_num] = (int) o_buf.flush();  // need io_bufs.java
           run_num ++;
-          
+
           // check to see whether need to expand the array
-	        if (run_num == n_tempfiles) {
+          if (run_num == n_tempfiles) {
             QuadrupleHeapFile[] temp1 = new QuadrupleHeapFile[2*n_tempfiles];
             for (int i=0; i<n_tempfiles; i++) {
               temp1[i] = temp_files[i];
             }
-            temp_files = temp1; 
-            n_tempfiles *= 2; 
-	  
+            temp_files = temp1;
+            n_tempfiles *= 2;
+
             int[] temp2 = new int[2*n_runs];
             for(int j=0; j<n_runs; j++) {
               temp2[j] = n_quadruples[j];
             }
             n_quadruples = temp2;
-            n_runs *=2; 
+            n_runs *=2;
           }
-          
+
           try {
-            temp_files[run_num] = new QuadrupleHeapFile(null); 
+            temp_files[run_num] = new QuadrupleHeapFile(null);
           }
           catch (Exception e) {
             throw new QuadrupleSortException(e, "QuadrupleSort.java: create quadrupleHeapFile failed");
           }
-	  
+
           // need io_bufs.java
           o_buf.init(bufs, _n_pages, temp_files[run_num], false);
 
           lastElem = getDummyQuadruple();
-	
+
           // switch the current heap and the other heap
           QuadruplepnodeSplayPQ tempQ = pcurr_Q;
           pcurr_Q = pother_Q;
@@ -409,10 +416,10 @@ public class QuadrupleSort extends Iterator implements GlobalConst
     // close the last run
     n_quadruples[run_num] = (int) o_buf.flush();
     run_num ++;
-    
-    return run_num; 
+
+    return run_num;
   }
-  
+
   /**
    * Set up for merging the runs.
    * Open an input buffer for each run, and insert the first element (min)
@@ -426,24 +433,24 @@ public class QuadrupleSort extends Iterator implements GlobalConst
    * @exception Exception other exceptions
    */
   private void setup_for_merge(int n_R_runs)
-    throws IOException, 
-	   LowMemException, 
-	   SortException,
-	   Exception
+          throws IOException,
+          LowMemException,
+          SortException,
+          Exception
   {
     // don't know what will happen if n_R_runs > _n_pages
-    if (n_R_runs > _n_pages) 
-      throw new LowMemException("QuadrupleSort.java: Not enough memory to sort in two passes."); 
+    if (n_R_runs > _n_pages)
+      throw new LowMemException("QuadrupleSort.java: Not enough memory to sort in two passes.");
 
     int i;
     Quadruplepnode cur_node;  // need pq_defs.java
-    
+
     i_buf = new QuadrupleSpoofIbuf[n_R_runs];   // need Quadrupleio_bufs.java
     for (int j=0; j<n_R_runs; j++) i_buf[j] = new QuadrupleSpoofIbuf();
-    
+
     // construct the lists, ignore TEST for now
     // this is a patch, I am not sure whether it works well -- bingjie 4/20/98
-    
+
     for (i=0; i<n_R_runs; i++) {
       byte[][] apage = new byte[1][];
       apage[0] = bufs[i];
@@ -453,29 +460,29 @@ public class QuadrupleSort extends Iterator implements GlobalConst
 
       cur_node = new Quadruplepnode();
       cur_node.run_num = i;
-      
+
       // may need change depending on whether Get() returns the original
       // or make a copy of the tuple, need io_bufs.java ???
       Quadruple temp_quadruple = new Quadruple();
 
       temp_quadruple =i_buf[i].Get(temp_quadruple);  // need io_bufs.java
-            
+
       if (temp_quadruple != null) {
 	/*
 	System.out.print("Get quadruple from run " + i);
 	temp_quadruple.print(_in);
 	*/
-	cur_node.quadruple = temp_quadruple; // no copy needed
-	try {
-	  Q.enq(cur_node);
-	}
-	catch (QuadrupleUtilsException e) {
-	  throw new QuadrupleSortException(e, "QuadrupleSort.java: QuadrupleUtilsException caught from Q.enq()");
-	}
+        cur_node.quadruple = temp_quadruple; // no copy needed
+        try {
+          Q.enq(cur_node);
+        }
+        catch (QuadrupleUtilsException e) {
+          throw new QuadrupleSortException(e, "QuadrupleSort.java: QuadrupleUtilsException caught from Q.enq()");
+        }
 
       }
     }
-    return; 
+    return;
   }
 
   /**
@@ -484,10 +491,10 @@ public class QuadrupleSort extends Iterator implements GlobalConst
    * @exception IOException from lower layers
    * @exception QuadrupleSortException something went wrong in the lower layer. 
    */
-  private Quadruple delete_min() 
-  throws IOException, 
-  QuadrupleSortException,
-  Exception
+  private Quadruple delete_min()
+          throws IOException,
+          QuadrupleSortException,
+          Exception
   {
     Quadruplepnode cur_node;                // needs pq_defs.java  
     Quadruple new_quadruple, old_quadruple;
@@ -500,10 +507,10 @@ public class QuadrupleSort extends Iterator implements GlobalConst
     */
     // we just removed one quadruple from one run, now we need to put another
     // quadruple of the same run into the queue
-    if (i_buf[cur_node.run_num].empty() != true) { 
+    if (i_buf[cur_node.run_num].empty() != true) {
       // run not exhausted 
       new_quadruple = new Quadruple(); // need Quadruple.java
-  
+
       new_quadruple = i_buf[cur_node.run_num].Get(new_quadruple);
       if (new_quadruple != null) {
         /*
@@ -515,18 +522,18 @@ public class QuadrupleSort extends Iterator implements GlobalConst
           Q.enq(cur_node);
         } catch (QuadrupleUtilsException e) {
           throw new QuadrupleSortException(e, "QuadrupleSort.java: QuadrupleUtilsException caught from Q.enq()");
-        } 
+        }
       }
       else {
         throw new QuadrupleSortException("********** Wait a minute, I thought input is not empty ***************");
       }
     }
     // changed to return Tuple instead of return char array ????
-    return old_quadruple; 
+    return old_quadruple;
   }
 
   private Quadruple getDummyQuadruple()
-  { 
+  {
     PageId pageno = new PageId(-1);
     LID lid = new LID(pageno, -1);
     Quadruple quadruple = new Quadruple();
@@ -534,8 +541,8 @@ public class QuadrupleSort extends Iterator implements GlobalConst
     {
       quadruple.setSubjecqid(lid.returnEID());
       quadruple.setPredicateid(lid.returnPID());
-	    quadruple.setObjecqid(lid.returnEID());
-	    quadruple.setConfidence(-1);
+      quadruple.setObjecqid(lid.returnEID());
+      quadruple.setConfidence(-1);
     }
     catch (Exception e)
     {

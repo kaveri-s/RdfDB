@@ -158,7 +158,7 @@ public class SystemDefs {
             try {
                 System.out.println("***Creating new database***");
                 JavabaseDB.openDB(JavabaseDBName, num_pgs); //create a new rdf database
-                JavabaseBM.flushAllPages();
+//                JavabaseBM.flushAllPages();
             }
             catch (Exception e) {
                 System.err.println (""+e);
@@ -208,7 +208,7 @@ public class SystemDefs {
 
         try
         {
-            //JavabaseBM.flushAllPages();
+            JavabaseBM.flushAllPages();
         }
         catch(Exception e)
         {

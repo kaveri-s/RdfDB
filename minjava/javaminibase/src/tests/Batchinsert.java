@@ -48,11 +48,11 @@ public class Batchinsert {
         File dbfile = new File(dbname); //Check if database already exists
         boolean dbexists = dbfile.exists();
         if(!dbexists) {
-            sysdefs = new SystemDefs(dbname, 100000, 1000, "Clock", indexoption);
+            sysdefs = new SystemDefs(dbname, 100000, 700, "Clock", indexoption);
         } else {
-            sysdefs = new SystemDefs(dbname, 0, 1000, "Clock", indexoption);
+            sysdefs = new SystemDefs(dbname, 0, 700, "Clock", indexoption);
         }
-        SystemDefs.JavabaseDB.openDB(dbname, 10000000);
+//        SystemDefs.JavabaseDB.openDB(dbname, 10000000);
         return dbexists;
     }
 
@@ -138,14 +138,14 @@ public class Batchinsert {
                 break;
         }
 
+        SystemDefs.close();
+
         int fread = PCounter.rCounter;
         int fwrite = PCounter.wCounter;
 
         System.out.println("Disk Page Stats: ");
         System.out.println("Total Page Reads "+ (fread - iread));
         System.out.println("Total Page Writes "+ (fwrite - iwrite));
-
-        SystemDefs.close();
     }
 
 }
