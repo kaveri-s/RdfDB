@@ -479,7 +479,7 @@ public class Stream implements GlobalConst {
                 }
                 if(subjectFilter.compareTo(subject.getLabel()) != 0)
                 {
-                    System.out.println("Found next subject hence stopping");
+                    //System.out.println("Found next subject hence stopping");
                     break;
                 }
                 else if(result)
@@ -552,12 +552,12 @@ public class Stream implements GlobalConst {
                 }
                 if(objectFilter.compareTo(object.getLabel()) != 0)
                 {
-                    System.out.println("Found next object hence stopping");
+                    //System.out.println("Found next object hence stopping");
                     break;
                 }
                 else if(result)
                 {
-                    System.out.println("Inserting "+object.getLabel()+confidenceFilter);
+                    //System.out.println("Inserting "+object.getLabel()+confidenceFilter);
                     Result_HF.insertQuadruple(record.returnTupleByteArray());
                 }
             }
@@ -624,12 +624,12 @@ public class Stream implements GlobalConst {
                 }
                 if(predicateFilter.compareTo(predicate.getLabel()) != 0)
                 {
-                    System.out.println("Found next predicate hence stopping");
+                    //System.out.println("Found next predicate hence stopping");
                     break;
                 }
                 else if(result)
                 {
-                    System.out.println("Inserting "+object.getLabel()+confidenceFilter);
+                    //System.out.println("Inserting "+object.getLabel()+confidenceFilter);
                     Result_HF.insertQuadruple(record.returnTupleByteArray());
                 }
             }
@@ -692,7 +692,7 @@ public class Stream implements GlobalConst {
                 }
                 if(result)
                 {
-                    System.out.println("Subject found");
+                    //System.out.println("Subject found");
                     Result_HF.insertQuadruple(record.returnTupleByteArray());
                 }
                 entryConf = scan.get_next();

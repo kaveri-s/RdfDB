@@ -375,28 +375,28 @@ public class rdfDB extends DB implements GlobalConst {
                     key = new StringKey(Double.toString(confidence));
                     break;
 
-                case 2: // index on subject
-                    subject = entityLabelHeapFile.getLabel(quad.getSubjecqid().returnLID());
-                    key = new StringKey(subject.getLabel());
-                    break;
-
-                case 3: //index on subject_confidence
+                case 2: // index on subject_confidence
                     confidence = quad.getConfidence();
-                    String temp = Double.toString(confidence);
                     subject = entityLabelHeapFile.getLabel(quad.getSubjecqid().returnLID());
                     key = new StringKey(subject.getLabel() + ":" + Double.toString(confidence));
                     break;
 
+                case 3: //index on object_confidence
+                    confidence = quad.getConfidence();
+                    Label object = entityLabelHeapFile.getLabel(quad.getObjecqid().returnLID());
+                    key = new StringKey(object.getLabel() + ":" + Double.toString(confidence));
+                    break;
+                    
                 case 4: //index on predicate_confidence
                     confidence = quad.getConfidence();
                     Label predicate = predicateLabelHeapFile.getLabel(quad.getPredicateID().returnLID());
                     key = new StringKey(predicate.getLabel() + ":" + Double.toString(confidence));
                     break;
 
-                case 5: //index on object_confidence
-                    confidence = quad.getConfidence();
-                    Label object = entityLabelHeapFile.getLabel(quad.getObjecqid().returnLID());
-                    key = new StringKey(object.getLabel() + ":" + Double.toString(confidence));
+                case 5: // index on subject
+                    subject = entityLabelHeapFile.getLabel(quad.getSubjecqid().returnLID());
+                    key = new StringKey(subject.getLabel());
+                    break;
             }
 
         }catch(Exception e){
