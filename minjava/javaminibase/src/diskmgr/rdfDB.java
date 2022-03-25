@@ -2,7 +2,6 @@ package diskmgr;
 
 import btree.*;
 import global.*;
-import iterator.QuadrupleSort;
 import labelheap.Label;
 import labelheap.LabelHeapFile;
 import quadrupleheap.Quadruple;
@@ -370,41 +369,9 @@ public class rdfDB extends DB implements GlobalConst {
         quad.setConfidence(confidence);
 
         try {
-            insertTempQuadruple(quad.getQuadrupleByteArray());
+            insertQuadruple(quad.getQuadrupleByteArray());
         } catch (Exception e) {
             System.err.println("Insert temp Quadruple failed.");
-            e.printStackTrace();
-        }
-    }
-
-    public void sortAndInsertQuadruples(boolean dbexists, int indexOption) {
-        QuadrupleOrder order = getSortOrder(indexOption);
-        Quadruple aquad = null;
-        try {
-            if (dbexists) {
-                TScan tScanner = new TScan(getQuadrupleHandle());
-                QID qid = new QID();
-
-                while ((aquad = tScanner.getNext(qid)) != null) {
-                    insertTempQuadruple(aquad.getQuadrupleByteArray());
-                    deleteQuadruple(aquad.getQuadrupleByteArray());
-                }
-                tScanner.closescan();
-            }
-            TScan tScanner = new TScan(tempQuadHeapFile);
-
-            QuadrupleSort qSort = new QuadrupleSort(tScanner, order, 200);
-
-            while ((aquad = qSort.get_next()) != null) {
-                insertQuadruple(aquad.getQuadrupleByteArray());
-            }
-            tempQuadHeapFile.deleteFile();
-            tempQuadHeapFile = null;
-            tScanner.closescan();
-            qSort.close();
-
-        } catch (Exception e) {
-            System.err.println("sort and insert Quadruple failed.");
             e.printStackTrace();
         }
     }
@@ -509,17 +476,6 @@ public class rdfDB extends DB implements GlobalConst {
         }
     }
 
-    private void insertTempQuadruple(byte[] quad) throws Exception {
-        try {
-            if (tempQuadHeapFile == null)
-                tempQuadHeapFile = new QuadrupleHeapFile(rdfDBname + "/tempQuadHeapFile");
-            QID qid = tempQuadHeapFile.insertQuadruple(quad);
-            Quadruple tempquad = tempQuadHeapFile.getQuadruple(qid);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private void initializeRdfDB() {
         try {
             quadrupleHeapFile = new QuadrupleHeapFile(rdfDBname + "/quadrupleHF");
@@ -596,26 +552,6 @@ public class rdfDB extends DB implements GlobalConst {
             Runtime.getRuntime().exit(1);
         }
         return isDeleteSuccessful;
-    }
-
-    private static QuadrupleOrder getSortOrder(int indexOption)
-    {
-        switch(indexOption)
-        {
-            case 1:
-                return new QuadrupleOrder(QuadrupleOrder.SubjectConfidence);
-            case 2:
-                return new QuadrupleOrder(QuadrupleOrder.PredicateConfidence);
-            case 3:
-                return new QuadrupleOrder(QuadrupleOrder.ObjectConfidence);
-            case 4:
-                return new QuadrupleOrder(QuadrupleOrder.Confidence);
-            case 5:
-                return new QuadrupleOrder(QuadrupleOrder.Subject);
-            default:
-                System.err.println("RuntimeError. Sort order out of range (1-5). Welp, shouldn't be here");
-        }
-        return null;
     }
 
     private String getKeyFromQuadPtr(byte[] quadruplePtr) {
