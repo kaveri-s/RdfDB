@@ -685,7 +685,6 @@ public class Stream implements GlobalConst {
                 {
                     result = result & (predicate.getLabel().compareTo(predicateFilter)==0);
                 }
-                System.out.println(subject.getLabel()+" "+predicate.getLabel()+" "+object.getLabel()+" "+record.getConfidence());
                 if(!confidence_null)
                 {
                     result = result & (record.getConfidence() >= confidenceFilter);
