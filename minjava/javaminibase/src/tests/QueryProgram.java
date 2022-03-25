@@ -92,7 +92,7 @@ public class QueryProgram {
         {
             //Database present. Opening existing database
             System.out.println("Database already present. Opening it");
-            sysdef = new SystemDefs(dbname,0,1000,"Clock",indexoption);
+            sysdef = new SystemDefs(dbname,0,1500,"Clock",indexoption);
 
         }
         else

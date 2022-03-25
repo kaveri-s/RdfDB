@@ -420,7 +420,6 @@ public class Stream implements GlobalConst {
 
             if(result)
             {
-                System.out.println("Subject::" + subject.getLabel()+ "\tPredicate::"+predicate.getLabel() + "\tObject::"+object.getLabel() );
                 Result_HF.insertQuadruple(record.returnTupleByteArray());
             }
         }
@@ -485,7 +484,6 @@ public class Stream implements GlobalConst {
                 }
                 else if(result)
                 {
-                    System.out.println("Subject::" + subject.getLabel()+ "\tPredicate::"+predicate.getLabel() + "\tObject::"+object.getLabel() );
                     Result_HF.insertQuadruple(record.returnTupleByteArray());
                 }
             }
@@ -599,7 +597,6 @@ public class Stream implements GlobalConst {
             while((entry = scan.get_next())!= null)
             {
                 qId=  ((QuadLeafData)entry.data).getData();
-                System.out.println("Quadruple found : " + ((StringKey)(entry.key)).getKey() + "qId" + qId);
                 record = quadrupleHeapFile.getQuadruple(qId);
                 orig_confidence = record.getConfidence();
 
