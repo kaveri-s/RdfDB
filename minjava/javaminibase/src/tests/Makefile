@@ -20,7 +20,7 @@ batchinsert: Batchinsert
 	$(JAVA) tests.Batchinsert $(DATAFILE) $(INDEXOPTION) $(DBNAME)
 
 queryprogram: QueryProgram
-	$(JAVA) tests.QueryProgram $(DBNAME) $(INDEXOPTION) $(SORTORDER) $(SUBJECT) $(PREDICATE) $(OBJECT) $(CONFIDENCE) $(NUMBUFRDF)
+	$(JAVA) tests.QueryProgram $(DBNAME) $(QUERYFILE) $(NUMBUFRDF)
 
 report: Report
 	$(JAVA) tests.Report $(DBNAME) $(INDEXOPTION)
