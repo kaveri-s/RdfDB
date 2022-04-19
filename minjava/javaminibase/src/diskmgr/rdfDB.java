@@ -500,7 +500,7 @@ public class rdfDB extends DB implements GlobalConst {
         }
     }
 
-    public BPFileScan initBPScan(Heapfile heapfile) throws Exception {
+    public BPFileScan initBPScan(Heapfile heapfile, String SF1, String PF1, String OF1, double CF1) throws Exception {
         TScan tScanner = new TScan(getQuadrupleHandle());
         QID qid = new QID();
         Quadruple aquad;
@@ -539,7 +539,7 @@ public class rdfDB extends DB implements GlobalConst {
 
         // Input Heapfile
         Heapfile inputHF = new Heapfile(rdfDBname + "/inputHF");
-        BPFileScan scanner = initBPScan(inputHF);
+        BPFileScan scanner = initBPScan(inputHF, SF1, PF1, OF1, CF1);
 
         // Put Result of First Join in Heapfile
         BP_Triple_Join join1 = new BP_Triple_Join(num_buf, 2, scanner,
