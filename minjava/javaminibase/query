@@ -1,11 +1,6 @@
 export DBNAME=$1
-export INDEXOPTION=$2
-export SORTORDER=$3
-export SUBJECT=$4
-export PREDICATE=$5
-export OBJECT=$6
-export CONFIDENCE=$7
-export NUMBUFRDF=$8
+export QUERYFILE=$2
+export NUMBUFRDF=$3
 cd src/tests
 make queryprogram
 

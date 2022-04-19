@@ -2,19 +2,20 @@ package diskmgr;
 
 import btree.*;
 import global.*;
+import heap.Heapfile;
 import labelheap.Label;
 import labelheap.LabelHeapFile;
 import quadrupleheap.Quadruple;
 import quadrupleheap.QuadrupleHeapFile;
 import quadrupleheap.TScan;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class rdfDB extends DB implements GlobalConst {
     private QuadrupleHeapFile quadrupleHeapFile;
     private LabelHeapFile entityLabelHeapFile;
     private LabelHeapFile predicateLabelHeapFile;
-    private QuadrupleHeapFile tempQuadHeapFile;
 
     private LabelBTreeFile entityBTree;
     private LabelBTreeFile predicateBTree;
@@ -77,6 +78,8 @@ public class rdfDB extends DB implements GlobalConst {
             quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT", AttrType.attrString, 255, 1);
             distinctSubjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctSubjBT", AttrType.attrString, 255, 1);
             distinctObjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctObjBT", AttrType.attrString, 255, 1);
+
+            System.out.println("Initialised Database");
 
         } catch (Exception e) {
             System.err.println("" + e);
@@ -307,7 +310,6 @@ public class rdfDB extends DB implements GlobalConst {
         boolean isDeleteSuccessful = false;
 
         try {
-//            quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT");
             String key = getKeyFromQuadPtr(quadruplePtr);
             double confidence = Convert.getFloValue(24, quadruplePtr);
             KeyClass low_key = new StringKey(key);
@@ -478,6 +480,83 @@ public class rdfDB extends DB implements GlobalConst {
             Runtime.getRuntime().exit(1);
         }
         return key;
+    }
+
+//    public void insertNewBasicPattern(Heapfile bpHeapfile, int num_nodes, EID[] nodes, double confidence) {
+//        BasicPattern bp = new BasicPattern();
+//        bp.setConfidence(confidence);
+//        bp.setNodes(num_nodes, nodes);
+//
+//        try {
+//            bpHeapfile.insertRecord(bp.getBasicPatternByteArray());
+//        } catch (Exception e) {
+//            System.err.println("Insert Basic Pattern failed.");
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public BPFileScan initBPScan(Heapfile heapfile) throws Exception {
+//        TScan tScanner = new TScan(getQuadrupleHandle());
+//        QID qid = new QID();
+//        Quadruple aquad;
+//        while ((aquad = tScanner.getNext(qid)) != null) {
+//            EID[] nodes = {aquad.getSubjecqid(), aquad.getObjecqid()};
+//            insertNewBasicPattern(heapfile, 2, nodes, aquad.getConfidence());
+//        }
+//        return new BPFileScan(heapfile);
+//    }
+//
+//    public BPFileScan getJoinScan(BP_Triple_join join, Heapfile heapfile) throws Exception {
+//        BasicPattern bp = new BasicPattern();
+//        while ((bp = join.getNext()) != null) {
+//            EID[] nodes = bp.getNodeIds();
+//            int num_nodes = join.LeftOutNodePosition.length + join.OutputRightSubject + join.OutputRightObject;
+//            insertNewBasicPattern(heapfile, num_nodes, nodes, bp.getConfidence());
+//        }
+//        return new BPFileScan(heapfile);
+//    }
+//
+//    public void printResult(BP_Sort result) {
+//        BasicPattern bp = new BasicPattern();
+//        RID rid = new RID();
+//        while((bp = result.getNext(rid))!=null)
+//        {
+//            bp.print();
+//        }
+//    }
+
+    public void executeQuery(int num_buf, String SF1, String PF1, String OF1, double CF1,
+                             int JNP1, int JONO1, String RSF1, String RPF1, String ROF1, double RCF1, ArrayList<Integer> LONP1, int ORS1, int ORO1,
+                             int JNP2, int JONO2, String RSF2, String RPF2, String ROF2, double RCF2, ArrayList<Integer> LONP2, int ORS2, int ORO2,
+                             int SO, int SNP, int NP) throws Exception {
+
+        // ToDo: Complete function. These are only stubs.
+
+//        // Input Heapfile
+//        Heapfile inputHF = new Heapfile(rdfDBname + "/inputHF");
+//        BPFileScan scanner = initBPScan(inputHF);
+//
+//        // Put Result of First Join in Heapfile
+//        BP_Triple_join join1 = new BP_Triple_join(num_buf, 2, scanner, JNP1, JONO1, RSF1, RPF1, ROF1, RCF1, LONP1, ORS1, ORO1);
+//        Heapfile join1hf = new Heapfile(rdfDBname + "/join1HF");
+//        BPFileScan jscanner1 = getJoinScan(join1, join1hf);
+//        scanner.close();
+//        inputHF.deleteFile();
+//
+//        // Put Result of Second Join in Heapfile
+//        BP_Triple_join join2 = new BP_Triple_join(num_buf, 3, jscanner1, JNP2, JONO2, RSF2, RPF2, ROF2, RCF2, LONP2, ORS2, ORO2);
+//        Heapfile join2hf = new Heapfile(rdfDBname + "/join2HF");
+//        BPFileScan jscanner2 = getJoinScan(join2, join2hf);
+//        jscanner1.close();
+//        join1hf.deleteFile();
+//
+//        // Stream Result of Sorted Result
+//        BP_Sort result = new BP_Sort(jscanner2, SO, SNP, NP);
+//        joinscanner2.close();
+//
+//        printResult(result);
+//        result.close();
+//        join2hf.deleteFile();
     }
 
 

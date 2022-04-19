@@ -6,7 +6,6 @@ import catalog.*;
 
 public class SystemDefs {
     public static BufMgr JavabaseBM;
-    //public static DB	JavabaseDB;
     public static rdfDB JavabaseDB;
     public static Catalog JavabaseCatalog;
 
@@ -17,8 +16,6 @@ public class SystemDefs {
 
     public SystemDefs() {
     }
-
-    ;
 
     public SystemDefs(String dbname, int num_pgs, int bufpoolsize,
                       String replacement_policy) {
@@ -77,11 +74,7 @@ public class SystemDefs {
 
         try {
             JavabaseBM = new BufMgr(bufpoolsize, replacement_policy);
-            //JavabaseDB = new DB();
             JavabaseDB = new rdfDB(1);
-/*
-	JavabaseCatalog = new Catalog(); 
-*/
         } catch (Exception e) {
             System.err.println("" + e);
             e.printStackTrace();
@@ -127,9 +120,6 @@ public class SystemDefs {
         try {
             JavabaseBM = new BufMgr(bufpoolsize, replacement_policy);
             JavabaseDB = new rdfDB(index);
-			/*
-			   JavabaseCatalog = new Catalog();
-			 */
         }
         catch (Exception e) {
             System.err.println (""+e);
@@ -165,39 +155,6 @@ public class SystemDefs {
                 Runtime.getRuntime().exit(1);
             }
         }
-    }
-
-    public static QuadrupleOrder getSortOrder(int orderType)
-    {
-        QuadrupleOrder sort_order = null;
-
-        switch(orderType)
-        {
-            case 1:
-                sort_order = new QuadrupleOrder(QuadrupleOrder.SubjectPredicateObjectConfidence);
-                break;
-
-            case 2:
-                sort_order = new QuadrupleOrder(QuadrupleOrder.PredicateSubjectObjectConfidence);
-                break;
-
-            case 3:
-                sort_order = new QuadrupleOrder(QuadrupleOrder.SubjectConfidence);
-                break;
-
-            case 4:
-                sort_order = new QuadrupleOrder(QuadrupleOrder.PredicateConfidence);
-                break;
-
-            case 5:
-                sort_order = new QuadrupleOrder(QuadrupleOrder.ObjectConfidence);
-                break;
-
-            case 6:
-                sort_order = new QuadrupleOrder(QuadrupleOrder.Confidence);
-                break;
-        }
-        return sort_order;
     }
 
 
