@@ -48,14 +48,14 @@ public class BPUtils
       if ((b1_fld_no > 0) && (b1_fld_no <= b1_n)
       && (b2_fld_no > 0) && (b2_fld_no <= b2_n))
       {
-        EID e1 = b1.getEIDFld(b1_fld_no);
-        EID e2 = b2.getEIDFld(b2_fld_no);
+        EID e1 = b1.getNodeID(b1_fld_no);
+        EID e2 = b2.getNodeID(b2_fld_no);
         // TODO compare EIDs here?
       }
       else if ((b1_fld_no == (b1_n + 1)) && (b2_fld_no == (b2_n + 1)))
       {
-        float b1_c = b1.getConfidence();
-        float b2_c = b2.getConfidence();
+        float b1_c = (float) b1.getConfidence();
+        float b2_c = (float) b2.getConfidence();
         if (b1_c > b2_c)
         {
           return 1;
@@ -156,8 +156,8 @@ public class BPUtils
   
       if ((fld_no > 0) && (fld_no <= v_n) && (fld_no <= b_n))
       {
-        EID e1 = value.getEIDFld(fld_no);
-        bp.setEIDFld(fld_no, e1);
+        EID e1 = value.getNodeID(fld_no);
+        bp.setNodeID(fld_no, e1);
       }
       else if ((fld_no == (b_n + 1)) && (fld_no == (v_n + 1)))
       {
