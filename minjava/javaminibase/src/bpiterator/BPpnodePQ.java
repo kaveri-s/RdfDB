@@ -1,9 +1,10 @@
 
 package bpiterator;
 import global.*;
-import bufmgr.*;
-import diskmgr.*;
 import heap.*;
+import iterator.TupleUtilsException;
+import iterator.UnknowAttrType;
+
 import java.io.*;
 
 /**
@@ -49,10 +50,10 @@ public abstract class BPpnodePQ
    * @exception IOException from lower layers
    * @exception UnknowAttrType <code>attrSymbol</code> or
    *                           <code>attrNull</code> encountered
-   * @exception BPUtilsException error in bp compare routines
+   * @exception TupleUtilsException error in bp compare routines
    */
-  abstract public void  enq(BPpnode  item) 
-           throws IOException, UnknowAttrType, BPUtilsException, FieldNumberOutOfBoundException;      
+  abstract public void  enq(BPpnode  item)
+          throws Exception;
 
   /**
    * removes the minimum (Ascending) or maximum (Descending) element
@@ -72,11 +73,21 @@ public abstract class BPpnodePQ
    * @exception IOException from lower layers
    * @exception UnknowAttrType <code>attrSymbol</code> or 
    *                           <code>attrNull</code> encountered
-   * @exception BPUtilsException error in bp compare routines
+   * @exception TupleUtilsException error in bp compare routines
    * @throws FieldNumberOutOfBoundException
    */
   public int BPpnodeCMP(BPpnode a, BPpnode b) 
-         throws IOException, UnknowAttrType, BPUtilsException, FieldNumberOutOfBoundException {
+  throws IOException, 
+  UnknowAttrType, 
+  TupleUtilsException, 
+  FieldNumberOutOfBoundException,
+  InvalidSlotNumberException, 
+  InvalidTupleSizeException, 
+  HFException, 
+  HFDiskMgrException, 
+  HFBufMgrException, 
+  Exception
+  {
     int ans = BPUtils.CompareBPWithBP(a.basicPattern, fld_no, b.basicPattern, fld_no);
     return ans;
   }
@@ -90,11 +101,21 @@ public abstract class BPpnodePQ
    * @exception IOException from lower layers
    * @exception UnknowAttrType <code>attrSymbol</code> or 
    *                           <code>attrNull</code> encountered
-   * @exception BPUtilsException error in bp compare routines
+   * @exception TupleUtilsException error in bp compare routines
    * @throws FieldNumberOutOfBoundException
    */  
   public boolean BPpnodeEQ(BPpnode a, BPpnode b) 
-  throws IOException, UnknowAttrType, BPUtilsException, FieldNumberOutOfBoundException {
+  throws IOException, 
+  UnknowAttrType, 
+  TupleUtilsException, 
+  FieldNumberOutOfBoundException,
+  InvalidSlotNumberException, 
+  InvalidTupleSizeException, 
+  HFException, 
+  HFDiskMgrException, 
+  HFBufMgrException, 
+  Exception
+  {
     return BPpnodeCMP(a, b) == 0;
   }
   
@@ -106,10 +127,10 @@ public abstract class BPpnodePQ
    *         <code>false</code> otherwise
    * @exception IOException from lower layers
    * @exception UnknowAttrType attrSymbol or attrNull encountered
-   * @exception BPUtilsException error in bp compare routines
+   * @exception TupleUtilsException error in bp compare routines
    */  
   /*
-  public boolean pnodeLE(pnode a, pnode b)throws IOException, UnknowAttrType, BPUtilsException {
+  public boolean pnodeLE(pnode a, pnode b)throws IOException, UnknowAttrType, TupleUtilsException {
     if (sort_order.bpOrder == BPOrder.Ascending) 
       return pnodeCMP(a, b) <= 0;
     else if (sort_order.bpOrder == BPOrder.Descending)

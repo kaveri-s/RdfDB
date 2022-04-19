@@ -137,6 +137,7 @@ public class Stream implements GlobalConst {
         catch(Exception e)
         {
             System.out.println("Error closing Stream"+e);
+            e.printStackTrace();
         }
     }
 
@@ -232,7 +233,7 @@ public class Stream implements GlobalConst {
                 break;
             default:
                 System.err.println("RuntimeError. Sort order out of range (1-6). Welp, shouldn't be here");
-                exit(1);
+                throw new RuntimeException();
         }
         return sort_order;
     }
