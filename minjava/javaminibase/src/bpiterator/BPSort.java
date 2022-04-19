@@ -92,12 +92,12 @@ public class BPSort extends BPIterator implements GlobalConst
       // or make a copy of the tuple, need io_bufs.java ???
       BasicPattern temp_bp = new BasicPattern(bp_size);
 
-      try {
-        temp_bp.setHdr(n_cols);
-      }
-      catch (Exception e) {
-        throw new BPSortException(e, "Sort.java: Tuple.setHdr() failed");
-      }
+//      try {
+//        temp_bp.setHdr(n_cols);
+//      }
+//      catch (Exception e) {
+//        throw new BPSortException(e, "Sort.java: Tuple.setHdr() failed");
+//      }
       
       temp_bp =i_buf[i].Get(temp_bp);  // need io_bufs.java
             
@@ -203,12 +203,12 @@ public class BPSort extends BPIterator implements GlobalConst
 	    Q = new BPpnodeSplayPQ(_sort_fld, in[_sort_fld - 1], order);		// todo: CHIRAYU
 	
 	    op_buf = new BasicPattern(bp_size);   // need Tuple.java
-	    try {
-	      op_buf.setHdr(n_cols);
-	    }
-	    catch (Exception e) {
-	      throw new BPSortException(e, "Sort.java: op_buf.setHdr() failed");
-	    }
+//	    try {
+//	      op_buf.setHdr(n_cols);
+//	    }
+//	    catch (Exception e) {
+//	      throw new BPSortException(e, "Sort.java: op_buf.setHdr() failed");
+//	    }
 	}
 
   /**
@@ -216,7 +216,6 @@ public class BPSort extends BPIterator implements GlobalConst
    * Using heap sort.
    * @param  max_elems    maximum number of elements in heap
    * @param  sortFldType  attribute type of the sort field
-   * @param  sortFldLen   length of the sort field
    * @return number of runs generated
    * @exception IOException from lower layers
    * @exception BPSortException something went wrong in the lower layer. 
@@ -299,14 +298,14 @@ public class BPSort extends BPIterator implements GlobalConst
     }
     
     BasicPattern lastElem = new BasicPattern(bp_size);  // need tuple.java
-    try
-    {
-      lastElem.setHdr(n_cols);
-    }
-    catch (Exception e)
-    {
-      throw new BPSortException(e, "BPSort.java: setHdr() failed");
-    }
+//    try
+//    {
+//      lastElem.setHdr(n_cols);
+//    }
+//    catch (Exception e)
+//    {
+//      throw new BPSortException(e, "BPSort.java: setHdr() failed");
+//    }
 
     // set the lastElem to be the minimum value for the sort field
     if(order.bpOrder == BPOrder.Ascending) 
@@ -564,12 +563,12 @@ public class BPSort extends BPIterator implements GlobalConst
       // run not exhausted 
       new_bp = new BasicPattern(bp_size); // need tuple.java??
 
-      try {
-	new_bp.setHdr(n_cols);
-      }
-      catch (Exception e) {
-	throw new BPSortException(e, "BPSort.java: setHdr() failed");
-      }
+//      try {
+//	new_bp.setHdr(n_cols);
+//      }
+//      catch (Exception e) {
+//	throw new BPSortException(e, "BPSort.java: setHdr() failed");
+//      }
       
       new_bp = i_buf[cur_node.run_num].Get(new_bp);  
       if (new_bp != null) {
@@ -617,7 +616,7 @@ public class BPSort extends BPIterator implements GlobalConst
     switch (sortFldType.attrType) {
     case AttrType.attrFloat:
       //      lastElem.setHdr(fld_no, junk, null);
-      lastElem.setFloFld(_sort_fld, Float.MIN_VALUE);
+      lastElem.setConfidence(Float.MIN_VALUE);
       break;
     default:
       // don't know how to handle attrSymbol, attrNull
@@ -649,7 +648,7 @@ public class BPSort extends BPIterator implements GlobalConst
     switch (sortFldType.attrType) {
     case AttrType.attrFloat:
       //      lastElem.setHdr(fld_no, junk, null);
-      lastElem.setFloFld(_sort_fld, Float.MAX_VALUE);
+      lastElem.setConfidence(Float.MAX_VALUE);
       break;
     default:
       // don't know how to handle attrSymbol, attrNull

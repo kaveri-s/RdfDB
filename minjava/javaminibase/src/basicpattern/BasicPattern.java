@@ -3,6 +3,7 @@ package basicpattern;
 import global.*;
 import heap.*;
 import labelheap.*;
+import quadrupleheap.Quadruple;
 
 import java.io.IOException;
 
@@ -75,7 +76,8 @@ public class BasicPattern extends Tuple implements GlobalConst {
             return this;
         }
         else{
-            throw new Exception("Basic patterns are of different sizes");        }
+            throw new Exception("Basic patterns are of different sizes");
+        }
     }
 
     public double getConfidence(){
@@ -139,6 +141,17 @@ public class BasicPattern extends Tuple implements GlobalConst {
 
         } catch (Exception e) {
             System.out.println("Error printing BP"+e);
+        }
+    }
+
+    public void basicPatternCopy(BasicPattern fromBasicPattern) throws FieldNumberOutOfBoundException {
+        tupleCopy(fromBasicPattern);
+        this.numNodes = fromBasicPattern.numNodes;
+        this.confidence = (float)fromBasicPattern.getConfidence();
+        this.nodeIDs = new EID[numNodes];
+        for(int i = 0; i< numNodes; i++){
+            this.nodeIDs[i].slotNo = fromBasicPattern.getNodeID(i).slotNo;
+            this.nodeIDs[i].pageNo = fromBasicPattern.getNodeID(i).pageNo;
         }
     }
 }

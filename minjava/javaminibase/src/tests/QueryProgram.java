@@ -124,10 +124,11 @@ public class QueryProgram {
                         JNP1, JONO1, RSF1, RPF1, ROF1, RCF1, LONP1, ORS1, ORO1, JNP2, JONO2, RSF2, RPF2, ROF2, RCF2, LONP2, ORS2, ORO2,
                         SO, SNP, NP);
 
-//                sysdef = new SystemDefs(dbname, 0, 1500, "Clock", 1);
+                sysdef = new SystemDefs(dbname, 0, 1500, "Clock", 1);
 //                SystemDefs.JavabaseDB.executeQuery(num_of_buf, SF1, PF1, OF1, CF1, JNP1, JONO1, RSF1, RPF1, ROF1, RCF1, LONP1, ORS1, ORO1,
 //                        JNP2, JONO2, RSF2, RPF2, ROF2, RCF2, LONP2, ORS2, ORO2,
 //                        SO, SNP, NP);
+                SystemDefs.close();
             }
             catch (Exception e) {
                 System.err.println("Insert Quadruple into Heapfile failed.");
@@ -154,8 +155,6 @@ public class QueryProgram {
         int init_write=PCounter.wCounter;
 
         parseAndRun();
-
-        SystemDefs.close();
 
         int fin_read=PCounter.rCounter;
         int fin_write=PCounter.wCounter;
