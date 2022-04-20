@@ -500,6 +500,7 @@ public class rdfDB extends DB implements GlobalConst {
         }
     }
 
+
     public BPFileScan initBPScan(Heapfile heapfile, String SF, String PF, String OF, Double CF) throws Exception {
         TScan tScanner = new TScan(getQuadrupleHandle());
         QID qid = new QID();
