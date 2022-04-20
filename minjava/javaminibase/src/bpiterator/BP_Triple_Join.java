@@ -96,7 +96,7 @@ public class BP_Triple_Join extends BPIterator {
 
                 try {
                     //TODO: check the orderType and bufPoolSize
-                    innerStream = SystemDefs.JavabaseDB.openStream(7, RightSubjectFilter, RightPredicateFilter, RightObjectFilter, RightConfidenceFilter, this.amt_of_mem);
+                    innerStream = SystemDefs.JavabaseDB.openStream(1, RightSubjectFilter, RightPredicateFilter, RightObjectFilter, RightConfidenceFilter, this.amt_of_mem);
                 } catch (Exception e) {
                     System.out.println("Open Stream failed during Triple Join: "+ e);
                 }

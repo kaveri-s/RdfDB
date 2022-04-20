@@ -2,6 +2,7 @@ package diskmgr;
 
 import basicpattern.BasicPattern;
 import bpiterator.BPFileScan;
+import bpiterator.BPIterator;
 import bpiterator.BPSort;
 import btree.*;
 import global.*;
@@ -493,7 +494,7 @@ public class rdfDB extends DB implements GlobalConst {
         bp.setNodeIDs(num_nodes, nodes);
 
         try {
-            bpHeapfile.insertRecord(bp.getBPByteArray());
+            bpHeapfile.insertRecord(bp.returnTupleByteArray());
         } catch (Exception e) {
             System.err.println("Insert Basic Pattern failed.");
             e.printStackTrace();
@@ -514,8 +515,8 @@ public class rdfDB extends DB implements GlobalConst {
             if((SF.compareToIgnoreCase("*") == 0 || sub.getLabel()== SF)
                     && (PF.compareToIgnoreCase("*") == 0 || pred.getLabel()== PF)
                     && (OF.compareToIgnoreCase("*") == 0 || obj.getLabel()== OF && CF!=-1)
-                    && ( CF==-1 || CF== conf)){
-                EID[] nodes = {aquad.getSubjecqid(), aquad.getObjecqid()};
+                    && ( CF ==-1 || CF <= conf)){
+                EID[] nodes = new EID[]{aquad.getSubjecqid(), aquad.getObjecqid()};
                 insertNewBasicPattern(heapfile, 2, nodes, aquad.getConfidence());
             }
         }
@@ -532,7 +533,7 @@ public class rdfDB extends DB implements GlobalConst {
         return new BPFileScan(heapfile, num_nodes);
     }
 
-    public void printResult(BPSort result) throws Exception {
+    public void printResult(BPIterator result) throws Exception {
         BasicPattern bp;
         RID rid = new RID();
         while((bp = result.get_next())!=null)
@@ -551,33 +552,35 @@ public class rdfDB extends DB implements GlobalConst {
         // Input Heapfile
         Heapfile inputHF = new Heapfile(rdfDBname + "/inputHF");
         BPFileScan scanner = initBPScan(inputHF, SF1, PF1,OF1,CF1);
+        printResult(scanner);
 
         // Put Result of First Join in Heapfile
-        BP_Triple_Join join1 = new BP_Triple_Join(num_buf, 2, scanner,
-                JNP1, JONO1, RSF1, RPF1, ROF1, RCF1,
-                LONP1.stream().mapToInt(Integer::intValue).toArray(), ORS1, ORO1);
-        Heapfile join1hf = new Heapfile(rdfDBname + "/join1HF");
-        BPFileScan jscanner1 = getJoinScan(join1, join1hf);
+//        BP_Triple_Join join1 = new BP_Triple_Join(num_buf, 2, scanner,
+//                JNP1, JONO1, RSF1, RPF1, ROF1, RCF1,
+//                LONP1.stream().mapToInt(Integer::intValue).toArray(), ORS1, ORO1);
+//        Heapfile join1hf = new Heapfile(rdfDBname + "/join1HF");
+//        BPFileScan jscanner1 = getJoinScan(join1, join1hf);
         scanner.close();
         inputHF.deleteFile();
+//        printResult(jscanner1);
 
         // Put Result of Second Join in Heapfile
-        BP_Triple_Join join2 = new BP_Triple_Join(num_buf, 3, jscanner1,
-                JNP2, JONO2, RSF2, RPF2, ROF2, RCF2,
-                LONP2.stream().mapToInt(Integer::intValue).toArray(), ORS2, ORO2);
-        Heapfile join2hf = new Heapfile(rdfDBname + "/join2HF");
-        BPFileScan jscanner2 = getJoinScan(join2, join2hf);
-        jscanner1.close();
-        join1hf.deleteFile();
+//        BP_Triple_Join join2 = new BP_Triple_Join(num_buf, 3, jscanner1,
+//                JNP2, JONO2, RSF2, RPF2, ROF2, RCF2,
+//                LONP2.stream().mapToInt(Integer::intValue).toArray(), ORS2, ORO2);
+//        Heapfile join2hf = new Heapfile(rdfDBname + "/join2HF");
+//        BPFileScan jscanner2 = getJoinScan(join2, join2hf);
+//        jscanner1.close();
+//        join1hf.deleteFile();
 
         // Stream Result of Sorted Result
-        BPOrder order = new BPOrder(SNP);
-        BPSort result = new BPSort(jscanner2, SO, order, NP);
-        jscanner2.close();
-
-        printResult(result);
-        result.close();
-        join2hf.deleteFile();
+//        BPOrder order = new BPOrder(SNP);
+//        BPSort result = new BPSort(jscanner2, SO, order, NP);
+//        jscanner2.close();
+//
+//        printResult(result);
+//        result.close();
+//        join2hf.deleteFile();
     }
 
 
