@@ -512,9 +512,9 @@ public class rdfDB extends DB implements GlobalConst {
             Label pred= predicateLabelHeapFile.getLabel(aquad.getPredicateID().returnLID());
             Double conf= aquad.getConfidence();
 
-            if((SF.compareToIgnoreCase("*") == 0 || sub.getLabel()== SF)
-                    && (PF.compareToIgnoreCase("*") == 0 || pred.getLabel()== PF)
-                    && (OF.compareToIgnoreCase("*") == 0 || obj.getLabel()== OF && CF!=-1)
+            if((SF.compareToIgnoreCase("*") == 0 || SF.compareTo(sub.getLabel()) == 0)
+                    && (PF.compareToIgnoreCase("*") == 0 || PF.compareTo(pred.getLabel()) == 0)
+                    && (OF.compareToIgnoreCase("*") == 0 || OF.compareTo(obj.getLabel()) == 0 && CF!=-1)
                     && ( CF ==-1 || CF <= conf)){
                 EID[] nodes = new EID[]{aquad.getSubjecqid(), aquad.getObjecqid()};
                 insertNewBasicPattern(heapfile, 2, nodes, aquad.getConfidence());

@@ -96,7 +96,7 @@ public class BP_Triple_Join extends BPIterator {
 
                 try {
                     //TODO: check the orderType and bufPoolSize
-                    innerStream = SystemDefs.JavabaseDB.openStream(1, RightSubjectFilter, RightPredicateFilter, RightObjectFilter, RightConfidenceFilter, this.amt_of_mem);
+                    innerStream = SystemDefs.JavabaseDB.openStream(5, RightSubjectFilter, RightPredicateFilter, RightObjectFilter, RightConfidenceFilter, this.amt_of_mem);
                 } catch (Exception e) {
                     System.out.println("Open Stream failed during Triple Join: "+ e);
                 }
@@ -116,7 +116,7 @@ public class BP_Triple_Join extends BPIterator {
 
 
             while ((inner_qr = innerStream.getNext(qid)) != null) {
-                if (compareFilters() == true) {
+//                if (compareFilters() == true) {
                     double confidence = inner_qr.getConfidence();
                     ArrayList<EID> EIDs = new ArrayList<EID>();
                     EID outerEID = outer_bp.getNodeID(BPJoinNodePosition);
@@ -175,7 +175,7 @@ public class BP_Triple_Join extends BPIterator {
                         }
                     }
                 }
-            }
+//            }
             getFromOuter = true;
         }while(true);
     }
@@ -190,15 +190,15 @@ public class BP_Triple_Join extends BPIterator {
         Label object = Entity_HF.getLabel(inner_qr.getObjecqid().returnLID());
         boolean result = true;
 
-        if(RightSubjectFilter.compareToIgnoreCase("null") != 0)
+        if(RightSubjectFilter.compareToIgnoreCase("*") != 0)
         {
             result = result & (RightSubjectFilter.compareTo(subject.getLabel()) == 0);
         }
-        if(RightObjectFilter.compareToIgnoreCase("null") != 0)
+        if(RightObjectFilter.compareToIgnoreCase("*") != 0)
         {
             result = result & (RightObjectFilter.compareTo(object.getLabel()) == 0 );
         }
-        if(RightPredicateFilter.compareToIgnoreCase("null") != 0)
+        if(RightPredicateFilter.compareToIgnoreCase("*") != 0)
         {
             result = result & (RightPredicateFilter.compareTo(predicate.getLabel()) == 0 );
         }
