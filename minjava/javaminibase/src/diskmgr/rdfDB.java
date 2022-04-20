@@ -500,13 +500,23 @@ public class rdfDB extends DB implements GlobalConst {
         }
     }
 
-    public BPFileScan initBPScan(Heapfile heapfile) throws Exception {
+    public BPFileScan initBPScan(Heapfile heapfile, String SF, String PF, String OF, Double CF) throws Exception {
         TScan tScanner = new TScan(getQuadrupleHandle());
         QID qid = new QID();
         Quadruple aquad;
         while ((aquad = tScanner.getNext(qid)) != null) {
-            EID[] nodes = {aquad.getSubjecqid(), aquad.getObjecqid()};
-            insertNewBasicPattern(heapfile, 2, nodes, aquad.getConfidence());
+            Label sub= entityLabelHeapFile.getLabel(aquad.getSubjecqid().returnLID());
+            Label obj= entityLabelHeapFile.getLabel(aquad.getObjecqid().returnLID());
+            Label pred= predicateLabelHeapFile.getLabel(aquad.getPredicateID().returnLID());
+            Double conf= aquad.getConfidence();
+
+            if((SF.compareToIgnoreCase("*") == 0 || sub.getLabel()== SF)
+                    && (PF.compareToIgnoreCase("*") == 0 || pred.getLabel()== PF)
+                    && (OF.compareToIgnoreCase("*") == 0 || obj.getLabel()== OF && CF!=-1)
+                    && ( CF==-1 || CF== conf)){
+                EID[] nodes = {aquad.getSubjecqid(), aquad.getObjecqid()};
+                insertNewBasicPattern(heapfile, 2, nodes, aquad.getConfidence());
+            }
         }
         return new BPFileScan(heapfile, 2);
     }
@@ -539,7 +549,7 @@ public class rdfDB extends DB implements GlobalConst {
 
         // Input Heapfile
         Heapfile inputHF = new Heapfile(rdfDBname + "/inputHF");
-        BPFileScan scanner = initBPScan(inputHF);
+        BPFileScan scanner = initBPScan(inputHF, SF1, PF1,OF1,CF1);
 
         // Put Result of First Join in Heapfile
         BP_Triple_Join join1 = new BP_Triple_Join(num_buf, 2, scanner,
