@@ -4,7 +4,6 @@ package bpiterator;
 import heap.*;
 import global.*;
 import bufmgr.*;
-import diskmgr.*;
 
 
 import java.lang.*;
@@ -38,13 +37,13 @@ public class BPFileScan extends  BPIterator
    *@param n_out_flds  number of fields in the out tuple
    *@exception IOException some I/O fault
    *@exception FileScanException exception from this class
-   *@exception TupleUtilsException exception from this class
+   *@exception iterator.TupleUtilsException exception from this class
    *@exception InvalidRelation invalid relation 
    */
   public  BPFileScan (Heapfile f, int n_out_flds)
     throws IOException,
           FileScanException,
-          BPUtilsException,
+          TupleUtilsException,
           InvalidRelation
     {
 //      tuple1 =  new Tuple();

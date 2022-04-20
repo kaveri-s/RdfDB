@@ -6,6 +6,7 @@ import bufmgr.*;
 import index.*;
 import java.io.*;
 import basicpattern.*;
+import iterator.*;
 
 /**
  *All the relational operators and access methods are iterators.
@@ -45,9 +46,9 @@ public abstract class BPIterator implements Flags {
 	   InvalidTupleSizeException,
 	   InvalidTypeException, 
 	   PageNotReadException,
-	   BPUtilsException, 
-	   PredEvalException,
-	   BPSortException,
+          TupleUtilsException,
+          PredEvalException,
+	   SortException,
 	   LowMemException,
 	   UnknowAttrType,
 	   UnknownKeyTypeException,
@@ -60,9 +61,9 @@ public abstract class BPIterator implements Flags {
    *@exception SortException exception Sort class
    */
   public abstract void close() 
-    throws IOException, 
-	   JoinsException, 
-	   BPSortException,
+    throws IOException,
+          JoinsException,
+          SortException,
 	   IndexException;
   
   /**
