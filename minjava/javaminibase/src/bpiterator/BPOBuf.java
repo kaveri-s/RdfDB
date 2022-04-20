@@ -63,7 +63,7 @@ public class BPOBuf implements GlobalConst{
     {
       
       byte[] copybuf;
-      copybuf = buf.getBasicPatternByteArray();
+      copybuf = buf.getTupleByteArray();
       System.arraycopy(copybuf,0,_bufs[curr_page],t_wr_to_pg*t_size,t_size); 
       BasicPattern bp_ptr = new BasicPattern(_bufs[curr_page] , t_wr_to_pg * t_size,t_size);
       

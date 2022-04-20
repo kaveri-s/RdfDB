@@ -95,7 +95,7 @@ public class BPSpoofIbuf implements GlobalConst  {
 	  done = true; buf = null;return null;
 	}
  
-      buf.basicPatternSet(_bufs[curr_page],t_rd_from_pg*t_size,t_size); 
+      buf.BasicPatternSet(_bufs[curr_page],t_rd_from_pg*t_size,t_size);
       tot_t_proc++;
       
       // Setup for next read

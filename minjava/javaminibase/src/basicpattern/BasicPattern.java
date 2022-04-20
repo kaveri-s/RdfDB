@@ -3,7 +3,6 @@ package basicpattern;
 import global.*;
 import heap.*;
 import labelheap.*;
-import quadrupleheap.Quadruple;
 
 import java.io.IOException;
 

@@ -7,11 +7,10 @@ import java.io.*;
 
 import quadrupleheap.*;
 
-import static global.GlobalConst.NUMBUF;
 import static java.lang.System.exit;
 
 
-public class QueryProgram {
+public class QueryProgramold {
     public static SystemDefs sysdef = null;
     static String dbname = null;   //Database name
     static String Subject = null;
