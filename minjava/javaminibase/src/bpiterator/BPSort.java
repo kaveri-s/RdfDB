@@ -57,8 +57,8 @@ public class BPSort extends BPIterator implements GlobalConst
    * @exception Exception other exceptions
    */
   private void setup_for_merge(int bp_size, int n_R_runs)
-    throws IOException, 
-	   LowMemException, 
+    throws IOException,
+	   LowMemException,
 	   SortException,
 	   Exception
   {
@@ -106,15 +106,13 @@ public class BPSort extends BPIterator implements GlobalConst
 	cur_node.basicPattern = temp_bp; // no copy needed
 	try {
 	  Q.enq(cur_node);
-	}
-	catch (UnknowAttrType e) {
+	} catch (TupleUtilsException e) {
+	  throw new SortException(e, "Sort.java: TupleUtilsException caught from Q.enq()");
+	} catch (Exception e) {
 	  throw new SortException(e, "Sort.java: UnknowAttrType caught from Q.enq()");
 	}
-	catch (TupleUtilsException e) {
-	  throw new SortException(e, "Sort.java: TupleUtilsException caught from Q.enq()");
-	}
 
-      }
+	  }
     }
     return; 
   }
@@ -352,7 +350,7 @@ public class BPSort extends BPIterator implements GlobalConst
 	try {
 	  pother_Q.enq(cur_node);
 	}
-	catch (UnknowAttrType e) {
+	catch (Exception e) {
 	  throw new SortException(e, "BPSort.java: UnknowAttrType caught from Q.enq()");
 	}
 	p_elems_other_Q ++;
@@ -448,7 +446,7 @@ public class BPSort extends BPIterator implements GlobalConst
 	  try {
 	    pcurr_Q.enq(cur_node);
 	  }
-	  catch (UnknowAttrType e) {
+	  catch (Exception e) {
 	    throw new SortException(e, "Sort.java: UnknowAttrType caught from Q.enq()");
 	  }
 	  p_elems_curr_Q ++;
@@ -577,12 +575,12 @@ public class BPSort extends BPIterator implements GlobalConst
 	cur_node.basicPattern = new_bp;  // no copy needed -- I think Bingjie 4/22/98
 	try {
 	  Q.enq(cur_node);
-	} catch (UnknowAttrType e) {
-	  throw new SortException(e, "BPSort.java: UnknowAttrType caught from Q.enq()");
 	} catch (TupleUtilsException e) {
 	  throw new SortException(e, "BPSort.java: TupleUtilsException caught from Q.enq()");
+	} catch (Exception e) {
+	  throw new SortException(e, "BPSort.java: UnknowAttrType caught from Q.enq()");
 	}
-      }
+	  }
       else {
 	throw new SortException("********** Wait a minute, I thought input is not empty ***************");
       }
