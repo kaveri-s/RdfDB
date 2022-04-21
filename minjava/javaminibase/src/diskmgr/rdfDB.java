@@ -346,6 +346,18 @@ public class rdfDB extends DB implements GlobalConst {
         return streamObj;
     }
 
+    public Stream openStream(String subjectFilter, String predicateFilter, String objectFilter, double confidenceFilter, int num_of_buf, boolean useIndex) {
+        Stream streamObj = null;
+        try {
+            streamObj = new Stream(this, subjectFilter, predicateFilter, objectFilter, confidenceFilter, num_of_buf, useIndex);
+        } catch (Exception e) {
+            System.err.println("Error while opening the stream. " + e);
+            e.printStackTrace();
+            Runtime.getRuntime().exit(1);
+        }
+        return streamObj;
+    }
+
     public void insertNewQuadruple(String data[]) throws Exception {
         EID sid = insertEntity(data[0]);
         PID pid = insertPredicate(data[1]);
@@ -399,6 +411,8 @@ public class rdfDB extends DB implements GlobalConst {
                     subject = entityLabelHeapFile.getLabel(quad.getSubjecqid().returnLID());
                     key = new StringKey(subject.getLabel());
                     break;
+
+                    //TODO: One on object
             }
 
         }catch(Exception e){

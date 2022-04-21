@@ -1,5 +1,6 @@
-package iterator;
+package bpiterator;
 
+import basicpattern.BasicPattern;
 import bufmgr.PageNotReadException;
 import diskmgr.Stream;
 import global.EID;
@@ -8,6 +9,13 @@ import global.SystemDefs;
 import heap.InvalidTupleSizeException;
 import heap.InvalidTypeException;
 import index.IndexException;
+import iterator.JoinsException;
+import iterator.LowMemException;
+import iterator.PredEvalException;
+import iterator.SortException;
+import iterator.TupleUtilsException;
+import iterator.UnknowAttrType;
+import iterator.UnknownKeyTypeException;
 import labelheap.Label;
 import labelheap.LabelHeapFile;
 import quadrupleheap.Quadruple;
@@ -16,7 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 //TODO: Change it to BPIterator
-public class BP_Triple_Join implements BPIterator {
+public class BP_Triple_Join extends BPIterator {
 
     int amt_of_mem;
     int num_left_nodes;
@@ -36,6 +44,7 @@ public class BP_Triple_Join implements BPIterator {
     private Stream innerStream;
     private BasicPattern outer_bp;
     private Quadruple inner_qr;
+    private boolean useIndex;
 
     BP_Triple_Join( int amt_of_mem,
                     int num_left_nodes,
@@ -48,7 +57,8 @@ public class BP_Triple_Join implements BPIterator {
                     double RightConfidenceFilter,
                     int [] LeftOutNodePositions,
                     int OutputRightSubject,
-                    int OutputRightObject){
+                    int OutputRightObject,
+                    boolean useIndex){
 
         this.amt_of_mem = amt_of_mem;
         this.num_left_nodes = num_left_nodes;
@@ -68,6 +78,7 @@ public class BP_Triple_Join implements BPIterator {
         this.outer_bp = null;
         this.inner_qr = null;
         this.done = false;
+        this.useIndex = useIndex;
     }
 
 
@@ -88,7 +99,7 @@ public class BP_Triple_Join implements BPIterator {
 
                 try {
                     //TODO: check the orderType and bufPoolSize
-                    innerStream = SystemDefs.JavabaseDB.openStream(7, RightSubjectFilter, RightPredicateFilter, RightObjectFilter, RightConfidenceFilter, this.amt_of_mem);
+                    innerStream = SystemDefs.JavabaseDB.openStream(RightSubjectFilter, RightPredicateFilter, RightObjectFilter, RightConfidenceFilter, this.amt_of_mem, useIndex);
                 } catch (Exception e) {
                     System.out.println("Open Stream failed during Triple Join: "+ e);
                 }
@@ -111,15 +122,14 @@ public class BP_Triple_Join implements BPIterator {
                 if (compareFilters() == true) {
                     double confidence = inner_qr.getConfidence();
                     ArrayList<EID> EIDs = new ArrayList<EID>();
-                    EID outerEID = outer_bp.getEIDFld(BPJoinNodePosition);
+                    EID outerEID = outer_bp.getNodeID(BPJoinNodePosition);
                     EID innerEID = JoinOnSubjectorObject == 0 ? inner_qr.getSubjecqid() : inner_qr.getObjecqid();
 
-                    double min_conf = Math.min(confidence, outer_bp.getDoubleFld(outer_bp.noOfFlds()));
+                    double min_conf = Math.min(confidence, outer_bp.getConfidence());
 
                     if (outerEID.equals(innerEID)) {
-                        BasicPattern bp = new BasicPattern();
                         for (int j = 0; j < LeftOutNodePosition.length; j++) {
-                            EIDs.add(outer_bp.getEIDFld(LeftOutNodePosition[j]));
+                            EIDs.add(outer_bp.getNodeID(LeftOutNodePosition[j]));
                         }
 
                         if (OutputRightSubject == 1) {
@@ -158,11 +168,12 @@ public class BP_Triple_Join implements BPIterator {
                         }
 
                         if (EIDs.size() != 0) {
-                            bp.setHdr((short) (EIDs.size() + 1));
-                            for (int k = 0; k < EIDs.size(); k++) {
-                                bp.setEIDFld(k + 1, EIDs.get(k));
+                            BasicPattern bp = new BasicPattern((short) (EIDs.size() + 1));
+                            int k;
+                            for (k = 0; k < EIDs.size(); k++) {
+                                bp.setNodeID(k + 1, EIDs.get(k));
                             }
-                            bp.setDoubleFld(k + 1, min_conf);
+                            bp.setConfidence(min_conf);
                             return bp;
                         }
                     }
@@ -202,7 +213,7 @@ public class BP_Triple_Join implements BPIterator {
     }
 
     @Override
-    public void close() throws IOException, SortException {
+    public void close() throws IOException {
         if (!closeFlag) {
             try {
                 if(innerStream!=null) innerStream.closeStream();
