@@ -2,6 +2,8 @@
 package bpiterator;
 import global.*;
 import heap.FieldNumberOutOfBoundException;
+import iterator.TupleUtilsException;
+import iterator.UnknowAttrType;
 
 import java.io.*;
 
@@ -56,10 +58,10 @@ public class BPpnodeSplayPQ extends BPpnodePQ
    * @exception IOException from lower layers
    * @exception UnknowAttrType <code>attrSymbol</code> or 
    *                           <code>attrNull</code> encountered
-   * @exception BPUtilsException error in basicpattern compare routines
+   * @exception TupleUtilsException error in basicpattern compare routines
    * @throws FieldNumberOutOfBoundException
    */
-  public void enq(BPpnode item) throws IOException, UnknowAttrType, BPUtilsException, FieldNumberOutOfBoundException 
+  public void enq(BPpnode item) throws IOException, UnknowAttrType, TupleUtilsException, FieldNumberOutOfBoundException
   {
     count ++;
     BPpnodeSplayNode newnode = new BPpnodeSplayNode(item);

@@ -28,16 +28,16 @@ public class BP_Triple_Join extends BPIterator {
 
     int amt_of_mem;
     int num_left_nodes;
-    BPIterator left_itr;
+    BPFileScan left_itr;
     int BPJoinNodePosition;
     int JoinOnSubjectorObject;
     String RightSubjectFilter;
     String RightPredicateFilter;
     String RightObjectFilter;
     double RightConfidenceFilter;
-    int [] LeftOutNodePosition;
-    int OutputRightSubject;
-    int OutputRightObject;
+    public int [] LeftOutNodePosition;
+    public int OutputRightSubject;
+    public int OutputRightObject;
 
     private boolean done;
     private boolean getFromOuter;
@@ -46,9 +46,9 @@ public class BP_Triple_Join extends BPIterator {
     private Quadruple inner_qr;
     private boolean useIndex;
 
-    BP_Triple_Join( int amt_of_mem,
+    public BP_Triple_Join( int amt_of_mem,
                     int num_left_nodes,
-                    BPIterator left_itr,
+                    BPFileScan left_itr,
                     int BPJoinNodePosition,
                     int JoinOnSubjectorObject,
                     String RightSubjectFilter,
@@ -69,7 +69,7 @@ public class BP_Triple_Join extends BPIterator {
         this.RightObjectFilter = new String(RightObjectFilter);
         this.RightPredicateFilter = new String(RightPredicateFilter);
         this.RightConfidenceFilter = RightConfidenceFilter;
-        this.LeftOutNodePosition = LeftOutNodePosition;
+        this.LeftOutNodePosition = LeftOutNodePositions;
         this.OutputRightSubject = OutputRightSubject;
         this.OutputRightObject = OutputRightObject;
 
@@ -119,7 +119,7 @@ public class BP_Triple_Join extends BPIterator {
 
 
             while ((inner_qr = innerStream.getNext(qid)) != null) {
-                if (compareFilters() == true) {
+//                if (compareFilters() == true) {
                     double confidence = inner_qr.getConfidence();
                     ArrayList<EID> EIDs = new ArrayList<EID>();
                     EID outerEID = outer_bp.getNodeID(BPJoinNodePosition);
@@ -178,7 +178,7 @@ public class BP_Triple_Join extends BPIterator {
                         }
                     }
                 }
-            }
+//            }
             getFromOuter = true;
         }while(true);
     }
@@ -193,15 +193,15 @@ public class BP_Triple_Join extends BPIterator {
         Label object = Entity_HF.getLabel(inner_qr.getObjecqid().returnLID());
         boolean result = true;
 
-        if(RightSubjectFilter.compareToIgnoreCase("null") != 0)
+        if(RightSubjectFilter.compareToIgnoreCase("*") != 0)
         {
             result = result & (RightSubjectFilter.compareTo(subject.getLabel()) == 0);
         }
-        if(RightObjectFilter.compareToIgnoreCase("null") != 0)
+        if(RightObjectFilter.compareToIgnoreCase("*") != 0)
         {
             result = result & (RightObjectFilter.compareTo(object.getLabel()) == 0 );
         }
-        if(RightPredicateFilter.compareToIgnoreCase("null") != 0)
+        if(RightPredicateFilter.compareToIgnoreCase("*") != 0)
         {
             result = result & (RightPredicateFilter.compareTo(predicate.getLabel()) == 0 );
         }

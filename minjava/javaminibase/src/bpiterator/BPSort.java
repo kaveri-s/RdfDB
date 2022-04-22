@@ -2,12 +2,9 @@ package bpiterator;
 
 import java.io.*; 
 import global.*;
-import bufmgr.*;
-import diskmgr.*;
 import heap.*;
-import index.*;
-import chainexception.*;
 import basicpattern.*;
+import iterator.*;
 
 /**
  * The Sort class sorts a file. All necessary information are passed as 
@@ -41,8 +38,8 @@ public class BPSort extends BPIterator implements GlobalConst
   private int[]             n_bps;
   private int               n_runs;
   private BasicPattern      op_buf;
-  private BPOBuf            o_buf;
-  private BPSpoofIbuf[]     i_buf;
+  private OBuf o_buf;
+  private SpoofIbuf[]     i_buf;
   private PageId[]          bufs_pids;
   private boolean useBM = true; // flag for whether to use buffer manager
   
@@ -56,13 +53,13 @@ public class BPSort extends BPIterator implements GlobalConst
    * @exception IOException from lower layers
    * @exception LowMemException there is not enough memory to 
    *                 sort in two passes (a subclass of SortException).
-   * @exception BPSortException something went wrong in the lower layer. 
+   * @exception SortException something went wrong in the lower layer. 
    * @exception Exception other exceptions
    */
   private void setup_for_merge(int bp_size, int n_R_runs)
-    throws IOException, 
-	   LowMemException, 
-	   BPSortException,
+    throws IOException,
+	   LowMemException,
+	   SortException,
 	   Exception
   {
     // don't know what will happen if n_R_runs > _n_pages
@@ -72,8 +69,8 @@ public class BPSort extends BPIterator implements GlobalConst
     int i;
     BPpnode cur_node;  // need pq_defs.java
     
-    i_buf = new BPSpoofIbuf[n_R_runs];   // need io_bufs.java
-    for (int j=0; j<n_R_runs; j++) i_buf[j] = new BPSpoofIbuf();
+    i_buf = new SpoofIbuf[n_R_runs];   // need io_bufs.java
+    for (int j=0; j<n_R_runs; j++) i_buf[j] = new SpoofIbuf();
     
     // construct the lists, ignore TEST for now
     // this is a patch, I am not sure whether it works well -- bingjie 4/20/98
@@ -92,15 +89,15 @@ public class BPSort extends BPIterator implements GlobalConst
       // or make a copy of the tuple, need io_bufs.java ???
       BasicPattern temp_bp = new BasicPattern(bp_size);
 
-      try {
-        temp_bp.setHdr(n_cols);
-      }
-      catch (Exception e) {
-        throw new BPSortException(e, "Sort.java: Tuple.setHdr() failed");
-      }
+//      try {
+//        temp_bp.setHdr(n_cols);
+//      }
+//      catch (Exception e) {
+//        throw new SortException(e, "Sort.java: Tuple.setHdr() failed");
+//      }
       
-      temp_bp =i_buf[i].Get(temp_bp);  // need io_bufs.java
-            
+      Tuple temp_tup =i_buf[i].Get(temp_bp);  // need io_bufs.java
+      temp_bp = new BasicPattern(temp_tup.returnTupleByteArray(), 0);
       if (temp_bp != null) {
 	/*
 	System.out.print("Get tuple from run " + i);
@@ -109,21 +106,19 @@ public class BPSort extends BPIterator implements GlobalConst
 	cur_node.basicPattern = temp_bp; // no copy needed
 	try {
 	  Q.enq(cur_node);
-	}
-	catch (UnknowAttrType e) {
-	  throw new BPSortException(e, "Sort.java: UnknowAttrType caught from Q.enq()");
-	}
-	catch (BPUtilsException e) {
-	  throw new BPSortException(e, "Sort.java: BPUtilsException caught from Q.enq()");
+	} catch (TupleUtilsException e) {
+	  throw new SortException(e, "Sort.java: TupleUtilsException caught from Q.enq()");
+	} catch (Exception e) {
+	  throw new SortException(e, "Sort.java: UnknowAttrType caught from Q.enq()");
 	}
 
-      }
+	  }
     }
     return; 
   }
   
   public void sort_init(AttrType[] in,short len_in, short[] str_sizes) 
-  throws IOException, BPSortException
+  throws IOException, SortException
 	{
 	    _in = new AttrType[len_in];
 	    n_cols = len_in;
@@ -158,7 +153,7 @@ public class BPSort extends BPIterator implements GlobalConst
 	    }
 	    catch (Exception e) 
 	    {
-		throw new BPSortException(e, "Sort.java: t.setHdr() failed");
+		throw new SortException(e, "Sort.java: t.setHdr() failed");
 	    }
 	    bp_size = t.size();
 	
@@ -172,7 +167,7 @@ public class BPSort extends BPIterator implements GlobalConst
 			get_buffer_pages(_n_pages, bufs_pids, bufs);
 			}
 			catch (Exception e) {
-			throw new BPSortException(e, "Sort.java: BUFmgr error");
+			throw new SortException(e, "Sort.java: BUFmgr error");
 			}
 	    }
 	    else 
@@ -192,10 +187,10 @@ public class BPSort extends BPIterator implements GlobalConst
 	    	temp_files[0] = new Heapfile(null);
 	    }
 	    catch (Exception e) {
-	    	throw new BPSortException(e, "Sort.java: Heapfile error");
+	    	throw new SortException(e, "Sort.java: Heapfile error");
 	    }
 	    
-	    o_buf = new BPOBuf();
+	    o_buf = new OBuf();
 	    
 	    o_buf.init(bufs, _n_pages, bp_size, temp_files[0], false);	// todo: CHIRAYU
 	    //    output_tuple = null;
@@ -203,12 +198,12 @@ public class BPSort extends BPIterator implements GlobalConst
 	    Q = new BPpnodeSplayPQ(_sort_fld, in[_sort_fld - 1], order);		// todo: CHIRAYU
 	
 	    op_buf = new BasicPattern(bp_size);   // need Tuple.java
-	    try {
-	      op_buf.setHdr(n_cols);
-	    }
-	    catch (Exception e) {
-	      throw new BPSortException(e, "Sort.java: op_buf.setHdr() failed");
-	    }
+//	    try {
+//	      op_buf.setHdr(n_cols);
+//	    }
+//	    catch (Exception e) {
+//	      throw new SortException(e, "Sort.java: op_buf.setHdr() failed");
+//	    }
 	}
 
   /**
@@ -216,17 +211,16 @@ public class BPSort extends BPIterator implements GlobalConst
    * Using heap sort.
    * @param  max_elems    maximum number of elements in heap
    * @param  sortFldType  attribute type of the sort field
-   * @param  sortFldLen   length of the sort field
    * @return number of runs generated
    * @exception IOException from lower layers
-   * @exception BPSortException something went wrong in the lower layer. 
+   * @exception SortException something went wrong in the lower layer. 
    * @exception JoinsException from <code>Iterator.get_next()</code>
    */
   private int generate_runs(int max_elems, AttrType sortFldType/*, int sortFldLen*/) 
     throws IOException, 
-	   BPSortException, 
+	   SortException, 
 	   UnknowAttrType,
-	   BPUtilsException,
+		  TupleUtilsException,
 	   JoinsException,
 	   Exception
   {
@@ -284,7 +278,7 @@ public class BPSort extends BPIterator implements GlobalConst
       catch (Exception e)
       {
         e.printStackTrace(); 
-        throw new BPSortException(e, "BPSort.java: get_next() failed");
+        throw new SortException(e, "BPSort.java: get_next() failed");
       } 
       
       if (basicPattern == null)
@@ -299,14 +293,14 @@ public class BPSort extends BPIterator implements GlobalConst
     }
     
     BasicPattern lastElem = new BasicPattern(bp_size);  // need tuple.java
-    try
-    {
-      lastElem.setHdr(n_cols);
-    }
-    catch (Exception e)
-    {
-      throw new BPSortException(e, "BPSort.java: setHdr() failed");
-    }
+//    try
+//    {
+//      lastElem.setHdr(n_cols);
+//    }
+//    catch (Exception e)
+//    {
+//      throw new SortException(e, "BPSort.java: setHdr() failed");
+//    }
 
     // set the lastElem to be the minimum value for the sort field
     if(order.bpOrder == BPOrder.Ascending) 
@@ -317,11 +311,11 @@ public class BPSort extends BPIterator implements GlobalConst
       } 
       catch (UnknowAttrType e) 
       {
-        throw new BPSortException(e, "Sort.java: UnknowAttrType caught from MIN_VAL()");
+        throw new SortException(e, "Sort.java: UnknowAttrType caught from MIN_VAL()");
       } 
       catch (Exception e) 
       {
-        throw new BPSortException(e, "MIN_VAL failed");
+        throw new SortException(e, "MIN_VAL failed");
       } 
   }
   else 
@@ -332,11 +326,11 @@ public class BPSort extends BPIterator implements GlobalConst
       } 
       catch (UnknowAttrType e) 
       {
-        throw new BPSortException(e, "Sort.java: UnknowAttrType caught from MAX_VAL()");
+        throw new SortException(e, "Sort.java: UnknowAttrType caught from MAX_VAL()");
       } 
       catch (Exception e) 
       {
-        throw new BPSortException(e, "MIN_VAL failed");
+        throw new SortException(e, "MIN_VAL failed");
       } 
   }
     
@@ -356,8 +350,8 @@ public class BPSort extends BPIterator implements GlobalConst
 	try {
 	  pother_Q.enq(cur_node);
 	}
-	catch (UnknowAttrType e) {
-	  throw new BPSortException(e, "BPSort.java: UnknowAttrType caught from Q.enq()");
+	catch (Exception e) {
+	  throw new SortException(e, "BPSort.java: UnknowAttrType caught from Q.enq()");
 	}
 	p_elems_other_Q ++;
       }
@@ -399,7 +393,7 @@ public class BPSort extends BPIterator implements GlobalConst
 	    temp_files[run_num] = new Heapfile(null);
 	}
 	catch (Exception e) {
-	  throw new BPSortException(e, "BPSort.java: create Heapfile failed");
+	  throw new SortException(e, "BPSort.java: create Heapfile failed");
 	}
 	
 	// need io_bufs.java
@@ -410,18 +404,18 @@ public class BPSort extends BPIterator implements GlobalConst
 	  try {
 	    MIN_VAL(lastElem, sortFldType);
 	  } catch (UnknowAttrType e) {
-	    throw new BPSortException(e, "BPSort.java: UnknowAttrType caught from MIN_VAL()");
+	    throw new SortException(e, "BPSort.java: UnknowAttrType caught from MIN_VAL()");
 	  } catch (Exception e) {
-	    throw new BPSortException(e, "MIN_VAL failed");
+	    throw new SortException(e, "MIN_VAL failed");
 	  } 
 	}
 	else {
 	  try {
 	    MAX_VAL(lastElem, sortFldType);
 	  } catch (UnknowAttrType e) {
-	    throw new BPSortException(e, "BPSort.java: UnknowAttrType caught from MAX_VAL()");
+	    throw new SortException(e, "BPSort.java: UnknowAttrType caught from MAX_VAL()");
 	  } catch (Exception e) {
-	    throw new BPSortException(e, "MIN_VAL failed");
+	    throw new SortException(e, "MIN_VAL failed");
 	  } 
 	}
     
@@ -440,7 +434,7 @@ public class BPSort extends BPIterator implements GlobalConst
 	  try {
 	    basicPattern = _am.get_next();  // according to Iterator.java
 	  } catch (Exception e) {
-	    throw new BPSortException(e, "get_next() failed");
+	    throw new SortException(e, "get_next() failed");
 	  } 
 	  
 	  if (basicPattern == null) {
@@ -452,8 +446,8 @@ public class BPSort extends BPIterator implements GlobalConst
 	  try {
 	    pcurr_Q.enq(cur_node);
 	  }
-	  catch (UnknowAttrType e) {
-	    throw new BPSortException(e, "Sort.java: UnknowAttrType caught from Q.enq()");
+	  catch (Exception e) {
+	    throw new SortException(e, "Sort.java: UnknowAttrType caught from Q.enq()");
 	  }
 	  p_elems_curr_Q ++;
 	}
@@ -494,7 +488,7 @@ public class BPSort extends BPIterator implements GlobalConst
 	    temp_files[run_num] = new Heapfile(null); 
 	  }
 	  catch (Exception e) {
-	    throw new BPSortException(e, "BPSort.java: create Heapfile failed");
+	    throw new SortException(e, "BPSort.java: create Heapfile failed");
 	  }
 	  
 	  // need io_bufs.java
@@ -505,18 +499,18 @@ public class BPSort extends BPIterator implements GlobalConst
 	    try {
 	      MIN_VAL(lastElem, sortFldType);
 	    } catch (UnknowAttrType e) {
-	      throw new BPSortException(e, "BPSort.java: UnknowAttrType caught from MIN_VAL()");
+	      throw new SortException(e, "BPSort.java: UnknowAttrType caught from MIN_VAL()");
 	    } catch (Exception e) {
-	      throw new BPSortException(e, "MIN_VAL failed");
+	      throw new SortException(e, "MIN_VAL failed");
 	    } 
 	  }
 	  else {
 	    try {
 	      MAX_VAL(lastElem, sortFldType);
 	    } catch (UnknowAttrType e) {
-	      throw new BPSortException(e, "BPSort.java: UnknowAttrType caught from MAX_VAL()");
+	      throw new SortException(e, "BPSort.java: UnknowAttrType caught from MAX_VAL()");
 	    } catch (Exception e) {
-	      throw new BPSortException(e, "MIN_VAL failed");
+	      throw new SortException(e, "MIN_VAL failed");
 	    } 
 	  }
 	
@@ -542,11 +536,11 @@ public class BPSort extends BPIterator implements GlobalConst
    * Remove the minimum value among all the runs.
    * @return the minimum tuple removed
    * @exception IOException from lower layers
-   * @exception BPSortException something went wrong in the lower layer. 
+   * @exception SortException something went wrong in the lower layer. 
    */
   private BasicPattern delete_min() 
     throws IOException, 
-	   BPSortException,
+	   SortException,
 	   Exception
   {
     BPpnode cur_node;                // needs pq_defs.java  
@@ -564,14 +558,15 @@ public class BPSort extends BPIterator implements GlobalConst
       // run not exhausted 
       new_bp = new BasicPattern(bp_size); // need tuple.java??
 
-      try {
-	new_bp.setHdr(n_cols);
-      }
-      catch (Exception e) {
-	throw new BPSortException(e, "BPSort.java: setHdr() failed");
-      }
-      
-      new_bp = i_buf[cur_node.run_num].Get(new_bp);  
+//      try {
+//	new_bp.setHdr(n_cols);
+//      }
+//      catch (Exception e) {
+//	throw new SortException(e, "BPSort.java: setHdr() failed");
+//      }
+
+		Tuple temp_tup =i_buf[cur_node.run_num].Get(new_bp);  // need io_bufs.java
+		new_bp = new BasicPattern(temp_tup.returnTupleByteArray(), 0);
       if (new_bp != null) {
 	/*
 	System.out.print(" fill in from run " + cur_node.run_num);
@@ -580,14 +575,14 @@ public class BPSort extends BPIterator implements GlobalConst
 	cur_node.basicPattern = new_bp;  // no copy needed -- I think Bingjie 4/22/98
 	try {
 	  Q.enq(cur_node);
-	} catch (UnknowAttrType e) {
-	  throw new BPSortException(e, "BPSort.java: UnknowAttrType caught from Q.enq()");
-	} catch (BPUtilsException e) {
-	  throw new BPSortException(e, "BPSort.java: BPUtilsException caught from Q.enq()");
-	} 
-      }
+	} catch (TupleUtilsException e) {
+	  throw new SortException(e, "BPSort.java: TupleUtilsException caught from Q.enq()");
+	} catch (Exception e) {
+	  throw new SortException(e, "BPSort.java: UnknowAttrType caught from Q.enq()");
+	}
+	  }
       else {
-	throw new BPSortException("********** Wait a minute, I thought input is not empty ***************");
+	throw new SortException("********** Wait a minute, I thought input is not empty ***************");
       }
       
     }
@@ -617,7 +612,7 @@ public class BPSort extends BPIterator implements GlobalConst
     switch (sortFldType.attrType) {
     case AttrType.attrFloat:
       //      lastElem.setHdr(fld_no, junk, null);
-      lastElem.setFloFld(_sort_fld, Float.MIN_VALUE);
+      lastElem.setConfidence(Float.MIN_VALUE);
       break;
     default:
       // don't know how to handle attrSymbol, attrNull
@@ -649,7 +644,7 @@ public class BPSort extends BPIterator implements GlobalConst
     switch (sortFldType.attrType) {
     case AttrType.attrFloat:
       //      lastElem.setHdr(fld_no, junk, null);
-      lastElem.setFloFld(_sort_fld, Float.MAX_VALUE);
+      lastElem.setConfidence(Float.MAX_VALUE);
       break;
     default:
       // don't know how to handle attrSymbol, attrNull
@@ -668,13 +663,13 @@ public class BPSort extends BPIterator implements GlobalConst
    * @param sort_order the sorting order (ASCENDING, DESCENDING)
    * @param n_pages amount of memory (in pages) available for sorting
    * @exception IOException from lower layers
-   * @exception BPSortException something went wrong in the lower layer. 
+   * @exception SortException something went wrong in the lower layer. 
    */
   public BPSort(BPFileScan   am,                 
 	      int        sort_fld,          
 	      BPOrder sort_order,     
 	      int        n_pages      
-	      ) throws IOException, BPSortException
+	      ) throws IOException, SortException
   {
     _am = am;
     _sort_fld = sort_fld;
@@ -696,7 +691,7 @@ public class BPSort extends BPIterator implements GlobalConst
    *       will be overwritten by the next <code>get_next()</code> call.
    * @return the next basicpattern, null if all basicpatterns exhausted
    * @exception IOException from lower layers
-   * @exception BPSortException something went wrong in the lower layer. 
+   * @exception SortException something went wrong in the lower layer. 
    * @exception JoinsException from <code>generate_runs()</code>.
    * @exception UnknowAttrType attribute type unknown
    * @exception LowMemException memory low exception
@@ -704,7 +699,7 @@ public class BPSort extends BPIterator implements GlobalConst
    */
   public BasicPattern get_next() 
     throws IOException, 
-	   BPSortException, 
+	   SortException, 
 	   UnknowAttrType,
 	   LowMemException, 
 	   JoinsException,
@@ -751,9 +746,9 @@ public class BPSort extends BPIterator implements GlobalConst
    * Cleaning up, including releasing buffer pages from the buffer pool
    * and removing temporary files from the database.
    * @exception IOException from lower layers
-   * @exception BPSortException something went wrong in the lower layer. 
+   * @exception SortException something went wrong in the lower layer. 
    */
-  public void close() throws BPSortException, IOException
+  public void close() throws SortException, IOException
   {
     // clean up
     if (!closeFlag) {
@@ -763,8 +758,8 @@ public class BPSort extends BPIterator implements GlobalConst
       }
       catch (Exception e) {
         try {
-					throw new BPSortException(e, "BPSort.java: error in closing iterator.");
-				} catch (BPSortException e1) {
+					throw new SortException(e, "BPSort.java: error in closing iterator.");
+				} catch (SortException e1) {
 					e1.printStackTrace();
 				}
       }
@@ -776,8 +771,8 @@ public class BPSort extends BPIterator implements GlobalConst
 	catch (Exception e) {
     try {
 
-	  throw new BPSortException(e, "BPSort.java: BUFmgr error");
-  } catch (BPSortException e1) {
+	  throw new SortException(e, "BPSort.java: BUFmgr error");
+  } catch (SortException e1) {
     e1.printStackTrace();
   }
 	}
@@ -791,8 +786,8 @@ public class BPSort extends BPIterator implements GlobalConst
 	  }
 	  catch (Exception e) {
       try {
-	    throw new BPSortException(e, "BPSort.java: Heapfile error");
-      } catch (BPSortException e1) {
+	    throw new SortException(e, "BPSort.java: Heapfile error");
+      } catch (SortException e1) {
         e1.printStackTrace();
       }
 	  }
