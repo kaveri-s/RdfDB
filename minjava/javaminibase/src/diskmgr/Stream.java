@@ -46,11 +46,14 @@ public class Stream implements GlobalConst {
 
     public QuadrupleSort qSort = null;
 
+    private boolean withIndexOption = true;
+
     Stream(){ }
 
     public Stream(rdfDB rdfDatabase, int orderType, String subjectFilter, String predicateFilter, String objectFilter,
                   double confidenceFilter, int num_of_buf) throws Exception {
 
+        this.withIndexOption = true;
         this.orderType = orderType;
         this.subjectFilter = subjectFilter;
         this.predicateFilter = predicateFilter;
@@ -118,6 +121,57 @@ public class Stream implements GlobalConst {
         }
     }
 
+    public Stream(rdfDB rdfDatabase, String subjectFilter, String predicateFilter, String objectFilter,
+                  double confidenceFilter, int num_of_buf, boolean useIndex) throws Exception {
+
+        this.withIndexOption = false;
+        this.subjectFilter = subjectFilter;
+        this.predicateFilter = predicateFilter;
+        this.objectFilter = objectFilter;
+        this.confidenceFilter = confidenceFilter;
+
+        this.rdfDatabase = rdfDatabase;
+
+        if(subjectFilter.compareToIgnoreCase("*") == 0)
+        {
+            subject_null = true;
+        }
+        if(predicateFilter.compareToIgnoreCase("*") == 0)
+        {
+            predicate_null = true;
+        }
+        if(objectFilter.compareToIgnoreCase("*") == 0)
+        {
+            object_null = true;
+        }
+        if(confidenceFilter == -99.0)
+        {
+            confidence_null = true;
+        }
+        dbName = rdfDatabase.getRdfDBName();
+        String indexOption = dbName.substring(dbName.lastIndexOf('.') + 1);
+
+
+        if(useIndex == true){
+            //TODO: Logic to determine which BTree to use and stream the data from there.
+
+        }
+        else
+        {
+            scanEntireHeapFile = true;
+            ScanEntireHeapFile(subjectFilter,predicateFilter,objectFilter,confidenceFilter);
+        }
+
+        //Sort the results
+        try{
+            tScan = new TScan(Result_HF);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
     public void closeStream() {
         try
         {
@@ -142,6 +196,18 @@ public class Stream implements GlobalConst {
     }
 
     public Quadruple getNext(QID qid) {
+        if(this.withIndexOption){
+
+            return getNextWithSort(qid);
+        }else{
+            return getNextWithoutSort(qid);
+        }
+
+
+    }
+
+    private Quadruple getNextWithSort(QID qid){
+
         try
         {
             Quadruple quadruple;
@@ -200,6 +266,51 @@ public class Stream implements GlobalConst {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private Quadruple getNextWithoutSort(QID qid){
+        Quadruple quadruple;
+
+        try{
+            while((quadruple = (Quadruple) tScan.getNext(qid)) != null) {
+                if(!this.withIndexOption){
+
+                    boolean result = true;
+                    double confidence = quadruple.getConfidence();
+                    Label subject = SystemDefs.JavabaseDB.getEntityHandle().getLabel(quadruple.getSubjecqid().returnLID());
+                    Label object = SystemDefs.JavabaseDB.getEntityHandle().getLabel(quadruple.getObjecqid().returnLID());
+                    Label predicate = SystemDefs.JavabaseDB.getPredicateHandle().getLabel(quadruple.getPredicateID().returnLID());
+
+                    if(!subject_null)
+                    {
+                        result = result & (subjectFilter.compareTo(subject.getLabel()) == 0);
+                    }
+                    if(!object_null)
+                    {
+                        result = result & (objectFilter.compareTo(object.getLabel()) == 0 );
+                    }
+                    if(!predicate_null)
+                    {
+                        result = result & (predicateFilter.compareTo(predicate.getLabel())==0);
+                    }
+                    if(!confidence_null)
+                    {
+                        result = result & (confidence >= confidenceFilter);
+                    }
+                    if(result)
+                    {
+                        return quadruple;
+                    }
+                }
+            }
+        }catch(Exception e)
+        {
+            System.out.println("Error in Stream get next\n"+e);
+            e.printStackTrace();
+        }
+        return null;
+
+
     }
 
     public static QuadrupleOrder getSortOrder(int orderType)

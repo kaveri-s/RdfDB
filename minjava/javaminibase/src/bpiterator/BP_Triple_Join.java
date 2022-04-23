@@ -44,6 +44,7 @@ public class BP_Triple_Join extends BPIterator {
     private Stream innerStream;
     private BasicPattern outer_bp;
     private Quadruple inner_qr;
+    private boolean useIndex;
 
     public BP_Triple_Join( int amt_of_mem,
                     int num_left_nodes,
@@ -56,7 +57,8 @@ public class BP_Triple_Join extends BPIterator {
                     double RightConfidenceFilter,
                     int [] LeftOutNodePositions,
                     int OutputRightSubject,
-                    int OutputRightObject){
+                    int OutputRightObject,
+                    boolean useIndex){
 
         this.amt_of_mem = amt_of_mem;
         this.num_left_nodes = num_left_nodes;
@@ -76,6 +78,7 @@ public class BP_Triple_Join extends BPIterator {
         this.outer_bp = null;
         this.inner_qr = null;
         this.done = false;
+        this.useIndex = useIndex;
     }
 
 
@@ -95,8 +98,7 @@ public class BP_Triple_Join extends BPIterator {
                 }
 
                 try {
-                    //TODO: check the orderType and bufPoolSize
-                    innerStream = SystemDefs.JavabaseDB.openStream(5, RightSubjectFilter, RightPredicateFilter, RightObjectFilter, RightConfidenceFilter, this.amt_of_mem);
+                    innerStream = SystemDefs.JavabaseDB.openStream(RightSubjectFilter, RightPredicateFilter, RightObjectFilter, RightConfidenceFilter, this.amt_of_mem, useIndex);
                 } catch (Exception e) {
                     System.out.println("Open Stream failed during Triple Join: "+ e);
                 }
@@ -116,7 +118,8 @@ public class BP_Triple_Join extends BPIterator {
 
 
             while ((inner_qr = innerStream.getNext(qid)) != null) {
-//                if (compareFilters() == true) {
+
+                if (compareFilters() == true) {
                     double confidence = inner_qr.getConfidence();
                     ArrayList<EID> EIDs = new ArrayList<EID>();
                     EID outerEID = outer_bp.getNodeID(BPJoinNodePosition);
@@ -125,57 +128,29 @@ public class BP_Triple_Join extends BPIterator {
                     double min_conf = Math.min(confidence, outer_bp.getConfidence());
 
                     if (outerEID.equals(innerEID)) {
-                        BasicPattern bp = new BasicPattern(LeftOutNodePosition.length);
                         for (int j = 0; j < LeftOutNodePosition.length; j++) {
                             EIDs.add(outer_bp.getNodeID(LeftOutNodePosition[j]));
                         }
 
                         if (OutputRightSubject == 1) {
-                            if (JoinOnSubjectorObject == 0) {
-
-                                boolean isPresent = false;
-
-                                for (int k = 0; k < LeftOutNodePosition.length; k++) {
-                                    if (LeftOutNodePosition[k] == BPJoinNodePosition) {
-                                        isPresent = true;
-                                        break;
-                                    }
-                                }
-                                if (!isPresent)
-                                    EIDs.add(inner_qr.getSubjecqid());
-                            } else {
-                                EIDs.add(inner_qr.getSubjecqid());
-                            }
+                            EIDs.add(inner_qr.getSubjecqid());
                         }
 
                         if (OutputRightObject == 1) {
-                            if (JoinOnSubjectorObject == 1) {
-
-                                boolean isPresent = false;
-                                for (int k = 0; k < LeftOutNodePosition.length; k++) {
-                                    if (LeftOutNodePosition[k] == BPJoinNodePosition) {
-                                        isPresent = true;
-                                        break;
-                                    }
-                                }
-                                if (!isPresent)
-                                    EIDs.add(inner_qr.getObjecqid());
-                            } else {
-                                EIDs.add(inner_qr.getObjecqid());
-                            }
+                            EIDs.add(inner_qr.getObjecqid());
                         }
 
                         if (EIDs.size() != 0) {
-                            // bp.setHdr((short) (EIDs.size() + 1));
+                            BasicPattern bp = new BasicPattern((short) (EIDs.size()));
                             for (int k = 0; k < EIDs.size(); k++) {
-                                bp.setNodeID(k + 2, EIDs.get(k));
+                                bp.setNodeID(k, EIDs.get(k));
                             }
                             bp.setConfidence(min_conf);
                             return bp;
                         }
                     }
                 }
-//            }
+            }
             getFromOuter = true;
         }while(true);
     }
