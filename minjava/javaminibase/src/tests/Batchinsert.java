@@ -100,8 +100,8 @@ public class Batchinsert {
 
         File datafile = new File(args[0]);
         int indexoption = Integer.parseInt(args[1]);
-        String dbname = new String("/tmp/"+args[2]+"."+indexoption);
-
+//        String dbname = new String("/tmp/"+args[2]+"."+indexoption);
+        String dbname = new String("/tmp/"+args[2]);
         int iread = PCounter.rCounter;
         int iwrite = PCounter.wCounter;
 
