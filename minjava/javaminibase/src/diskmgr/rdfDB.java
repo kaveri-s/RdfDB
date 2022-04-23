@@ -599,7 +599,6 @@ public class rdfDB extends DB implements GlobalConst {
         jScanner1.close();
         join1hf.deleteFile();
 
-        printResult(jScanner2);
         // Stream Result of Sorted Result
         BPOrder order = new BPOrder(SO);
         BPSort result = new BPSort(jScanner2, SNP, order, NP);
