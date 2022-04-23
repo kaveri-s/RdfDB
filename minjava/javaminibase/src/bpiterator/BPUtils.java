@@ -8,6 +8,8 @@ import java.io.*;
 import basicpattern.BasicPattern;
 import iterator.TupleUtilsException;
 import iterator.UnknowAttrType;
+import iterator.LabelUtils;
+import labelheap.*;
 
 /**
  *some useful method when processing Tuple 
@@ -38,10 +40,16 @@ public class BPUtils
   public static int CompareBPWithBP(
     BasicPattern b1, int b1_fld_no,
     BasicPattern b2, int b2_fld_no)
-    throws IOException,
-	   UnknowAttrType,
-          TupleUtilsException,
-     FieldNumberOutOfBoundException
+    throws IOException, 
+    UnknowAttrType, 
+    TupleUtilsException, 
+    FieldNumberOutOfBoundException,
+    InvalidSlotNumberException, 
+    InvalidTupleSizeException, 
+    HFException, 
+    HFDiskMgrException, 
+    HFBufMgrException, 
+    Exception
     {
       int b1_n = b1.getNodeIDCount();
       int b2_n = b2.getNodeIDCount();
@@ -49,9 +57,33 @@ public class BPUtils
       if ((b1_fld_no > 0) && (b1_fld_no <= b1_n)
       && (b2_fld_no > 0) && (b2_fld_no <= b2_n))
       {
+        b1_fld_no = b1_fld_no - 1;
+        b2_fld_no = b2_fld_no - 1;
         EID e1 = b1.getNodeID(b1_fld_no);
         EID e2 = b2.getNodeID(b2_fld_no);
-        // TODO compare EIDs here?
+        if (e1 == e2)
+        {
+          return 0;
+        }
+        else if (e1.pageNo.pid == -1)
+        {
+          return -1;
+        }
+        else if (e2.pageNo.pid == -1)
+        {
+          return 1;
+        }
+        else if (e1.pageNo.pid == -2)
+        {
+          return 1;
+        }
+        else if (e2.pageNo.pid == -2)
+        {
+          return -1;
+        }
+        Label ll1 = SystemDefs.JavabaseDB.getEntityHandle().getLabel(e1.returnLID());
+        Label ll2 = SystemDefs.JavabaseDB.getEntityHandle().getLabel(e2.returnLID());
+        return LabelUtils.CompareLabelWithLabel(ll1, ll2);
       }
       else if ((b1_fld_no == (b1_n + 1)) && (b2_fld_no == (b2_n + 1)))
       {
@@ -94,9 +126,15 @@ public class BPUtils
     BasicPattern b1, int b1_fld_no,
     BasicPattern value)
     throws IOException,
-	   UnknowAttrType,
-          TupleUtilsException,
-     FieldNumberOutOfBoundException
+    UnknowAttrType,
+    TupleUtilsException,
+    FieldNumberOutOfBoundException,
+    InvalidSlotNumberException, 
+    InvalidTupleSizeException, 
+    HFException, 
+    HFDiskMgrException, 
+    HFBufMgrException, 
+    Exception
     {
       return CompareBPWithBP(b1, b1_fld_no, value, b1_fld_no);
     }
@@ -117,7 +155,13 @@ public class BPUtils
   public static boolean Equal(BasicPattern b1, BasicPattern b2)
     throws IOException,
     UnknowAttrType,
-          TupleUtilsException, FieldNumberOutOfBoundException
+    TupleUtilsException, FieldNumberOutOfBoundException,
+    InvalidSlotNumberException, 
+    InvalidTupleSizeException, 
+    HFException, 
+    HFDiskMgrException, 
+    HFBufMgrException, 
+    Exception
     {
       int b1_l = b1.getNodeIDCount();
       int b2_l = b2.getNodeIDCount();
@@ -154,9 +198,9 @@ public class BPUtils
     try {
       int v_n = value.getNodeIDCount();
       int b_n = bp.getNodeIDCount();
-  
       if ((fld_no > 0) && (fld_no <= v_n) && (fld_no <= b_n))
       {
+        fld_no = fld_no - 1;
         EID e1 = value.getNodeID(fld_no);
         bp.setNodeID(fld_no, e1);
       }

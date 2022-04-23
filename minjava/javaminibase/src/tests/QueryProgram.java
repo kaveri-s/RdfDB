@@ -130,7 +130,7 @@ public class QueryProgram {
                 SystemDefs.close();
             }
             catch (Exception e) {
-                System.err.println("Insert Quadruple into Heapfile failed.");
+                System.err.println("Query Execute failed.");
                 e.printStackTrace();
             }
         }

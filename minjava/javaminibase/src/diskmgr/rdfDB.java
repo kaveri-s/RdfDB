@@ -2,7 +2,6 @@ package diskmgr;
 
 import basicpattern.BasicPattern;
 import bpiterator.BPFileScan;
-import bpiterator.BPIterator;
 import bpiterator.BPSort;
 import btree.*;
 import global.*;
@@ -352,18 +351,6 @@ public class rdfDB extends DB implements GlobalConst {
         return streamObj;
     }
 
-    public Stream openStream(String subjectFilter, String predicateFilter, String objectFilter, double confidenceFilter, int num_of_buf, boolean useIndex) {
-        Stream streamObj = null;
-        try {
-            streamObj = new Stream(this, subjectFilter, predicateFilter, objectFilter, confidenceFilter, num_of_buf, useIndex);
-        } catch (Exception e) {
-            System.err.println("Error while opening the stream. " + e);
-            e.printStackTrace();
-            Runtime.getRuntime().exit(1);
-        }
-        return streamObj;
-    }
-
     public void insertNewQuadruple(String data[]) throws Exception {
         EID sid = insertEntity(data[0]);
         PID pid = insertPredicate(data[1]);
@@ -417,8 +404,6 @@ public class rdfDB extends DB implements GlobalConst {
                     subject = entityLabelHeapFile.getLabel(quad.getSubjecqid().returnLID());
                     key = new StringKey(subject.getLabel());
                     break;
-
-                    //TODO: One on object
             }
 
         }catch(Exception e){
@@ -547,7 +532,16 @@ public class rdfDB extends DB implements GlobalConst {
         return new BPFileScan(heapfile, num_nodes);
     }
 
-    public void printResult(BPIterator result) throws Exception {
+    public void printResult(BPFileScan result) throws Exception {
+        BasicPattern bp;
+        RID rid = new RID();
+        while((bp = result.get_next())!=null)
+        {
+            bp.print();
+        }
+    }
+
+    public void printResult(BPSort result) throws Exception {
         BasicPattern bp;
         RID rid = new RID();
         while((bp = result.get_next())!=null)
@@ -566,16 +560,14 @@ public class rdfDB extends DB implements GlobalConst {
         // Input Heapfile
         Heapfile inputHF = new Heapfile(rdfDBname + "/inputHF");
         BPFileScan scanner = initBPScan(inputHF, SF1, PF1,OF1,CF1);
-        printResult(scanner);
-
+//        printResult(scanner);
+//        System.out.println("Scan done");
         // Put Result of First Join in Heapfile
 //        BP_Triple_Join join1 = new BP_Triple_Join(num_buf, 2, scanner,
 //                JNP1, JONO1, RSF1, RPF1, ROF1, RCF1,
 //                LONP1.stream().mapToInt(Integer::intValue).toArray(), ORS1, ORO1);
 //        Heapfile join1hf = new Heapfile(rdfDBname + "/join1HF");
 //        BPFileScan jscanner1 = getJoinScan(join1, join1hf);
-        scanner.close();
-        inputHF.deleteFile();
 //        printResult(jscanner1);
 
         // Put Result of Second Join in Heapfile
@@ -588,12 +580,15 @@ public class rdfDB extends DB implements GlobalConst {
 //        join1hf.deleteFile();
 
         // Stream Result of Sorted Result
-//        BPOrder order = new BPOrder(SNP);
-//        BPSort result = new BPSort(jscanner2, SO, order, NP);
+        BPOrder order = new BPOrder(SO);
+        BPSort result = new BPSort(scanner, SNP, order, NP);
 //        jscanner2.close();
 //
-//        printResult(result);
-//        result.close();
+        printResult(result);
+
+        scanner.close();
+        inputHF.deleteFile();
+        result.close();
 //        join2hf.deleteFile();
     }
 

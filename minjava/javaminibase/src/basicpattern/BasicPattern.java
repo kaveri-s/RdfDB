@@ -17,6 +17,9 @@ public class BasicPattern extends Tuple implements GlobalConst {
         Convert.setIntValue(numNodes, 0, returnTupleByteArray());
         this.numNodes = numNodes;
         this.nodeIDs = new EID[numNodes];
+        for(int i = 0; i< numNodes; i++){
+            this.nodeIDs[i] = new EID();
+        }
     }
 
     public BasicPattern (byte[] abp, int offset) throws IOException{
@@ -26,9 +29,9 @@ public class BasicPattern extends Tuple implements GlobalConst {
         this.confidence=Convert.getFloValue(offset+4,abp);
         this.nodeIDs= new EID[numNodes];
         for(int i = 0; i< numNodes; i++){
-            nodeIDs[i] = new EID();
-            nodeIDs[i].pageNo=new PageId(Convert.getIntValue(8+offset+(8*i),abp));
-            nodeIDs[i].slotNo=Convert.getIntValue(12+offset+(8*i),abp);
+            this.nodeIDs[i] = new EID();
+            this.nodeIDs[i].pageNo=new PageId(Convert.getIntValue(8+offset+(8*i),abp));
+            this.nodeIDs[i].slotNo=Convert.getIntValue(12+offset+(8*i),abp);
         }
     }
 
@@ -38,6 +41,7 @@ public class BasicPattern extends Tuple implements GlobalConst {
         this.nodeIDs= new EID[numNodes];
         this.confidence= (float) fromBasicPattern.getConfidence();
         for(int i = 0; i< numNodes; i++){
+            this.nodeIDs[i] = new EID();
             this.nodeIDs[i].copyEid(fromBasicPattern.getNodeID(i));
         }
     }
@@ -53,7 +57,6 @@ public class BasicPattern extends Tuple implements GlobalConst {
 
     public BasicPattern setNodeID(int fldNo,EID val) throws FieldNumberOutOfBoundException, IOException {
         if(fldNo>=0 && fldNo< numNodes){
-            this.nodeIDs[fldNo] = new EID();
             this.nodeIDs[fldNo].copyEid(val);
             int pos = (fldNo*8)+8;
             Convert.setIntValue(nodeIDs[fldNo].pageNo.pid, pos, returnTupleByteArray());
@@ -71,7 +74,6 @@ public class BasicPattern extends Tuple implements GlobalConst {
 
     public BasicPattern setNodeIDs(int length, EID[] vals) throws Exception, IOException {
         if(length==this.numNodes){
-            this.nodeIDs= new EID[numNodes];
             for(int i = 0; i< this.numNodes; i++){
                 setNodeID(i,vals[i]);
             }
@@ -146,13 +148,10 @@ public class BasicPattern extends Tuple implements GlobalConst {
         }
     }
 
-    public void basicPatternCopy(BasicPattern fromBasicPattern) throws FieldNumberOutOfBoundException {
+    public void basicPatternCopy(BasicPattern fromBasicPattern) throws Exception {
         tupleCopy(fromBasicPattern);
         this.numNodes = fromBasicPattern.numNodes;
         this.confidence = (float)fromBasicPattern.getConfidence();
-        this.nodeIDs = new EID[numNodes];
-        for(int i = 0; i< numNodes; i++){
-            this.nodeIDs[i].copyEid(fromBasicPattern.getNodeID(i));
-        }
+        setNodeIDs(numNodes, fromBasicPattern.getNodeIDs());
     }
 }

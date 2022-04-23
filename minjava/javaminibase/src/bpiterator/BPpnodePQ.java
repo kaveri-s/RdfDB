@@ -52,8 +52,8 @@ public abstract class BPpnodePQ
    *                           <code>attrNull</code> encountered
    * @exception TupleUtilsException error in bp compare routines
    */
-  abstract public void  enq(BPpnode  item) 
-           throws IOException, UnknowAttrType, TupleUtilsException, FieldNumberOutOfBoundException, TupleUtilsException;
+  abstract public void  enq(BPpnode  item)
+          throws Exception;
 
   /**
    * removes the minimum (Ascending) or maximum (Descending) element
@@ -77,7 +77,17 @@ public abstract class BPpnodePQ
    * @throws FieldNumberOutOfBoundException
    */
   public int BPpnodeCMP(BPpnode a, BPpnode b) 
-         throws IOException, UnknowAttrType, TupleUtilsException, FieldNumberOutOfBoundException {
+  throws IOException, 
+  UnknowAttrType, 
+  TupleUtilsException, 
+  FieldNumberOutOfBoundException,
+  InvalidSlotNumberException, 
+  InvalidTupleSizeException, 
+  HFException, 
+  HFDiskMgrException, 
+  HFBufMgrException, 
+  Exception
+  {
     int ans = BPUtils.CompareBPWithBP(a.basicPattern, fld_no, b.basicPattern, fld_no);
     return ans;
   }
@@ -95,7 +105,17 @@ public abstract class BPpnodePQ
    * @throws FieldNumberOutOfBoundException
    */  
   public boolean BPpnodeEQ(BPpnode a, BPpnode b) 
-  throws IOException, UnknowAttrType, TupleUtilsException, FieldNumberOutOfBoundException {
+  throws IOException, 
+  UnknowAttrType, 
+  TupleUtilsException, 
+  FieldNumberOutOfBoundException,
+  InvalidSlotNumberException, 
+  InvalidTupleSizeException, 
+  HFException, 
+  HFDiskMgrException, 
+  HFBufMgrException, 
+  Exception
+  {
     return BPpnodeCMP(a, b) == 0;
   }
   
