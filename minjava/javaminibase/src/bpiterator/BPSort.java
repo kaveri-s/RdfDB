@@ -26,6 +26,7 @@ public class BPSort extends BPIterator implements GlobalConst
 	private int           Nruns;
 	private int           max_elems_in_heap;
 	private int           bp_size;
+	private int           nodes;
 
 	private BPpnodeSplayPQ    Q;
 	private Heapfile[]        temp_files;
@@ -98,11 +99,11 @@ public class BPSort extends BPIterator implements GlobalConst
 		return;
 	}
 
-	public void sort_init(AttrType[] in,short len_in)
+	public void sort_init(AttrType[] in,short nodes)
 			throws IOException, SortException
 	{
-
-		bp_size = (len_in-1)*8 + 8;
+		this.nodes = nodes;
+		bp_size = nodes*8 + 8;
 
 		bufs_pids = new PageId[_n_pages];
 		bufs = new byte[_n_pages][];
@@ -143,7 +144,7 @@ public class BPSort extends BPIterator implements GlobalConst
 		//    output_tuple = null;
 
 		Q = new BPpnodeSplayPQ(_sort_fld, in[_sort_fld - 1], order);		// todo: CHIRAYU
-		op_buf = new BasicPattern(len_in-1);   // need Tuple.java
+		op_buf = new BasicPattern(nodes);   // need Tuple.java
 	}
 
 	/**
@@ -206,7 +207,7 @@ public class BPSort extends BPIterator implements GlobalConst
 						pother_Q = Q2_confidence;
 					}
 
-					sort_init(in, (short) (basicPattern.getNodeIDCount() +1));
+					sort_init(in, (short) (basicPattern.getNodeIDCount()));
 					init_flag = 0;
 				}
 			}
@@ -226,8 +227,7 @@ public class BPSort extends BPIterator implements GlobalConst
 			pcurr_Q.enq(cur_node);
 			p_elems_curr_Q ++;
 		}
-
-		BasicPattern lastElem = new BasicPattern((bp_size - 8)/8);  // need tuple.java
+		BasicPattern lastElem = new BasicPattern(nodes);  // need tuple.java
 		// set the lastElem to be the minimum value for the sort field
 		if(order.bpOrder == BPOrder.Ascending)
 		{
@@ -474,7 +474,7 @@ public class BPSort extends BPIterator implements GlobalConst
 		// tuple of the same run into the queue
 		if (i_buf[cur_node.run_num].empty() != true) {
 			// run not exhausted
-			new_bp = new BasicPattern((bp_size - 8)/8); // need tuple.java??
+			new_bp = new BasicPattern(nodes); // need tuple.java??
 
 			Tuple temp_tup =i_buf[cur_node.run_num].Get(new_bp);  // need io_bufs.java
 			new_bp = new BasicPattern(temp_tup.returnTupleByteArray(), 0);

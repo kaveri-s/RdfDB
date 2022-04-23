@@ -593,19 +593,19 @@ public class rdfDB extends DB implements GlobalConst {
                 new BP_Triple_Join(num_buf, 3, jScanner1,
                         JNP2, JONO2, RSF2, RPF2, ROF2, RCF2,
                         LONP2.stream().mapToInt(Integer::intValue).toArray(), ORS2, ORO2, false);
-
         Heapfile join2hf = new Heapfile(rdfDBname + "/join2HF");
         BPFileScan jScanner2 = getJoinScan(join2, join2hf);
+
+//        printResult(jScanner2);
         jScanner1.close();
         join1hf.deleteFile();
 
         // Stream Result of Sorted Result
         BPOrder order = new BPOrder(SO);
         BPSort result = new BPSort(jScanner2, SNP, order, NP);
-        jScanner2.close();
 
         printResult(result);
-
+        jScanner2.close();
         result.close();
         join2hf.deleteFile();
     }
