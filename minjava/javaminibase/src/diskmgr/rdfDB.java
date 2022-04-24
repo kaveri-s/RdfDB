@@ -643,31 +643,50 @@ public class rdfDB extends DB implements GlobalConst {
                              int JNP2, int JONO2, String RSF2, String RPF2, String ROF2, double RCF2, ArrayList<Integer> LONP2, int ORS2, int ORO2,
                              int SO, int SNP, int NP) throws Exception {
         int start = SystemDefs.JavabaseBM.getNumBuffers() - SystemDefs.JavabaseBM.getNumUnpinnedBuffers();
+        int init_read=PCounter.rCounter;
+        int init_write=PCounter.wCounter;
         System.out.println("First Execution Stratery: Without index");
-        excuteQueryWithStrategyOption(num_buf, SF1, PF1, OF1, CF1,
+        executeQueryWithStrategyOption(num_buf, SF1, PF1, OF1, CF1,
                 JNP1, JONO1, RSF1, RPF1, ROF1, RCF1, LONP1, ORS1, ORO1,
                 JNP2, JONO2, RSF2, RPF2, ROF2, RCF2, LONP2, ORS2, ORO2,
                 SO, SNP, NP, 1);
         int end = SystemDefs.JavabaseBM.getNumBuffers() - SystemDefs.JavabaseBM.getNumUnpinnedBuffers();
         flushNewPages(start, end);
+        int fin_read=PCounter.rCounter;
+        int fin_write=PCounter.wCounter;
+        System.out.println("Total Page Writes for Strategy 1 "+ (fin_write-init_write));
+        System.out.println("Total Page Reads for Strategy 1"+ (fin_read-init_read));
 
         System.out.println("Second Execution Stratery: Outer element -without index. Inner element - with index");
-        excuteQueryWithStrategyOption(num_buf, SF1, PF1, OF1, CF1,
+        init_read=PCounter.rCounter;
+        init_write=PCounter.wCounter;
+        executeQueryWithStrategyOption(num_buf, SF1, PF1, OF1, CF1,
                 JNP1, JONO1, RSF1, RPF1, ROF1, RCF1, LONP1, ORS1, ORO1,
                 JNP2, JONO2, RSF2, RPF2, ROF2, RCF2, LONP2, ORS2, ORO2,
                 SO, SNP, NP, 2);
         end = SystemDefs.JavabaseBM.getNumBuffers() - SystemDefs.JavabaseBM.getNumUnpinnedBuffers();
         flushNewPages(start, end);
+        fin_read=PCounter.rCounter;
+        fin_write=PCounter.wCounter;
+        System.out.println("Total Page Writes for Strategy 2 "+ (fin_write-init_write));
+        System.out.println("Total Page Reads for Strategy 2"+ (fin_read-init_read));
 
         System.out.println("Third Execution Stratery: Using index for both inner and outer element");
-        excuteQueryWithStrategyOption(num_buf, SF1, PF1, OF1, CF1,
+        init_read=PCounter.rCounter;
+        init_write=PCounter.wCounter;
+        executeQueryWithStrategyOption(num_buf, SF1, PF1, OF1, CF1,
                 JNP1, JONO1, RSF1, RPF1, ROF1, RCF1, LONP1, ORS1, ORO1,
                 JNP2, JONO2, RSF2, RPF2, ROF2, RCF2, LONP2, ORS2, ORO2,
                 SO, SNP, NP, 3);
+        fin_read=PCounter.rCounter;
+        fin_write=PCounter.wCounter;
+        System.out.println("Total Page Writes for Strategy 2 "+ (fin_write-init_write));
+        System.out.println("Total Page Reads for Strategy 2"+ (fin_read-init_read));
+
     }
 
 
-    private void excuteQueryWithStrategyOption(int num_buf, String SF1, String PF1, String OF1, double CF1,
+    private void executeQueryWithStrategyOption(int num_buf, String SF1, String PF1, String OF1, double CF1,
                                                int JNP1, int JONO1, String RSF1, String RPF1, String ROF1, double RCF1, ArrayList<Integer> LONP1, int ORS1, int ORO1,
                                                int JNP2, int JONO2, String RSF2, String RPF2, String ROF2, double RCF2, ArrayList<Integer> LONP2, int ORS2, int ORO2,
                                                int SO, int SNP, int NP, int strategy) throws Exception{
