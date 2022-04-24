@@ -680,8 +680,8 @@ public class rdfDB extends DB implements GlobalConst {
                 SO, SNP, NP, 3);
         fin_read=PCounter.rCounter;
         fin_write=PCounter.wCounter;
-        System.out.println("Total Page Writes for Strategy 2 "+ (fin_write-init_write));
-        System.out.println("Total Page Reads for Strategy 2"+ (fin_read-init_read));
+        System.out.println("Total Page Writes for Strategy 3 "+ (fin_write-init_write));
+        System.out.println("Total Page Reads for Strategy 3"+ (fin_read-init_read));
 
     }
 
