@@ -86,37 +86,37 @@ public class QueryProgram {
             scanner.next("S");
             scanner.next("J");
             scanner.next("J");
-            String SF1 = scanner.next().replace("[", "");
-            String PF1 = scanner.next();
-            String OF1 = scanner.next();
-            double CF1 = Double.parseDouble(scanner.next().replace("]", ""));
-            int JNP1 = Integer.parseInt(scanner.next("[0-1]"));
-            int JONO1 = Integer.parseInt(scanner.next("[0-1]"));
-            String RSF1 = scanner.next();
-            String RPF1 = scanner.next();
-            String ROF1 = scanner.next();
+            String SF1 = scanner.next().replace("[", "").replace(":", "");
+            String PF1 = scanner.next().replace(":", "");
+            String OF1 = scanner.next().replace(":", "");
+            double CF1 = Double.parseDouble(scanner.next().replace("]", "").replace(":", ""));
+            int JNP1 = Integer.parseInt(scanner.next("[0-1]").replace(":", ""));
+            int JONO1 = Integer.parseInt(scanner.next("[0-1]").replace(":", ""));
+            String RSF1 = scanner.next().replace(":", "");
+            String RPF1 = scanner.next().replace(":", "");
+            String ROF1 = scanner.next().replace(":", "");
             double RCF1 = scanner.nextDouble();
             ArrayList<Integer> LONP1 = new ArrayList<Integer>();
             while(!scanner.hasNext("\\[?[0-3]\\]"))
                 LONP1.add(Integer.parseInt(scanner.next("\\[?[0-3]").replace("[", "")));
-            LONP1.add(Integer.parseInt(scanner.next("\\[?[0-3]\\]").replaceAll("[\\[\\]]", "")));
-            int ORS1 = Integer.parseInt(scanner.next("[0-1]"));
-            int ORO1 = Integer.parseInt(scanner.next("[0-1]"));
-            int JNP2 = Integer.parseInt(scanner.next("[0-3]"));
-            int JONO2 = Integer.parseInt(scanner.next("[0-1]"));
-            String RSF2 = scanner.next();
-            String RPF2 = scanner.next();
-            String ROF2 = scanner.next();
+            LONP1.add(Integer.parseInt(scanner.next("\\[?[0-3]\\]").replaceAll("[\\[\\]]", "").replaceAll(":", "")));
+            int ORS1 = Integer.parseInt(scanner.next("[0-1]").replace(":", ""));
+            int ORO1 = Integer.parseInt(scanner.next("[0-1]").replace(":", ""));
+            int JNP2 = Integer.parseInt(scanner.next("[0-3]").replace(":", ""));
+            int JONO2 = Integer.parseInt(scanner.next("[0-1]").replace(":", ""));
+            String RSF2 = scanner.next().replace(":", "");
+            String RPF2 = scanner.next().replace(":", "");
+            String ROF2 = scanner.next().replace(":", "");
             double RCF2 = scanner.nextDouble();
             ArrayList<Integer> LONP2 = new ArrayList<Integer>();
             while(!scanner.hasNext("\\[?[0-5]\\]"))
-                LONP2.add(Integer.parseInt(scanner.next("\\[?[0-5]").replaceAll("[\\[\\]]", "")));
-            LONP2.add(Integer.parseInt(scanner.next("\\[?[0-5]\\]").replaceAll("[\\[\\]]", "")));
-            int ORS2 = Integer.parseInt(scanner.next("[0-1]"));
-            int ORO2 = Integer.parseInt(scanner.next("[0-1]"));
-            int SO = Integer.parseInt(scanner.next("[0-2]"));
-            int SNP = Integer.parseInt(scanner.next("-1|[0-5]"));
-            int NP = Integer.parseInt(scanner.next("[0-9]*"));
+                LONP2.add(Integer.parseInt(scanner.next("\\[?[0-5]").replaceAll("[\\[\\]]", "").replaceAll(":", "")));
+            LONP2.add(Integer.parseInt(scanner.next("\\[?[0-5]\\]").replaceAll("[\\[\\]]", "").replaceAll(":", "")));
+            int ORS2 = Integer.parseInt(scanner.next("[0-1]").replace(":", ""));
+            int ORO2 = Integer.parseInt(scanner.next("[0-1]").replace(":", ""));
+            int SO = Integer.parseInt(scanner.next("[0-2]").replace(":", ""));
+            int SNP = Integer.parseInt(scanner.next("-1|[0-5]").replace(":", ""));
+            int NP = Integer.parseInt(scanner.next("[0-9]*").replace(":", ""));
             try
             {
 
@@ -124,7 +124,8 @@ public class QueryProgram {
                         JNP1, JONO1, RSF1, RPF1, ROF1, RCF1, LONP1, ORS1, ORO1, JNP2, JONO2, RSF2, RPF2, ROF2, RCF2, LONP2, ORS2, ORO2,
                         SO, SNP, NP);
 
-                sysdef = new SystemDefs(dbname, 0, 1500, "Clock", 1);
+                sysdef = new SystemDefs(dbname, 0, NP, "Clock", 1);
+
                 SystemDefs.JavabaseDB.executeQuery(num_of_buf, SF1, PF1, OF1, CF1, JNP1, JONO1, RSF1, RPF1, ROF1, RCF1, LONP1, ORS1, ORO1,
                        JNP2, JONO2, RSF2, RPF2, ROF2, RCF2, LONP2, ORS2, ORO2, SO, SNP, NP);
                 SystemDefs.close();

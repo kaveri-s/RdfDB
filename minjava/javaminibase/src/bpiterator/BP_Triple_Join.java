@@ -45,6 +45,8 @@ public class BP_Triple_Join extends BPIterator {
     private BasicPattern outer_bp;
     private Quadruple inner_qr;
     private boolean useIndex;
+    private int outerCount;
+    private int innerCount;
 
     public BP_Triple_Join( int amt_of_mem,
                     int num_left_nodes,
@@ -79,8 +81,13 @@ public class BP_Triple_Join extends BPIterator {
         this.inner_qr = null;
         this.done = false;
         this.useIndex = useIndex;
+        this.outerCount = 0;
+        this.innerCount = 0;
     }
 
+    public int getInnerCount(){ return this.innerCount;}
+
+    public int getOuterCount(){ return this.outerCount;}
 
     //TODO: Change Tuple to BasicPattern
     @Override
@@ -111,6 +118,7 @@ public class BP_Triple_Join extends BPIterator {
                     }
                     return null;
                 }
+                this.outerCount++;
             }
 
             //Fetch the inner quadruple
@@ -120,6 +128,7 @@ public class BP_Triple_Join extends BPIterator {
             while ((inner_qr = innerStream.getNext(qid)) != null) {
 
                 if (compareFilters() == true) {
+                    this.innerCount++;
                     double confidence = inner_qr.getConfidence();
                     ArrayList<EID> EIDs = new ArrayList<EID>();
                     EID outerEID = outer_bp.getNodeID(BPJoinNodePosition);
