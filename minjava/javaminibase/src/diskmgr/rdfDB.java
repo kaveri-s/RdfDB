@@ -4,6 +4,7 @@ import basicpattern.BasicPattern;
 import bpiterator.BPFileScan;
 import bpiterator.BPSort;
 import btree.*;
+import bufmgr.*;
 import global.*;
 import heap.Heapfile;
 import bpiterator.BP_Triple_Join;
@@ -631,29 +632,38 @@ public class rdfDB extends DB implements GlobalConst {
         }
     }
 
+    public void flushNewPages(int start, int end) throws PageNotFoundException, HashOperationException, BufMgrException, PagePinnedException, IOException, PageUnpinnedException {
+        for(int i=start; i<end; i++) {
+            SystemDefs.JavabaseBM.flushPage(new PageId(i));
+        }
+    }
+
     public void executeQuery(int num_buf, String SF1, String PF1, String OF1, double CF1,
                              int JNP1, int JONO1, String RSF1, String RPF1, String ROF1, double RCF1, ArrayList<Integer> LONP1, int ORS1, int ORO1,
                              int JNP2, int JONO2, String RSF2, String RPF2, String ROF2, double RCF2, ArrayList<Integer> LONP2, int ORS2, int ORO2,
                              int SO, int SNP, int NP) throws Exception {
-
+        int start = SystemDefs.JavabaseBM.getNumBuffers() - SystemDefs.JavabaseBM.getNumUnpinnedBuffers();
         System.out.println("First Execution Stratery: Without index");
         excuteQueryWithStrategyOption(num_buf, SF1, PF1, OF1, CF1,
                 JNP1, JONO1, RSF1, RPF1, ROF1, RCF1, LONP1, ORS1, ORO1,
                 JNP2, JONO2, RSF2, RPF2, ROF2, RCF2, LONP2, ORS2, ORO2,
                 SO, SNP, NP, 1);
+        int end = SystemDefs.JavabaseBM.getNumBuffers() - SystemDefs.JavabaseBM.getNumUnpinnedBuffers();
+        flushNewPages(start, end);
 
         System.out.println("Second Execution Stratery: Outer element -without index. Inner element - with index");
         excuteQueryWithStrategyOption(num_buf, SF1, PF1, OF1, CF1,
                 JNP1, JONO1, RSF1, RPF1, ROF1, RCF1, LONP1, ORS1, ORO1,
                 JNP2, JONO2, RSF2, RPF2, ROF2, RCF2, LONP2, ORS2, ORO2,
                 SO, SNP, NP, 2);
+        end = SystemDefs.JavabaseBM.getNumBuffers() - SystemDefs.JavabaseBM.getNumUnpinnedBuffers();
+        flushNewPages(start, end);
 
         System.out.println("Third Execution Stratery: Using index for both inner and outer element");
         excuteQueryWithStrategyOption(num_buf, SF1, PF1, OF1, CF1,
                 JNP1, JONO1, RSF1, RPF1, ROF1, RCF1, LONP1, ORS1, ORO1,
                 JNP2, JONO2, RSF2, RPF2, ROF2, RCF2, LONP2, ORS2, ORO2,
                 SO, SNP, NP, 3);
-
     }
 
 
