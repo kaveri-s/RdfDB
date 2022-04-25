@@ -1,6 +1,6 @@
 S(
   J(
-    J([:Schuyler_Erle,*,:Jarkko_Hietaniemi,-99.0],1,0,:Jarkko_Hietaniemi,*,Jarkko,-99.0,[0,1],1,1),
-    3,0,:Jarkko,*,Alice,-99.0,[0,1,2,3],1,1
+    J([:Schuyler_Erle,*,*,-99.0],1,0,:Jarkko_Hietaniemi,*,*,-99.0,[0,1],1,1),
+    3,0,:Jarkko,*,*,-99.0,[0,1,2,3],1,1
   ), 0, 2, 30
 )

@@ -24,7 +24,7 @@ public class Batchinsert {
         int indexoption;
         try {
             indexoption = Integer.parseInt(args[1]);
-            if(indexoption > 5 || indexoption < 0)
+            if(indexoption != 1)
             {
                 System.err.println("Index out of range (1-5)");
                 exit(0);
