@@ -56,6 +56,8 @@ public class BasicPattern extends Tuple implements GlobalConst {
     }
 
     public BasicPattern setNodeID(int fldNo,EID val) throws FieldNumberOutOfBoundException, IOException {
+        if(numNodes == 0)
+            return this;
         if(fldNo>=0 && fldNo< numNodes){
             this.nodeIDs[fldNo].copyEid(val);
             int pos = (fldNo*8)+8;

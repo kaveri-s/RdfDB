@@ -185,7 +185,8 @@ public class BPSort extends BPIterator implements GlobalConst
 		{
 			try
 			{
-				basicPattern = _am.get_next();  // according to Iterator.java
+				if((basicPattern = _am.get_next())==null)
+					break;// according to Iterator.java
 				if(init_flag==1)
 				{
 					// fill all the vars here!! --- CHIRAYU
@@ -448,8 +449,10 @@ public class BPSort extends BPIterator implements GlobalConst
 		} // end of while (true)
 
 		// close the last run
-		n_bps[run_num] = (int) o_buf.flush();
-		run_num ++;
+		if(o_buf !=null) {
+			n_bps[run_num] = (int) o_buf.flush();
+			run_num ++;
+		}
 
 		return run_num;
 	}
@@ -626,7 +629,8 @@ public class BPSort extends BPIterator implements GlobalConst
 			}
 
 			// generate runs
-			Nruns = generate_runs(max_elems_in_heap, sortFldTyp);
+			if((Nruns = generate_runs(max_elems_in_heap, sortFldTyp))==0)
+				return null;
 			//      System.out.println("Generated " + Nruns + " runs");
 
 			// setup state to perform merge of runs.
@@ -670,7 +674,7 @@ public class BPSort extends BPIterator implements GlobalConst
 				}
 			}
 
-			if (useBM) {
+			if (bufs_pids != null && useBM) {
 				try {
 					free_buffer_pages(_n_pages, bufs_pids);
 				}
@@ -685,7 +689,7 @@ public class BPSort extends BPIterator implements GlobalConst
 				for (int i=0; i<_n_pages; i++) bufs_pids[i].pid = INVALID_PAGE;
 			}
 
-			for (int i = 0; i<temp_files.length; i++) {
+			for (int i = 0; temp_files!=null && i<temp_files.length; i++) {
 				if (temp_files[i] != null) {
 					try {
 						temp_files[i].deleteFile();
