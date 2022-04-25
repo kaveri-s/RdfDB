@@ -731,10 +731,10 @@ public class rdfDB extends DB implements GlobalConst {
         result.close();
         join2hf.deleteFile();
 
-        System.out.println("Count of outer elements: " + join1.getOuterCount()+join2.getOuterCount());
-        System.out.println("Count of inner elements: "+ join1.getInnerCount() + join2.getInnerCount());
+        System.out.println("Join outer passes: " + (join1.getOuterCount()+join2.getOuterCount()));
+        System.out.println("Join inner passes: "+ (join1.getInnerCount() + join2.getInnerCount()));
 
-        System.out.println("Total Count: " + (counter3 - counter0));
+        System.out.println("Total Quadruples Scanned: " + (counter3 - counter0));
     }
 
 
