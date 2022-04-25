@@ -654,8 +654,8 @@ public class rdfDB extends DB implements GlobalConst {
         flushNewPages(start, end);
         int fin_read=PCounter.rCounter;
         int fin_write=PCounter.wCounter;
-        System.out.println("Total Page Writes for Strategy 1 "+ (fin_write-init_write));
-        System.out.println("Total Page Reads for Strategy 1"+ (fin_read-init_read));
+        System.out.println("Total Page Writes for Strategy 1: "+ (fin_write-init_write));
+        System.out.println("Total Page Reads for Strategy 1: "+ (fin_read-init_read));
 
         System.out.println("Second Execution Stratery: Outer element -without index. Inner element - with index");
         init_read=PCounter.rCounter;
@@ -668,8 +668,8 @@ public class rdfDB extends DB implements GlobalConst {
         flushNewPages(start, end);
         fin_read=PCounter.rCounter;
         fin_write=PCounter.wCounter;
-        System.out.println("Total Page Writes for Strategy 2 "+ (fin_write-init_write));
-        System.out.println("Total Page Reads for Strategy 2"+ (fin_read-init_read));
+        System.out.println("Total Page Writes for Strategy 2: "+ (fin_write-init_write));
+        System.out.println("Total Page Reads for Strategy 2: "+ (fin_read-init_read));
 
         System.out.println("Third Execution Stratery: Using index for both inner and outer element");
         init_read=PCounter.rCounter;
@@ -680,8 +680,8 @@ public class rdfDB extends DB implements GlobalConst {
                 SO, SNP, NP, 3);
         fin_read=PCounter.rCounter;
         fin_write=PCounter.wCounter;
-        System.out.println("Total Page Writes for Strategy 3 "+ (fin_write-init_write));
-        System.out.println("Total Page Reads for Strategy 3"+ (fin_read-init_read));
+        System.out.println("Total Page Writes for Strategy 3: "+ (fin_write-init_write));
+        System.out.println("Total Page Reads for Strategy 3: "+ (fin_read-init_read));
 
     }
 
