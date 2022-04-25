@@ -185,9 +185,7 @@ public class BPSort extends BPIterator implements GlobalConst
 		{
 			try
 			{
-				if((basicPattern = _am.get_next()) == null) {
-					return 0;
-				}  // according to Iterator.java
+				basicPattern = _am.get_next();  // according to Iterator.java
 				if(init_flag==1)
 				{
 					// fill all the vars here!! --- CHIRAYU
@@ -633,10 +631,7 @@ public class BPSort extends BPIterator implements GlobalConst
 
 			// setup state to perform merge of runs.
 			// Open input buffers for all the input file
-			if(Nruns == 0)
-				return null;
-			else
-				setup_for_merge(bp_size, Nruns);
+			setup_for_merge(bp_size, Nruns);
 		}
 
 		if (Q.empty()) {
@@ -666,8 +661,6 @@ public class BPSort extends BPIterator implements GlobalConst
 
 			try {
 				_am.close();
-				if(Nruns == 0)
-					return;
 			}
 			catch (Exception e) {
 				try {
