@@ -13,7 +13,7 @@ BINPATH = $(JDKPATH)/bin
 JAVAC = $(JDKPATH)/bin/javac -classpath $(CLASSPATH)
 JAVA  = $(JDKPATH)/bin/java  -classpath $(CLASSPATH)
 
-DOCFILES=bufmgr diskmgr global chainexception heap btree iterator index
+DOCFILES=bufmgr diskmgr global chainexception heap btree iterator index basicpattern bpiterator
 
 ##############  update the above for each assignment in making
 
@@ -39,6 +39,8 @@ db:
 	make -C iterator
 	make -C labelheap
 	make -C quadrupleheap
+	make -C basicpattern
+	make -C bpiterator
 	
 doc:
 	$(JAVADOC) $(DOCFILES)
@@ -47,7 +49,7 @@ test:
 	cd oldtests; make bmtest dbtest; whoami; make hftest bttest indextest jointest sorttest sortmerge
 
 reports:
-	cd tests; make batchinsert # batchinsert queryprogram report;
+	cd tests; make batchinsert queryprogram # report;
 
 clean:
 	\rm -f $(CLASSPATH)/*.class *~ \#* core $(JARFILES) TRACE

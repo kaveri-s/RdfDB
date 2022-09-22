@@ -24,7 +24,7 @@ public class Batchinsert {
         int indexoption;
         try {
             indexoption = Integer.parseInt(args[1]);
-            if(indexoption > 5 || indexoption < 0)
+            if(indexoption != 1)
             {
                 System.err.println("Index out of range (1-5)");
                 exit(0);
@@ -100,8 +100,8 @@ public class Batchinsert {
 
         File datafile = new File(args[0]);
         int indexoption = Integer.parseInt(args[1]);
-        String dbname = new String("/tmp/"+args[2]+"."+indexoption);
-
+//        String dbname = new String("/tmp/"+args[2]+"."+indexoption);
+        String dbname = new String("/tmp/"+args[2]);
         int iread = PCounter.rCounter;
         int iwrite = PCounter.wCounter;
 

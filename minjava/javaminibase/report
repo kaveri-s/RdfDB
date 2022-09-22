@@ -1,5 +1,5 @@
 export DBNAME=$1
-export INDEXOPTION=$2
+#export INDEXOPTION=$2
 cd src/tests
 make report
 

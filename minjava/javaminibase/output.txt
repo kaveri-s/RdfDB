@@ -1,0 +1,330 @@
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 1 1 hex knows libby \* 100
+db_test 1 1 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.1
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 178
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 1 2 hex knows libby \* 100
+db_test 1 2 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.1
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 1 3 hex knows libby \* 100
+db_test 1 3 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.1
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 1 4 hex knows libby \* 100
+db_test 1 4 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.1
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 1 5 hex knows libby \* 100
+db_test 1 5 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.1
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 1 6 hex knows libby \* 100
+db_test 1 6 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.1
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 2 1 hex knows libby \* 100
+db_test 2 1 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.2
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 178
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 2 2 hex knows libby \* 100
+db_test 2 2 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.2
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 2 3 hex knows libby \* 100
+db_test 2 3 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.2
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 2 4 hex knows libby \* 100
+db_test 2 4 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.2
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 2 5 hex knows libby \* 100
+db_test 2 5 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.2
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 2 6 hex knows libby \* 100
+db_test 2 6 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.2
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 3 1 hex knows libby \* 100
+db_test 3 1 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.3
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 178
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 3 2 hex knows libby \* 100
+db_test 3 2 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.3
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 3 3 hex knows libby \* 100
+db_test 3 3 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.3
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 3 4 hex knows libby \* 100
+db_test 3 4 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.3
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 3 5 hex knows libby \* 100
+db_test 3 5 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.3
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 3 6 hex knows libby \* 100
+db_test 3 6 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.3
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 4 1 hex knows libby \* 100
+db_test 4 1 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.4
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 178
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 4 2 hex knows libby \* 100
+db_test 4 2 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.4
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 4 3 hex knows libby \* 100
+db_test 4 3 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.4
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 4 4 hex knows libby \* 100
+db_test 4 4 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.4
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 4 5 hex knows libby \* 100
+db_test 4 5 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.4
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 4 6 hex knows libby \* 100
+db_test 4 6 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.4
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 179
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 5 1 hex knows libby \* 100
+db_test 5 1 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.5
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 141
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 5 2 hex knows libby \* 100
+db_test 5 2 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.5
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 130
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 5 3 hex knows libby \* 100
+db_test 5 3 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.5
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 141
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 5 4 hex knows libby \* 100
+db_test 5 4 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.5
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 130
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 5 5 hex knows libby \* 100
+db_test 5 5 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.5
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 141
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/javac -classpath .:.. QueryProgram.java
+/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/bin/java  -classpath .:.. tests.QueryProgram db_test 5 6 hex knows libby \* 100
+db_test 5 6 hex knows libby * 100
+Database already present. Opening it
+/tmp/db_test.5
+Replacer: Clock
+
+***Opening existing database***
+hex knows libby 0.1061747744679451
+Total Page Writes 8
+Total Page Reads 130

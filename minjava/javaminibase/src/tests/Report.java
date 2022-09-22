@@ -20,28 +20,28 @@ public class Report
         int indexoption = 0;    //Index option
         int iread = PCounter.rCounter;
         int iwrite = PCounter.wCounter;
-        if(args.length == 2 )   //Check if the args are RDFDBNAME INDEXOPTION
+        if(args.length == 1 )   //Check if the args are RDFDBNAME INDEXOPTION
         {
-            try{
-                indexoption = Integer.parseInt(args[1]);
-            }
-            catch(Exception e){
-                System.err.println("Index option must be an integer");
-                exit(0);
-            }
+//            try{
+//                indexoption = Integer.parseInt(args[1]);
+//            }
+//            catch(Exception e){
+//                System.err.println("Index option must be an integer");
+//                exit(0);
+//            }
 
-            dbname = new String("/tmp/"+args[0]+"."+indexoption);
+            dbname = new String("/tmp/"+args[0]);
 
-            if(indexoption>5 || indexoption<0)
-            {
-                System.err.println("Indexoption only allowed within range: 1 to 5");
-                exit(0);
-            }
+//            if(indexoption>5 || indexoption<0)
+//            {
+//                System.err.println("Indexoption only allowed within range: 1 to 5");
+//                exit(0);
+//            }
 
         }
         else
         {
-            System.err.println("Usage:report RDFDBNAME INDEXOPTION");
+            System.err.println("Usage:report RDFDBNAME");
             exit(0);
         }
 
@@ -49,7 +49,7 @@ public class Report
         if(dbfile.exists())
         {
             //Database present. Opening existing database
-            sysdef = new SystemDefs(dbname, 0, NUMBUF, "Clock", indexoption);
+            sysdef = new SystemDefs(dbname, 0, NUMBUF, "Clock", 0);
             System.out.println("*** Opening existing database ***");
         }
         else

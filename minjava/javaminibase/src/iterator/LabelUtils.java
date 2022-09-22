@@ -58,11 +58,11 @@ public class LabelUtils
 //      String l1_s = l1.getLabel();
 //      String l2_s = l2.getLabel();
       // Now handle the special case that is posed by the max_values for strings...
-      if (l1_s.compareTo(l2_s) > 0)
+      if (l1_s.compareToIgnoreCase(l2_s) > 0)
       {
         return 1;
       }
-      if (l1_s.compareTo(l2_s) < 0)
+      if (l1_s.compareToIgnoreCase(l2_s) < 0)
       {
         return -1;
       }

@@ -1,20 +1,27 @@
 package diskmgr;
 
+import basicpattern.BasicPattern;
+import bpiterator.BPFileScan;
+import bpiterator.BPSort;
 import btree.*;
+import bufmgr.*;
 import global.*;
+import heap.Heapfile;
+import bpiterator.BP_Triple_Join;
 import labelheap.Label;
 import labelheap.LabelHeapFile;
 import quadrupleheap.Quadruple;
 import quadrupleheap.QuadrupleHeapFile;
 import quadrupleheap.TScan;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class rdfDB extends DB implements GlobalConst {
     private QuadrupleHeapFile quadrupleHeapFile;
     private LabelHeapFile entityLabelHeapFile;
     private LabelHeapFile predicateLabelHeapFile;
-    private QuadrupleHeapFile tempQuadHeapFile;
 
     private LabelBTreeFile entityBTree;
     private LabelBTreeFile predicateBTree;
@@ -26,6 +33,10 @@ public class rdfDB extends DB implements GlobalConst {
     private int subjectsCount;
     private int objectsCount;
     private int predicatesCount;
+
+    private QuadBTreeFile subIndexBTree;
+    private QuadBTreeFile objIndexBTree;
+    private QuadBTreeFile subObjIndexBTree;
     private int quadruplesCount;
     private int entitiesCount;
     private int indexType;
@@ -78,6 +89,12 @@ public class rdfDB extends DB implements GlobalConst {
             distinctSubjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctSubjBT", AttrType.attrString, 255, 1);
             distinctObjectsBTree = new LabelBTreeFile(rdfDBname + "/distinctObjBT", AttrType.attrString, 255, 1);
 
+            subIndexBTree = new QuadBTreeFile(rdfDBname + "/subIndexBT", AttrType.attrString, 255, 1);
+            objIndexBTree = new QuadBTreeFile(rdfDBname + "/objIndexBT", AttrType.attrString, 255, 1);
+            subObjIndexBTree = new QuadBTreeFile(rdfDBname + "/subObjIndexBT", AttrType.attrString, 255, 1);
+
+            System.out.println("Initialised Database");
+
         } catch (Exception e) {
             System.err.println("" + e);
             e.printStackTrace();
@@ -113,6 +130,12 @@ public class rdfDB extends DB implements GlobalConst {
     public QuadBTreeFile getQuadBTree() {
         return quadrupleBTree;
     }
+
+    public QuadBTreeFile getSubIndexBTree() { return subIndexBTree;}
+
+    public QuadBTreeFile getObjIndexBTree() { return objIndexBTree;}
+
+    public QuadBTreeFile getSubObjIndexBTree() { return subObjIndexBTree; }
 
     public LabelHeapFile getEntityHandle() {
         return entityLabelHeapFile;
@@ -292,6 +315,7 @@ public class rdfDB extends DB implements GlobalConst {
             }
 
             qid = quadrupleHeapFile.insertQuadruple(quadruplePtr);
+            createIndices(temp, qid);   //craete the indices for joins.
             quadrupleBTree.insert(key, qid);
             scan.DestroyBTreeFileScan();
 
@@ -303,11 +327,36 @@ public class rdfDB extends DB implements GlobalConst {
         return qid;
     }
 
+    private void createIndices(Quadruple quad, QID qid){
+        try{
+            System.out.println("Creating the index");
+            Label subject = entityLabelHeapFile.getLabel(quad.getSubjecqid().returnLID());
+            Label object = entityLabelHeapFile.getLabel(quad.getObjecqid().returnLID());
+            KeyClass key;
+
+            //create index for subject
+            System.out.println("Subject: "+ subject.getLabel()+ " Object: "+object.getLabel());
+            key = new StringKey(subject.getLabel());
+            subIndexBTree.insert(key, qid);
+
+            //create index for object
+            key = new StringKey(object.getLabel());
+            objIndexBTree.insert(key, qid);
+
+            //craete index for subject and object
+            key = new StringKey(subject.getLabel() + ":" + object.getLabel());
+            subObjIndexBTree.insert(key, qid);
+        }catch(Exception e){
+
+            System.out.println("Error while creating indexes during Quadruple insert: " + e);
+        }
+
+    }
+
     public boolean deleteQuadruple(byte[] quadruplePtr) {
         boolean isDeleteSuccessful = false;
 
         try {
-//            quadrupleBTree = new QuadBTreeFile(rdfDBname + "/quadBT");
             String key = getKeyFromQuadPtr(quadruplePtr);
             double confidence = Convert.getFloValue(24, quadruplePtr);
             KeyClass low_key = new StringKey(key);
@@ -336,6 +385,18 @@ public class rdfDB extends DB implements GlobalConst {
         Stream streamObj = null;
         try {
             streamObj = new Stream(this, orderType, subjectFilter, predicateFilter, objectFilter, confidenceFilter, num_of_buf);
+        } catch (Exception e) {
+            System.err.println("Error while opening the stream. " + e);
+            e.printStackTrace();
+            Runtime.getRuntime().exit(1);
+        }
+        return streamObj;
+    }
+
+    public Stream openStream(String subjectFilter, String predicateFilter, String objectFilter, double confidenceFilter, int num_of_buf, boolean useIndex) {
+        Stream streamObj = null;
+        try {
+            streamObj = new Stream(this, subjectFilter, predicateFilter, objectFilter, confidenceFilter, num_of_buf, useIndex);
         } catch (Exception e) {
             System.err.println("Error while opening the stream. " + e);
             e.printStackTrace();
@@ -480,6 +541,202 @@ public class rdfDB extends DB implements GlobalConst {
         return key;
     }
 
+    public void insertNewBasicPattern(Heapfile bpHeapfile, int num_nodes, EID[] nodes, double confidence) throws Exception {
+        BasicPattern bp = new BasicPattern(num_nodes);
+        bp.setConfidence(confidence);
+        bp.setNodeIDs(num_nodes, nodes);
+
+        try {
+            bpHeapfile.insertRecord(bp.returnTupleByteArray());
+        } catch (Exception e) {
+            System.err.println("Insert Basic Pattern failed.");
+            e.printStackTrace();
+        }
+    }
+
+
+    public BPFileScan initBPScan(Heapfile heapfile, String SF, String PF, String OF, Double CF,int mem, boolean useIndex) throws Exception {
+        Stream stream = null;
+        try {
+            stream = SystemDefs.JavabaseDB.openStream(SF, PF, OF, CF, mem, useIndex);
+            QID qid = new QID();
+            Quadruple aquad;
+        } catch (Exception e) {
+            System.out.println("Open Stream failed during Triple Join: "+ e);
+        }
+        QID qid = new QID();
+        Quadruple aquad;
+        while ((aquad = stream.getNext(qid)) != null) {
+            Label sub= entityLabelHeapFile.getLabel(aquad.getSubjecqid().returnLID());
+            Label obj= entityLabelHeapFile.getLabel(aquad.getObjecqid().returnLID());
+            Label pred= predicateLabelHeapFile.getLabel(aquad.getPredicateID().returnLID());
+            Double conf= aquad.getConfidence();
+
+            if((SF.compareToIgnoreCase("*") == 0 || SF.compareTo(sub.getLabel()) == 0)
+                    && (PF.compareToIgnoreCase("*") == 0 || PF.compareTo(pred.getLabel()) == 0)
+                    && (OF.compareToIgnoreCase("*") == 0 || OF.compareTo(obj.getLabel()) == 0 && CF!=-1)
+                    && ( CF ==-1 || CF <= conf)){
+                EID[] nodes = new EID[]{aquad.getSubjecqid(), aquad.getObjecqid()};
+                insertNewBasicPattern(heapfile, 2, nodes, aquad.getConfidence());
+            }
+        }
+        stream.closeStream();
+        return new BPFileScan(heapfile, 2);
+//        TScan tScanner = new TScan(getQuadrupleHandle());
+//        QID qid = new QID();
+//        Quadruple aquad;
+//        while ((aquad = tScanner.getNext(qid)) != null) {
+//            Label sub= entityLabelHeapFile.getLabel(aquad.getSubjecqid().returnLID());
+//            Label obj= entityLabelHeapFile.getLabel(aquad.getObjecqid().returnLID());
+//            Label pred= predicateLabelHeapFile.getLabel(aquad.getPredicateID().returnLID());
+//            Double conf= aquad.getConfidence();
+//
+//            if((SF.compareToIgnoreCase("*") == 0 || SF.compareTo(sub.getLabel()) == 0)
+//                    && (PF.compareToIgnoreCase("*") == 0 || PF.compareTo(pred.getLabel()) == 0)
+//                    && (OF.compareToIgnoreCase("*") == 0 || OF.compareTo(obj.getLabel()) == 0 && CF!=-1)
+//                    && ( CF ==-1 || CF <= conf)){
+//                EID[] nodes = new EID[]{aquad.getSubjecqid(), aquad.getObjecqid()};
+//                insertNewBasicPattern(heapfile, 2, nodes, aquad.getConfidence());
+//            }
+//        }
+
+    }
+
+    public BPFileScan getJoinScan(BP_Triple_Join join, Heapfile heapfile) throws Exception {
+        //int num_nodes = join.LeftOutNodePosition.length + join.OutputRightSubject + join.OutputRightObject;
+        int num_nodes = 0;
+        BasicPattern bp;
+        while ((bp = join.get_next()) != null) {
+            EID[] nodes = bp.getNodeIDs();
+            num_nodes = nodes.length;
+            insertNewBasicPattern(heapfile, num_nodes, nodes, bp.getConfidence());
+        }
+        return new BPFileScan(heapfile, num_nodes);
+    }
+
+    public void printResult(BPFileScan result) throws Exception {
+        BasicPattern bp;
+        RID rid = new RID();
+        while((bp = result.get_next())!=null)
+        {
+            bp.print();
+        }
+    }
+
+    public void printResult(BPSort result) throws Exception {
+        BasicPattern bp;
+        RID rid = new RID();
+        while((bp = result.get_next())!=null)
+        {
+            bp.print();
+        }
+    }
+
+    public void flushNewPages(int start, int end) throws PageNotFoundException, HashOperationException, BufMgrException, PagePinnedException, IOException, PageUnpinnedException {
+        for(int i=start; i<end; i++) {
+            SystemDefs.JavabaseBM.flushPage(new PageId(i));
+        }
+    }
+
+    public void executeQuery(int num_buf, String SF1, String PF1, String OF1, double CF1,
+                             int JNP1, int JONO1, String RSF1, String RPF1, String ROF1, double RCF1, ArrayList<Integer> LONP1, int ORS1, int ORO1,
+                             int JNP2, int JONO2, String RSF2, String RPF2, String ROF2, double RCF2, ArrayList<Integer> LONP2, int ORS2, int ORO2,
+                             int SO, int SNP, int NP) throws Exception {
+        int start = SystemDefs.JavabaseBM.getNumBuffers() - SystemDefs.JavabaseBM.getNumUnpinnedBuffers();
+        int init_read=PCounter.rCounter;
+        int init_write=PCounter.wCounter;
+        System.out.println("First Execution Stratery: Without index");
+        executeQueryWithStrategyOption(num_buf, SF1, PF1, OF1, CF1,
+                JNP1, JONO1, RSF1, RPF1, ROF1, RCF1, LONP1, ORS1, ORO1,
+                JNP2, JONO2, RSF2, RPF2, ROF2, RCF2, LONP2, ORS2, ORO2,
+                SO, SNP, NP, 1);
+        int end = SystemDefs.JavabaseBM.getNumBuffers() - SystemDefs.JavabaseBM.getNumUnpinnedBuffers();
+        flushNewPages(start, end);
+        int fin_read=PCounter.rCounter;
+        int fin_write=PCounter.wCounter;
+        System.out.println("Total Page Writes for Strategy 1: "+ (fin_write-init_write));
+        System.out.println("Total Page Reads for Strategy 1: "+ (fin_read-init_read));
+
+        System.out.println("Second Execution Stratery: Outer element -without index. Inner element - with index");
+        init_read=PCounter.rCounter;
+        init_write=PCounter.wCounter;
+        executeQueryWithStrategyOption(num_buf, SF1, PF1, OF1, CF1,
+                JNP1, JONO1, RSF1, RPF1, ROF1, RCF1, LONP1, ORS1, ORO1,
+                JNP2, JONO2, RSF2, RPF2, ROF2, RCF2, LONP2, ORS2, ORO2,
+                SO, SNP, NP, 2);
+        end = SystemDefs.JavabaseBM.getNumBuffers() - SystemDefs.JavabaseBM.getNumUnpinnedBuffers();
+        flushNewPages(start, end);
+        fin_read=PCounter.rCounter;
+        fin_write=PCounter.wCounter;
+        System.out.println("Total Page Writes for Strategy 2: "+ (fin_write-init_write));
+        System.out.println("Total Page Reads for Strategy 2: "+ (fin_read-init_read));
+
+        System.out.println("Third Execution Stratery: Using index for both inner and outer element");
+        init_read=PCounter.rCounter;
+        init_write=PCounter.wCounter;
+        executeQueryWithStrategyOption(num_buf, SF1, PF1, OF1, CF1,
+                JNP1, JONO1, RSF1, RPF1, ROF1, RCF1, LONP1, ORS1, ORO1,
+                JNP2, JONO2, RSF2, RPF2, ROF2, RCF2, LONP2, ORS2, ORO2,
+                SO, SNP, NP, 3);
+        fin_read=PCounter.rCounter;
+        fin_write=PCounter.wCounter;
+        System.out.println("Total Page Writes for Strategy 3: "+ (fin_write-init_write));
+        System.out.println("Total Page Reads for Strategy 3: "+ (fin_read-init_read));
+
+    }
+
+
+    private void executeQueryWithStrategyOption(int num_buf, String SF1, String PF1, String OF1, double CF1,
+                                               int JNP1, int JONO1, String RSF1, String RPF1, String ROF1, double RCF1, ArrayList<Integer> LONP1, int ORS1, int ORO1,
+                                               int JNP2, int JONO2, String RSF2, String RPF2, String ROF2, double RCF2, ArrayList<Integer> LONP2, int ORS2, int ORO2,
+                                               int SO, int SNP, int NP, int strategy) throws Exception{
+
+        int counter0 = Stream.getQuadScanned();
+        Heapfile inputHF = new Heapfile(rdfDBname + "/inputHF");
+        boolean useIndex = strategy == 3;
+        BPFileScan scanner = initBPScan(inputHF, SF1, PF1,OF1,CF1, num_buf, useIndex);
+
+        int counter1 = Stream.getQuadScanned();
+        // Put Result of First Join in a Heap file
+        useIndex = strategy == 2 || strategy == 3;
+        BP_Triple_Join join1 =
+                new BP_Triple_Join(num_buf, 2, scanner,
+                        JNP1, JONO1, RSF1, RPF1, ROF1, RCF1,
+                        LONP1.stream().mapToInt(Integer::intValue).toArray(), ORS1, ORO1, useIndex);
+
+        Heapfile join1hf = new Heapfile(rdfDBname + "/join1HF");
+        BPFileScan jScanner1 = getJoinScan(join1, join1hf);
+        scanner.close();
+        inputHF.deleteFile();
+
+        int counter2 = Stream.getQuadScanned();
+        // Put Result of Second Join in a Heap file
+        BP_Triple_Join join2 =
+                new BP_Triple_Join(num_buf, 3, jScanner1,
+                        JNP2, JONO2, RSF2, RPF2, ROF2, RCF2,
+                        LONP2.stream().mapToInt(Integer::intValue).toArray(), ORS2, ORO2, useIndex);
+
+        Heapfile join2hf = new Heapfile(rdfDBname + "/join2HF");
+        BPFileScan jScanner2 = getJoinScan(join2, join2hf);
+        jScanner1.close();
+        join1hf.deleteFile();
+        int counter3 = Stream.getQuadScanned();
+
+        //Stream Result of Sorted Result
+        BPOrder order = new BPOrder(SO);
+        BPSort result = new BPSort(jScanner2, SNP, order, NP/2);
+
+        printResult(result);
+        jScanner2.close();
+        result.close();
+        join2hf.deleteFile();
+
+        System.out.println("Join outer passes: " + (join1.getOuterCount()+join2.getOuterCount()));
+        System.out.println("Join inner passes: "+ (join1.getInnerCount() + join2.getInnerCount()));
+
+        System.out.println("Total Quadruples Scanned: " + (counter3 - counter0));
+    }
+
 
     public void closeRdfDBFiles() {
 
@@ -493,6 +750,13 @@ public class rdfDB extends DB implements GlobalConst {
             distinctSubjectsBTree.close();
 
             distinctObjectsBTree.close();
+
+            subIndexBTree.close();
+
+            objIndexBTree.close();
+
+            subObjIndexBTree.close();
+
 
         } catch (Exception e) {
             System.err.println("" + e);
